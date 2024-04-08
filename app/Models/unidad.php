@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class unidad extends Model
 {
     use HasFactory;
+    protected $table = "unidad";
+    protected $primaryKey = "idUnidad";
+
+    protected $fillable = [
+        'numeroUnidad',
+        'nombreUnidad',
+        'idRuta',
+        'idOperador'
+    ];
 }
