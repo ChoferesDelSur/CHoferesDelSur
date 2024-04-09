@@ -32,6 +32,7 @@
                 <div class="flex items-center"> <!-- Mostrado en todos los dispositivos -->
                     <h2 class="font-bold text-xl">Telesecundaria clave: 20DTV1474D</h2>
                 </div>
+
             </div>
 
             <!-- Ícono de Notificación y Perfil -->
