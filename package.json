@@ -10,9 +10,13 @@
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.0.4",
+        "autoprefixer": "^10.4.19",
         "axios": "^1.6.4",
+        "laravel-mix": "^6.0.49",
         "laravel-vite-plugin": "^1.0",
         "npm-run-all": "^4.1.5",
+        "postcss": "^8.4.38",
+        "tailwindcss": "^3.4.3",
         "vite": "^5.0"
     },
     "dependencies": {
@@ -21,6 +25,7 @@
         "vue-loader": "^17.4.2",
         "vue-router": "^4.3.0",
         "vue-select": "^4.0.0-beta.6",
+        "vuetify": "^3.4.0-beta.1",
         "ziggy": "^1.2.0"
     }
 }

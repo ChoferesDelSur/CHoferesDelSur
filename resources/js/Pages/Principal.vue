@@ -1,14 +1,24 @@
 <script>
-import { Head, Link } from '@inertiajs/vue3';
+import PrincipalLayout from '@/Layouts/PrincipalLayout.vue';
+
 
 </script>
 
 <template>
-<div>
-    <Head title="Administrador: inicio" />
-    <div class="flex flex-col h-screen bg-gray-100">
-      <h1>Bienvenido al administrador</h1>
-      <!-- Otro contenido de tu aplicación -->
-    </div>
-  </div>
+    <PrincipalLayout title="Inicio">
+            <div class="mt-8 bg-yellow-200 p-4 shadow rounded-lg h-5/6">
+            <h2 class="font-bold text-center text-xl pt-5">Bienvenido al sistema de la empresa Choferes del Sur</h2>
+        </div>
+
+    </PrincipalLayout>
 </template>
+<style>
+.text-lgg {
+    font-size: 1.190rem
+        /* 20px */
+    ;
+    line-height: 1.75rem
+        /* 28px */
+    ;
+}
+</style>
