@@ -30,7 +30,7 @@
                     </button>
                 </div>
                 <div class="flex items-center"> <!-- Mostrado en todos los dispositivos -->
-                    <h2 class="font-bold text-xl">Telesecundaria clave: 20DTV1474D</h2>
+                    <h2 class="font-bold text-xl">Choferes de Sur</h2>
                 </div>
 
             </div>
@@ -53,12 +53,12 @@
                     <div class="w-60 h-16 justify-start items-center gap-4 inline-flex">
                         <div class="w-12 h-12 relative">
                             <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full"></div>
-                            <img class="w-12 h-12 left-0 top-0 absolute" src="{{ asset('images/perfil.png') }}" />
+                            <img class="w-12 h-12 left-0 top-0 absolute" src="{{ asset('Imagenes/ChoferesDelSurLogo.png') }}" />
                         </div>
                         <div class="flex-col justify-start items-center inline-flex ">
-                            <div class="text-center text-black text-lg font-normal font-['DM Sans']">Rigoberto López
+                            <div class="text-center text-black text-lg font-normal font-['DM Sans']">Admin
                             </div>
-                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">SALOR850201
+                            <div class="text-center text-stone-950 text-sm font-normal font-['DM Sans']">User
                             </div>
                         </div>
                     </div>

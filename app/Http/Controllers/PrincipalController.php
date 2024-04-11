@@ -28,7 +28,19 @@ class PrincipalController extends Controller
         $directivo = directivo::all();
         $operador = operador::all();
         $ruta = ruta::all();
-        return Inertia::render('Principal',[
+        return Inertia::render('Principal/Principal',[
+            'unidad ' => $unidad,
+            'directivo' => $directivo,
+            'operador' => $operador,
+            'ruta' => $ruta
+        ]);
+    }
+    public function formarUnidades(){
+        $unidad = unidad::all();
+        $directivo = directivo::all();
+        $operador = operador::all();
+        $ruta = ruta::all();
+        return Inertia::render('Principal/FormarUnidades',[
             'unidad ' => $unidad,
             'directivo' => $directivo,
             'operador' => $operador,
