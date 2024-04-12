@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('entrada', function (Blueprint $table) {
             $table->id(column:'idEntrada');
+            $table->date(column:'horaEntrada')->nullable(false);
+            $table->string(column:'tipoEntrada')->nullable(false);
+            $table->boolean(column:'extremo')->nullable(false);
+            $table->date(column:'ultimaAyer')->nullable(false);
+            $table->integer(column:'multa') -> nullable(false);
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

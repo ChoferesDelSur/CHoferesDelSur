@@ -24,15 +24,16 @@
         <!-- Barra de navegación superior -->
         <div class="bg-cyan-600 text-white shadow w-full p-2 flex items-center justify-between">
             <div class="flex items-center">
-                <div class="md:hidden flex items-center pe-2"> <!-- Se muestra solo en dispositivos pequeños -->
+                <div class="md:hidden flex items-center pe-2">
+                    <!-- Se muestra solo en dispositivos pequeños -->
                     <button id="menuBtn">
                         <i class="fas fa-bars text-white text-lg"></i> <!-- Ícono de menú -->
                     </button>
                 </div>
-                <div class="flex items-center"> <!-- Mostrado en todos los dispositivos -->
+                <div class="flex items-center">
+                    <!-- Mostrado en todos los dispositivos -->
                     <h2 class="font-bold text-xl">Choferes de Sur</h2>
                 </div>
-
             </div>
 
             <!-- Ícono de Notificación y Perfil -->
@@ -53,7 +54,8 @@
                     <div class="w-60 h-16 justify-start items-center gap-4 inline-flex">
                         <div class="w-12 h-12 relative">
                             <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full"></div>
-                            <img class="w-12 h-12 left-0 top-0 absolute" src="{{ asset('Imagenes/ChoferesDelSurLogo.png') }}" />
+                            <img class="w-12 h-12 left-0 top-0 absolute"
+                                src="{{ asset('Imagenes/ChoferesDelSurLogo.png') }}" />
                         </div>
                         <div class="flex-col justify-start items-center inline-flex ">
                             <div class="text-center text-black text-lg font-normal font-['DM Sans']">Admin
@@ -86,14 +88,14 @@
     </div>
     @yield('scripts');
     <script>
-        // Agregar lógica para mostrar/ocultar la navegación lateral al hacer clic en el ícono de menú
-        const menuBtn = document.getElementById('menuBtn');
-        const sideNav = document.getElementById('sideNav');
+    // Agregar lógica para mostrar/ocultar la navegación lateral al hacer clic en el ícono de menú
+    const menuBtn = document.getElementById('menuBtn');
+    const sideNav = document.getElementById('sideNav');
 
-        menuBtn.addEventListener('click', () => {
-            sideNav.classList.toggle(
-                'hidden'); // Agrega o quita la clase 'hidden' para mostrar u ocultar la navegación lateral
-        });
+    menuBtn.addEventListener('click', () => {
+        sideNav.classList.toggle(
+            'hidden'); // Agrega o quita la clase 'hidden' para mostrar u ocultar la navegación lateral
+    });
     </script>
 </body>
 

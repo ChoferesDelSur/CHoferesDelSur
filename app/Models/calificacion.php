@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class calificacion extends Model
 {
     use HasFactory;
+    protected $table = "calificacion";
+    protected $primaryKey = "idCalificacion";
+
+    protected $fillable = [
+        'calificacion',
+    ];
 }

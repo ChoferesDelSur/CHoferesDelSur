@@ -1,7 +1,4 @@
-<script setup>
-defineProps({
-
-});
+<script>
 
 </script>
 

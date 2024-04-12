@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watchEffect } from 'vue';
+//import { defineProps } from 'vue';
+import { ref, watchEffect} from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
 const page = usePage();
@@ -14,6 +15,7 @@ const props = defineProps({
 const toggleSidebar = () => {
     sideNav.classList.toggle('hidden'); // Agrega o quita la clase 'hidden' para mostrar u ocultar la navegación lateral
 }
+
 /*const toggleSidebar = () => {
     const sideNav = document.getElementById('sideNav');
     if (sideNav) {

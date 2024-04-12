@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class formacionUnidades extends Model
 {
     use HasFactory;
+    protected $table = "formacionUnidades";
+    protected $primaryKey = "idFormacionUnidades";
+
+    protected $fillable = [
+        'fecha',
+        'idUnidad',
+        'idEntrada',
+        'idCorte',
+    ];
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+//import { defineProps } from 'vue';
 import { Head } from '@inertiajs/vue3';
 
 import TopContent from '../Components/Principal/TopContent.vue';
@@ -11,12 +11,13 @@ const props = defineProps({
 
 </script>
 
+
 <template>
   <div class="flex flex-col h-screen bg-gray-100">
 
     <Head :title="title" />
 
-    <TopContent />
+    <TopContent />  <!--LLama al componente TopContent--> 
 
     <div class="flex-1 flex flex-wrap">
       <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
@@ -28,13 +29,12 @@ const props = defineProps({
                 <!-- rounded-full sirve para redondear las esquinas de la imagen-->
                 <img class="w-12 h-12 left-0 top-0 absolute" :src="'Imagenes/ChoferesDelSurLogo.png'" />
               </div>
-
             </div>
           </div>
           <!-- Señalador de ubicación -->
           <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mt-2"></div>
 
-          <OpcionesNav />
+          <OpcionesNav /> <!--LLama al componente OpcionesNav--> 
 
         </nav>
         <!-- Señalador de ubicación -->

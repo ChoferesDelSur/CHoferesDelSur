@@ -1,5 +1,6 @@
 <script setup>
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
+//import { defineProps } from 'vue';
 
 const props = defineProps({
     message: { String, default: '' },
@@ -13,7 +14,6 @@ const props = defineProps({
             <h2 class="font-bold text-center text-xl pt-5"> Bienvenido al sistema de la empresa Choferes del Sur</h2>
             <h3 class="font-bold text-center text-xl pt-5"> Ha iniciado sesión como administrador</h3>
         </div>
-
     </PrincipalLayout>
 </template>
 <style>

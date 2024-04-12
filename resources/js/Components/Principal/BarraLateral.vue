@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import OpcionesNav from './OpcionesNav.vue';
 //import { useSidebar } from '../composables/useSidebar'
 
 //const { isOpen } = useSidebar()

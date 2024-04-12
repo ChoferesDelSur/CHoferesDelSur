@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('corte', function (Blueprint $table) {
             $table->id(column:'idCorte');
+            $table->date(column:'horaCorte')->nullable(false);
+            $table->string(column:'causa')->nullable(false);
+            $table->date(column:'horaRegreso')->nullable(false);
+            $table->boolean(column:'notaTalacha')->nullable(false);
+            $table->string(column:'tiempoCorte')->nullable(false);
+            $table->string(column:'tipoCorte')->nullable(false);
+            $table->foreignId(column:'idCastigo')->references('idCastigo')->on('castigo');
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

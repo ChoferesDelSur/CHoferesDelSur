@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class entrada extends Model
 {
     use HasFactory;
+    protected $table = "entrada";
+    protected $primaryKey = "idEntrada";
+
+    protected $fillable = [
+        'horaEntrada',
+        'tipoEntrada',
+        'extremo',
+        'ultimaAyer',
+        'multa'
+    ];
 }
