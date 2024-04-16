@@ -16,14 +16,6 @@ const toggleSidebar = () => {
     sideNav.classList.toggle('hidden'); // Agrega o quita la clase 'hidden' para mostrar u ocultar la navegación lateral
 }
 
-/*const toggleSidebar = () => {
-    const sideNav = document.getElementById('sideNav');
-    if (sideNav) {
-        sideNav.classList.toggle('hidden');
-    }
-}
-*/
-
 watchEffect(async () => {
     style.value = page.props.jetstream?.flash?.bannerStyle || 'success';
     message.value = page.props.jetstream?.flash?.banner || '';
