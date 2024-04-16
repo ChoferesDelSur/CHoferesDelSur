@@ -1,14 +1,13 @@
 <script setup>
 //import { defineProps } from 'vue';
 import { Head } from '@inertiajs/vue3';
-
 import TopContent from '../Components/Principal/TopContent.vue';
 import OpcionesNav from '../Components/Principal/OpcionesNav.vue';
 
 const props = defineProps({
   title: String,
 });
-
+ 
 </script>
 
 
@@ -27,7 +26,7 @@ const props = defineProps({
             <div class="w-12 h-12 relative">
               <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full">
                 <!-- rounded-full sirve para redondear las esquinas de la imagen-->
-                <img class="w-12 h-12 left-0 top-0 absolute" :src="'Imagenes/ChoferesDelSurLogo.png'" />
+                <!-- <img class="w-12 h-12 left-0 top-0 absolute" :src="'Imagenes/ChoferesDelSurLogo.png'" /> -->
               </div>
             </div>
           </div>

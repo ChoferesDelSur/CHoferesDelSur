@@ -39,10 +39,18 @@ watchEffect(async () => {
                     <i class="fas fa-bars text-white text-lg"></i> <!-- Ícono de menú -->
                 </button>
             </div>
+            <div class="h-full">
+                <img :src="'Imagenes/ChoferesDelSurLogo.png'" class="md:h-full h-14 md:mx-1 border-2 border-cyan-600 object-cover rounded-lg">
+            </div>
             <div class="md:flex items-center justify-center text-center hidden">
                 <!-- Mostrado en todos los dispositivos -->
                 <h1 class="md:font-bold md:text-2xl font-semibold text-xl"> Choferes del sur</h1>
             </div>
+        </div>
+        <div class="flex items-center h-full">
+            <div class="flex items-center text-center h-full justify-center mx-1">
+                
+            </div>        
         </div>
     </div>
 </template>

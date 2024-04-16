@@ -16,7 +16,7 @@ const props = defineProps({
         </div>
     </PrincipalLayout>
 </template>
-<style>
+<!-- <style>
 .text-lgg {
     font-size: 1.190rem
         /* 20px */
@@ -25,4 +25,4 @@ const props = defineProps({
         /* 28px */
     ;
 }
-</style>
+</style> -->

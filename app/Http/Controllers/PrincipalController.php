@@ -18,17 +18,17 @@ use Inertia\Inertia;
 
 class PrincipalController extends Controller
 {
-    public function index()
+    /* public function index()
     {
         return Inertia::render('Principal');
-    }
+    } */
     public function inicio()
     {
         /*$unidad = unidad::all();
         $directivo = directivo::all();
         $operador = operador::all();
         $ruta = ruta::all();*/
-        return Inertia::render('Principal/Principal',[
+        return Inertia::render('Principal/Inicio',[
             /*'unidad ' => $unidad,
             'directivo' => $directivo,
             'operador' => $operador,
