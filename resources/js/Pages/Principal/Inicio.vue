@@ -6,6 +6,7 @@ const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
 });
+console.log("Estoy en Inicio");
 </script>
 
 <template>
@@ -16,7 +17,7 @@ const props = defineProps({
         </div>
     </PrincipalLayout>
 </template>
-<!-- <style>
+<style>
 .text-lgg {
     font-size: 1.190rem
         /* 20px */
@@ -25,4 +26,4 @@ const props = defineProps({
         /* 28px */
     ;
 }
-</style> -->
+</style>

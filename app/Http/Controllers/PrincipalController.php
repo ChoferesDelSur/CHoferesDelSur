@@ -24,27 +24,40 @@ class PrincipalController extends Controller
     } */
     public function inicio()
     {
-        /*$unidad = unidad::all();
+        /* /*$unidad = unidad::all();
         $directivo = directivo::all();
-        $operador = operador::all();
-        $ruta = ruta::all();*/
+        $operador = operador::all(); */
+        $ruta = ruta::all();
         return Inertia::render('Principal/Inicio',[
-            /*'unidad ' => $unidad,
+            /* /*'unidad ' => $unidad,
             'directivo' => $directivo,
-            'operador' => $operador,
-            'ruta' => $ruta*/
+            'operador' => $operador, */
+            'ruta' => $ruta
         ]);
     }
     public function formarUnidades(){
-        $unidad = unidad::all();
+        /* $unidad = unidad::all();
         $directivo = directivo::all();
         $operador = operador::all();
-        $ruta = ruta::all();
+        $ruta = ruta::all(); */
+        dd("Estoy en formarUnidades");
         return Inertia::render('Principal/FormarUnidades',[
-            'unidad ' => $unidad,
+            /* 'unidad ' => $unidad,
             'directivo' => $directivo,
             'operador' => $operador,
-            'ruta' => $ruta
+            'ruta' => $ruta */
+        ]);
+    }
+    public function registrarUnidad(){
+        $unidades = unidad::all();
+        return Inertia::render('Principal/Unidades',[
+            'unidades' => $unidades,
+        ]);
+    }
+    public function rutas(){
+        $ruta = ruta::all();
+        return Inertia::render('Principal/Rutas',[
+            'ruta' => $ruta,
         ]);
     }
 }

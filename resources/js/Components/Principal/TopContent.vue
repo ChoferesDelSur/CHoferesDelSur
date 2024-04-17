@@ -1,7 +1,7 @@
 <script setup>
 //import { defineProps } from 'vue';
 import { ref, watchEffect} from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/inertia-vue3';
 
 const page = usePage();
 const show = ref(true);
@@ -24,7 +24,7 @@ watchEffect(async () => {
 </script>
 
 <template>
-    <div class="bg-cyan-600 text-white shadow w-full flex items-center justify-between md:max-h-12 h-24 rounded-sm">
+    <div class="bg-cyan-500 text-white shadow w-full flex items-center justify-between md:max-h-12 h-24 rounded-sm">
         <div class="flex items-center h-full">
             <div class="md:hidden flex items-center pe-2 mx-1"> <!-- Se muestra solo en dispositivos pequeños -->
                 <button id="menuBtn" @click="toggleSidebar">
@@ -32,7 +32,7 @@ watchEffect(async () => {
                 </button>
             </div>
             <div class="h-full">
-                <img :src="'Imagenes/ChoferesDelSurLogo.png'" class="md:h-full h-14 md:mx-1 border-2 border-cyan-600 object-cover rounded-lg">
+                <img :src="'Imagenes/ChoferesDelSurLogo.png'" class="md:h-full h-14 md:mx-1 border-2 border-cyan-500 object-cover rounded-lg">
             </div>
             <div class="md:flex items-center justify-center text-center hidden">
                 <!-- Mostrado en todos los dispositivos -->
