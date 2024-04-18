@@ -10,5 +10,9 @@ use App\Http\Controllers\PrincipalController;
 Route::controller(PrincipalController::class)->group(function () {
     Route::get('/', 'inicio')->name('principal.inicio');
     Route::get('/principal/formUnidades', 'formarUnidades')->name('principal.formarUni');
+    Route::get('/principal/unidades', 'unidades')->name('principal.unidades');
+    Route::get('/principal/operadores', 'operadores')->name('principal.operadores');
     Route::get('/principal/rutas', 'rutas')->name('principal.rutas');
+
+    Route::post('/principal/operadores', 'addOperador')->name('principal.addOperador');
 });

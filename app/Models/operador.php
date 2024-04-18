@@ -16,7 +16,6 @@ class operador extends Model
         'apellidoP',
         'apellidoM',
         'idEstado',
-        'idTipoOperador',
-        'idAsistencia'
+        'idTipoOperador'
     ];
 }

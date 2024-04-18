@@ -32,7 +32,7 @@ DataTable.use(ButtonsHtml5);
 const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
-    unidades: { type: Object },
+    unidad: { type: Object },
 });
 
 const botones = [
@@ -121,7 +121,7 @@ console.log("Estoy en Unidades");
 
             <div>
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-                    id="unidadesTablaId" name="unidadesTablaId" :columns="columnas" :data="unidades" :options="{
+                    id="unidadesTablaId" name="unidadesTablaId" :columns="columnas" :data="unidad" :options="{
                         responsive: true, autoWidth: false, dom: 'Bftrip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
