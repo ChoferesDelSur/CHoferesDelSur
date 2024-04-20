@@ -1,12 +1,15 @@
 <script setup>
-import { data } from 'jquery';
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
+import pdfmake from 'pdfmake';
+import { useForm } from '@inertiajs/inertia-vue3';
 import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import Select from 'datatables.net-select-dt';
-import pdfmake from 'pdfmake';
+import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
+import { ref, watch } from 'vue';
+import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -33,6 +36,8 @@ const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
     unidad: { type: Object },
+    ruta: { type: Object },
+    operador: { type: Object },
 });
 
 const botones = [
@@ -93,10 +98,49 @@ const columnas = [
     },
     { data: 'numeroUnidad' },
     { data: 'nombreUnidad' },
+    {
+        data: 'idOperador',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const oper = props.operador.find(oper => oper.idOperador === data);
+            return oper ? oper.nombre : '';
+        }
+    },
+    {
+        data: 'idRuta',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const rut = props.ruta.find(rut => rut.idRuta === data);
+            return rut ? rut.nombreRuta : '';
+        }
+    },
 ]
+
+const mostrarModal = ref(false);
+const mostrarModalE = ref(false);
+const maxWidth = 'xl';
+const closeable = true;
+
+const form = useForm({});
+
+const abrirE = ($clasee) => {
+    claseE = $clasee;
+    mostrarModalE.value = true;
+    console.log($clasee);
+    console.log(claseE);
+}
+
+const cerrarModal = () => {
+    mostrarModal.value = false;
+};
+
+const cerrarModalE = () => {
+    mostrarModalE.value = false;
+};
 
 
 console.log("Estoy en Unidades");
+console.log(props.unidad);
 
 </script>
 
@@ -164,5 +208,11 @@ console.log("Estoy en Unidades");
                 </DataTable>
             </div>
         </div>
+        <formulario-unidades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :operador="props.operador" :unidad="props.unidad"
+            :ruta="props.ruta"></formulario-unidades>
+        <formulario-unidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :operador="props.operador" :unidad="props.unidad"
+            :ruta="props.ruta"></formulario-unidades>
     </PrincipalLayout>
 </template>

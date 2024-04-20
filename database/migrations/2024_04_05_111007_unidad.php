@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('unidad', function (Blueprint $table) {
             $table->id(column:'idUnidad');
-            $table->integer(column:'numeroUnidad')->unique()->nullable(false);
+            $table->string(column:'numeroUnidad')->unique()->nullable(false);
             $table->string(column:'nombreUnidad')->nullable(false);
             $table->foreignId(column:'idRuta')->references('idRuta')->on('ruta');
             $table->foreignId(column:'idOperador')->references('idOperador')->on('operador');

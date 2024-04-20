@@ -89,12 +89,12 @@ const save = async () => {
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Seleccione el tipo de operador';
 
-    if(
+    if (
         nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value
-    ){
+    ) {
         return;
     }
-    form.post(route('principal.addOperador'),{
+    form.post(route('principal.addOperador'), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -166,34 +166,37 @@ const update = async () => {
                         </div>
                         <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
                     </div>
-                </div>
-                <div class="sm:col-span-2">
-                    <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo de operador</label>
-                    <div class="mt-2">
-                        <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
-                            placeholder="Seleccione el tipo de operador"
-                            class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="" disabled selected>Seleccione un tipo de operador</option>
-                            <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador" :value="tOperador.idTipoOperador">
-                                {{ tOperador.tipOperador }}
-                            </option>
-                        </select>
+                    <div class="sm:col-span-2">
+                        <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                            operador</label>
+                        <div class="mt-2">
+                            <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
+                                placeholder="Seleccione el tipo de operador"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option value="" disabled selected>Seleccione un tipo de operador</option>
+                                <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador"
+                                    :value="tOperador.idTipoOperador">
+                                    {{ tOperador.tipOperador }}
+                                </option>
+                            </select>
+                        </div>
+                        <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError }}
+                        </div>
                     </div>
-                    <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError }}</div>
-                </div>
-                <div class="sm:col-span-2">
-                    <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
-                    <div class="mt-2">
-                        <select name="estado" :id="'estado' + op" v-model="form.estado"
-                            placeholder="Seleccione el tipo de estado"
-                            class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value="" disabled selected>Seleccione el estado del operador</option>
-                            <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
-                                {{ est.estado }}
-                            </option>
-                        </select>
+                    <div class="sm:col-span-2">
+                        <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
+                        <div class="mt-2">
+                            <select name="estado" :id="'estado' + op" v-model="form.estado"
+                                placeholder="Seleccione el tipo de estado"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option value="" disabled selected>Seleccione el estado del operador</option>
+                                <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
+                                    {{ est.estado }}
+                                </option>
+                            </select>
+                        </div>
+                        <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
                     </div>
-                    <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
                 </div>
 
                 <div class="mt-6 flex items-center justify-end gap-x-6">

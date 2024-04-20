@@ -35,7 +35,7 @@ class RutaSeeder extends Seeder
             "VIGUERA - 1a. ETAPA",
             "MONJONERA - COL. MOCTEZUMA",
             "ANAHUAC - VOLCANES",
-            "LA JOYA - COL.JARDIN",
+            "LA JOYA - COL. JARDIN",
         ];
         foreach($ruta as $nombreRuta){
             ruta::create(['nombreRuta'=> $nombreRuta]);

@@ -31,7 +31,7 @@ class PrincipalController extends Controller
         $estado = estado::all();
         $unidad = unidad::all();
         $ruta = ruta::all();
-        return Inertia::render('Principal/Operadores',[
+        return Inertia::render('Principal/Unidades',[
             'unidad' => $unidad,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
@@ -57,6 +57,30 @@ class PrincipalController extends Controller
         return Inertia::render('Principal/Unidades',[
             'unidades' => $unidades,
         ]);
+    }
+
+    public function addUnidad(Request $request){
+        try{
+            $request->validate([
+                'numeroUnidad'=> 'required',
+                'nombreUnidad'=> 'required',
+                'ruta' => 'required',
+                'operador' => 'required',
+            ]);
+
+            $numeroUnidad = $request->numeroUnidad;
+            $nombreUnidad = $request->nombreUnidad;
+    
+            $unidad = new unidad();
+            $unidad->numeroUnidad = $numeroUnidad;
+            $unidad->nombreUnidad = $nombreUnidad;
+            $unidad->idOperador = $request->operador;
+            $unidad->idRuta = $request->ruta;
+            $unidad->save();
+            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregado correctamente: $numeroUnidad $nombreUnidad ", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('principal.unidades');
+        }
     }
 
     public function operadores(){
