@@ -63,21 +63,18 @@ class PrincipalController extends Controller
         try{
             $request->validate([
                 'numeroUnidad'=> 'required',
-                'nombreUnidad'=> 'required',
                 'ruta' => 'required',
                 'operador' => 'required',
             ]);
 
             $numeroUnidad = $request->numeroUnidad;
-            $nombreUnidad = $request->nombreUnidad;
     
             $unidad = new unidad();
             $unidad->numeroUnidad = $numeroUnidad;
-            $unidad->nombreUnidad = $nombreUnidad;
             $unidad->idOperador = $request->operador;
             $unidad->idRuta = $request->ruta;
             $unidad->save();
-            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregado correctamente: $numeroUnidad $nombreUnidad ", "color" => "green"]);
+            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregado correctamente: $numeroUnidad ", "color" => "green"]);
         }catch(Exception $e){
             return redirect()->route('principal.unidades');
         }

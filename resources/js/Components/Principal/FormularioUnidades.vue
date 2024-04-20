@@ -39,7 +39,6 @@ const emit = defineEmits(['close']);
 const form = useForm({
     idUnidad: props.unidad.idUnidad,
     numeroUnidad: props.unidad.numeroUnidad,
-    nombreUnidad: props.unidad.nombreUnidad,
     ruta: props.unidad.idRuta,
     operador: props.unidad.idOperador,
 });
@@ -47,7 +46,6 @@ const form = useForm({
 watch(() => props.unidad, async (newVal) => {
     form.idUnidad = newVal.idUnidad;
     form.numeroUnidad = newVal.numeroUnidad;
-    form.nombreUnidad = newVal.nombreUnidad;
     form.ruta = newVal.idRuta;
     form.operador = newVal.idOperador;
 }, { deep: true }
@@ -55,7 +53,6 @@ watch(() => props.unidad, async (newVal) => {
 
 // Variables para los mensajes de validación
 const numeroUnidadError = ref('');
-const nombreUnidadError = ref('');
 const rutaError = ref('');
 const operadorError = ref('');
 
@@ -80,12 +77,11 @@ const validateSelect = (selectedValue) => {
 
 const save = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
-    nombreUnidadError.value = validateStringNotEmpty(form.nombreUnidad) ? '' : 'Ingrese el nombre de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
     operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
 
     if (
-        numeroUnidadError.value || nombreUnidadError.value || rutaError.value || operadorError.value
+        numeroUnidadError.value || rutaError.value || operadorError.value
     ) {
         return;
     }
@@ -93,7 +89,6 @@ const save = async () => {
         onSuccess: () => {
             close()
             numeroUnidadError.value = '';
-            nombreUnidadError.value = '';
             rutaError.value = '';
             operadorError.value = '';
         }
@@ -102,7 +97,6 @@ const save = async () => {
 
 const update = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
-    nombreUnidadError.value = validateStringNotEmpty(form.nombreUnidad) ? '' : 'Ingrese el nombre de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
     operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
 }
@@ -141,17 +135,6 @@ const update = async () => {
                         <div v-if="numeroUnidadError != ''" class="text-red-500 text-xs mt-1">{{ numeroUnidadError }}
                         </div>
                         <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="nombreUnidad" class="block text-sm font-medium leading-6 text-gray-900">Nombre de
-                            unidad</label>
-                        <div class="mt-2">
-                            <input type="text" name="nombreUnidad" :id="'nombreUnidad' + op" v-model="form.nombreUnidad"
-                                placeholder="Ingrese el nombre de la unidad"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="nombreUnidadError != ''" class="text-red-500 text-xs mt-1">{{ nombreUnidadError }}
-                        </div>
                     </div>
                     <div class="sm:col-span-2">
                         <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta</label>

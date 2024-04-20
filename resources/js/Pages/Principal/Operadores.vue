@@ -91,7 +91,7 @@ const columnas = [
         }
     },
     {
-        data: null,
+        data: null, 
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="operador-checkboxes" data-id="${row.idOperador}" ">`;
         }

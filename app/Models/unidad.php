@@ -13,7 +13,6 @@ class unidad extends Model
 
     protected $fillable = [
         'numeroUnidad',
-        'nombreUnidad',
         'idRuta',
         'idOperador'
     ];

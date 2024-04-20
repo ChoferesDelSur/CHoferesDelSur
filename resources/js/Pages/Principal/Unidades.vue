@@ -97,7 +97,6 @@ const columnas = [
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'numeroUnidad' },
-    { data: 'nombreUnidad' },
     {
         data: 'idOperador',
         render: function (data, type, row, meta) {
@@ -190,10 +189,6 @@ console.log(props.unidad);
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Número de Unidad
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre de Unidad
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
