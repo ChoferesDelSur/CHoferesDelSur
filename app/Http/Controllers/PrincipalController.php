@@ -24,7 +24,6 @@ class PrincipalController extends Controller
     } */
     public function inicio()
     {
-        
         $directivo = directivo::all();
         $operador = operador::all(); 
         $tipoOperador = tipooperador::all();
@@ -124,6 +123,17 @@ class PrincipalController extends Controller
         }catch(Exception $e){
             return redirect()->route('principal.operadores');
         }
+    }
+
+    public function sociosPrestadores(){
+        $directivo = directivo::all();
+        $operador = operador::all();
+        $tipDirectivo = tipodirectivo::all();
+        return Inertia::render('Principal/SociosPrestadores',[
+            'directivo' => $directivo,
+            'operador' => $operador,
+            'tipDirectivo' => $tipDirectivo,
+        ]);
     }
 
     public function rutas(){
