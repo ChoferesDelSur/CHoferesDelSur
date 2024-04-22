@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
+//import Modal from '../Modal.vue';
 
 const props = defineProps({
     show: {
@@ -33,6 +34,9 @@ const props = defineProps({
     modal: { type: String },
     op: { type: String },
 })
+
+console.log("Operadores:");
+console.log(props.operador);
 
 const emit = defineEmits(['close']);
 
@@ -132,8 +136,7 @@ const update = async () => {
                         </div>
                         <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                         <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
-                        <div v-if="numeroUnidadError != ''" class="text-red-500 text-xs mt-1">{{ numeroUnidadError }}
-                        </div>
+                        <div v-if="numeroUnidadError != ''" class="text-red-500 text-xs mt-1">{{ numeroUnidadError }}</div>
                         <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                     </div>
                     <div class="sm:col-span-2">
@@ -158,7 +161,7 @@ const update = async () => {
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="" disabled selected>Seleccione al operador</option>
                                 <option v-for="chofer in operador" :key="chofer.idOperador" :value="chofer.idOperador">
-                                    {{ chofer.nombre }} {{ chofer.apellidoP }} {{ chofer.apellidoM }}
+                                    {{ chofer.nombre && chofer.apellidoP}}
                                 </option>
                             </select>
                         </div>

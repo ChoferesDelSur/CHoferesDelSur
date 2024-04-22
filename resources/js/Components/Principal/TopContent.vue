@@ -7,6 +7,7 @@ const page = usePage();
 const show = ref(true);
 const style = ref('success');
 const message = ref('');
+//const sideNav = ref(null); // Definir sideNav como una referencia a un elemento HTML
 
 const props = defineProps({
     //usuario: { type: Object }

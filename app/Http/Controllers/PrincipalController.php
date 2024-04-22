@@ -31,7 +31,7 @@ class PrincipalController extends Controller
         $estado = estado::all();
         $unidad = unidad::all();
         $ruta = ruta::all();
-        return Inertia::render('Principal/Unidades',[
+        return Inertia::render('Principal/Inicio',[
             'unidad' => $unidad,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
