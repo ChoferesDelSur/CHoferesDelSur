@@ -44,7 +44,6 @@ class PrincipalController extends Controller
         $directivo = directivo::all();
         $operador = operador::all();
         $ruta = ruta::all(); */
-        dd("Estoy en formarUnidades");
         return Inertia::render('Principal/FormarUnidades',[
             /* 'unidad ' => $unidad,
             'directivo' => $directivo,
@@ -53,9 +52,18 @@ class PrincipalController extends Controller
         ]);
     }
     public function unidades(){
-        $unidades = unidad::all();
+        $unidad = unidad::all();
+        $operador = operador::all(); 
+        // Filtrar los operadores disponibles
+        $operadoresDisp = operador::where('idEstado', 1) // Filtrar por estado "Alta"
+                                ->whereDoesntHave('unidad') // Verificar que no estén relacionados con otra unidad
+                                ->get();
+        $ruta = ruta::all();
         return Inertia::render('Principal/Unidades',[
-            'unidades' => $unidades,
+            'unidad' => $unidad,
+            'operador' => $operador,
+            'operadoresDisp' => $operadoresDisp,
+            'ruta' => $ruta
         ]);
     }
 

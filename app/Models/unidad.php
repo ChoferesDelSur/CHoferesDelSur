@@ -16,4 +16,10 @@ class unidad extends Model
         'idRuta',
         'idOperador'
     ];
+
+    public function operador()
+{
+    return $this->belongsTo(Operador::class, 'idOperador');
+}
+
 }

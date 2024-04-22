@@ -22,7 +22,7 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    operador: {
+    operadoresDisp: {
         type: Object,
         default: () => ({}),
     },
@@ -36,7 +36,7 @@ const props = defineProps({
 })
 
 console.log("Operadores:");
-console.log(props.operador);
+console.log(props.operadoresDisp);
 
 const emit = defineEmits(['close']);
 
@@ -160,8 +160,8 @@ const update = async () => {
                                 placeholder="Seleccione al operador"
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="" disabled selected>Seleccione al operador</option>
-                                <option v-for="chofer in operador" :key="chofer.idOperador" :value="chofer.idOperador">
-                                    {{ chofer.nombre && chofer.apellidoP}}
+                                <option v-for="chofer in operadoresDisp" :key="chofer.idOperador" :value="chofer.idOperador">
+                                    {{ chofer.nombre}}
                                 </option>
                             </select>
                         </div>

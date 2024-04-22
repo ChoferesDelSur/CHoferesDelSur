@@ -38,6 +38,7 @@ const props = defineProps({
     unidad: { type: Object },
     ruta: { type: Object },
     operador: { type: Object },
+    operadoresDisp:{type: Object},
 });
 
 const botones = [
@@ -140,6 +141,8 @@ const cerrarModalE = () => {
 
 console.log("Estoy en Unidades");
 console.log(props.unidad);
+console.log("Operadores Disponibles");
+console.log(props.operadoresDisp);
 
 </script>
 
@@ -204,10 +207,10 @@ console.log(props.unidad);
             </div>
         </div>
         <formulario-unidades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :operador="props.operador" :unidad="props.unidad"
-            :ruta="props.ruta"></formulario-unidades>
+            :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :unidad="props.unidad"
+            :ruta="props.ruta" :operadoresDisp="props.operadoresDisp"></formulario-unidades>
         <formulario-unidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :operador="props.operador" :unidad="props.unidad"
-            :ruta="props.ruta"></formulario-unidades>
+            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="props.unidad"
+            :ruta="props.ruta" :operadoresDisp="props.operadoresDisp"></formulario-unidades>
     </PrincipalLayout>
 </template>

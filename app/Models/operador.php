@@ -18,4 +18,10 @@ class operador extends Model
         'idEstado',
         'idTipoOperador'
     ];
+
+    public function unidad()
+{
+    return $this->hasOne(Unidad::class, 'idOperador');
+}
+
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('unidad', function (Blueprint $table) {
             $table->id(column:'idUnidad');
-            $table->string(column:'numeroUnidad')->unique()->nullable(false);
+            $table->string(column:'numeroUnidad')->unique()->nullable(false);//nullable(false) quiere decir que no puede estar nulo
             $table->foreignId(column:'idRuta')->references('idRuta')->on('ruta');
             $table->foreignId(column:'idOperador')->references('idOperador')->on('operador');
             $table->softDeletes();
