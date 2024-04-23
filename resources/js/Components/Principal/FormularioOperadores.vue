@@ -29,6 +29,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    directivo: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -43,7 +47,7 @@ const form = useForm({
     apellidoM: props.operador.apellidoM,
     tipoOperador: props.operador.idTipoOperador,
     estado: props.operador.idEstado,
-    asistencia: props.operador.idAsistencia, //Probablemente se quite al crear una tabla Asistencia
+    directivo: props.operador.idDirectivo,
 });
 
 watch(() => props.operador, async (newVal) => {
@@ -53,7 +57,7 @@ watch(() => props.operador, async (newVal) => {
     form.apellidoM = newVal.apellidoM;
     form.tipoOperador = newVal.idTipoOperador;
     form.estado = newVal.idEstado;
-    form.asistencia = newVal.idAsistencia;//Probablemente se quite al crear una tabla Asistencia
+    form.directivo = newVal.idDirectivo;
 }, { deep: true }
 );
 
@@ -63,6 +67,7 @@ const apellidoPError = ref('');
 const apellidoMError = ref('');
 const tipoOperadorError = ref('');
 const estadoError = ref('');
+const directivoError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -88,9 +93,10 @@ const save = async () => {
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Seleccione el tipo de operador';
+    directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
 
     if (
-        nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value
+        nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value || directivoError.value
     ) {
         return;
     }
@@ -101,6 +107,7 @@ const save = async () => {
             apellidoPError.value = '';
             apellidoMError.value = '';
             tipoOperadorError.value = '';
+            directivoError.value = '';
         }
     })
 }
@@ -110,6 +117,7 @@ const update = async () => {
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Selecciones el tipo de operador';
+    directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
 }
 
 </script>
@@ -173,7 +181,7 @@ const update = async () => {
                             <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
                                 placeholder="Seleccione el tipo de operador"
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione un tipo de operador</option>
+                                <option value="" disabled selected>Seleccione el tipo de operador</option>
                                 <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador"
                                     :value="tOperador.idTipoOperador">
                                     {{ tOperador.tipOperador }}
@@ -196,6 +204,23 @@ const update = async () => {
                             </select>
                         </div>
                         <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
+                    </div>
+                    <p class="mt-2 text-sm leading-6 text-gray-600">A continuación, seleccione al socio/prestador para el que
+                        trabajará el operador que se está registrando
+                    </p>
+                    <div class="sm:col-span-2">
+                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Jefe</label>
+                        <div class="mt-2">
+                            <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
+                                placeholder="Seleccione a un socio/prestador"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option value="" disabled selected>Seleccione a un socio/prestador</option>
+                                <option v-for="jefe in directivo" :key="jefe.idDirectivo" :value="jefe.idDirectivo">
+                                    {{ jefe.nombre_completo }}
+                                </option>
+                            </select>
+                        </div>
+                        <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}</div>
                     </div>
                 </div>
 

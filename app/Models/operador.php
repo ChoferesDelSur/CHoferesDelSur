@@ -16,7 +16,8 @@ class operador extends Model
         'apellidoP',
         'apellidoM',
         'idEstado',
-        'idTipoOperador'
+        'idTipoOperador',
+        'nombre_completo'
     ];
 
     public function unidad()

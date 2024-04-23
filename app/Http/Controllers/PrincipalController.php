@@ -91,10 +91,12 @@ class PrincipalController extends Controller
         $operador = operador::all(); 
         $tipoOperador = tipooperador::all();
         $estado = estado::all();
+        $directivo = directivo::all();
         return Inertia::render('Principal/Operadores',[
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
+            'directivo' => $directivo,
         ]);
     }
 
@@ -106,20 +108,26 @@ class PrincipalController extends Controller
                 'apellidoM' => 'required',
                 'tipoOperador' => 'required',
                 'estado' => 'required',
+                'directivo' => 'required',
             ]);
 
-            $nombre = $request->nombre;
+            /* $nombre = $request->nombre;
             $apellidoP = $request->apellidoP;
-            $apellidoM = $request->apellidoM;
+            $apellidoM = $request->apellidoM; */
     
             $operador = new operador();
-            $operador->nombre = $nombre;
-            $operador->apellidoP = $apellidoP;
-            $operador->apellidoM = $apellidoM;
+            $operador->nombre = $request->nombre;
+            $operador->apellidoP = $request->apellidoP;
+            $operador->apellidoM = $request->apellidoM;
             $operador->idTipoOperador = $request->tipoOperador;
             $operador->idEstado = $request->estado;
+            $operador->idDirectivo = $request->directivo;
+
+            $nombreCompleto = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
+            $operador->nombre_completo = $nombreCompleto;
+
             $operador->save();
-            return redirect()->route('principal.operadores')->with(['message' => "Operador agregado correctamente: $nombre $apellidoP $apellidoM", "color" => "green"]);
+            return redirect()->route('principal.operadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green"]);
         }catch(Exception $e){
             return redirect()->route('principal.operadores');
         }
@@ -134,6 +142,34 @@ class PrincipalController extends Controller
             'operador' => $operador,
             'tipDirectivo' => $tipDirectivo,
         ]);
+    }
+
+    public function addDirectivo(Request $request){
+        try{
+            $request->validate([
+                'nombre'=> 'required',
+                'apellidoP'=> 'required',
+                'apellidoM' => 'required',
+                'tipDirectivo' => 'required',
+            ]);
+
+            /* $nombre = $request->nombre;
+            $apellidoP = $request->apellidoP;
+            $apellidoM = $request->apellidoM; */
+    
+            $directivo = new directivo();
+            $directivo->nombre = $request->nombre;
+            $directivo->apellidoP = $request->apellidoP;
+            $directivo->apellidoM = $request->apellidoM;
+            $directivo->idTipoDirectivo = $request->tipDirectivo;
+            $nombreCompleto =$directivo->apellidoP . ' ' . $directivo->apellidoM. ' ' . $directivo->nombre;
+            $directivo->nombre_completo = $nombreCompleto;
+
+            $directivo->save();
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('principal.sociosPrestadores');
+        }
     }
 
     public function rutas(){

@@ -38,6 +38,7 @@ const props = defineProps({
     operador: { type: Object },
     tipoOperador: { type: Object },
     estado: { type: Object },
+    directivo: { type: Object },
 });
 
 console.log("Operadores");
@@ -99,9 +100,9 @@ const columnas = [
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
-    { data: 'nombre' },
     { data: 'apellidoP' },
     { data: 'apellidoM' },
+    { data: 'nombre' },
     {
         data: 'idTipoOperador',
         render: function (data, type, row, meta) {
@@ -116,6 +117,14 @@ const columnas = [
             // Modificación para mostrar la descripción del ciclo
             const estad = props.estado.find(estad => estad.idEstado === data);
             return estad ? estad.estado : '';
+        }
+    },
+    {
+        data: 'idDirectivo',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const jefe = props.directivo.find(jefe => jefe.idDirectivo === data);
+            return jefe ? jefe.nombre_completo : '';
         }
     },
 ]
@@ -206,15 +215,15 @@ console.log("Estoy en Operadores");
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Paterno
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Materno
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Nombre
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -224,6 +233,10 @@ console.log("Estoy en Operadores");
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Estado
                             </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Jefe
+                            </th>
                         </tr>
                     </thead>
                 </DataTable>
@@ -231,9 +244,9 @@ console.log("Estoy en Operadores");
         </div>
         <formulario-operadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir operador'" :op="'1'" :modal="'modalCreate'" :operador="props.operador"
-            :tipoOperador="props.tipoOperador" :estado="props.estado"></formulario-operadores>
+            :tipoOperador="props.tipoOperador" :estado="props.estado" :directivo="props.directivo"></formulario-operadores>
         <formulario-operadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar operador'" :op="'2'" :modal="'modalEdit'" :operador="props.operador"
-            :tipoOperador="props.tipoOperador" :estado="props.estado"></formulario-operadores>
+            :tipoOperador="props.tipoOperador" :estado="props.estado" :directivo="props.directivo"></formulario-operadores>
     </PrincipalLayout>
 </template>

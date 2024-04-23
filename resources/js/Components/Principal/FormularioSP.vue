@@ -21,10 +21,6 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
-    operador: {
-        type: Object,
-        default: () => ({}),
-    },
     tipDirectivo: {
         type: Object,
         default: () => ({}),
@@ -41,8 +37,7 @@ const form = useForm({
     nombre: props.directivo.nombre,
     apellidoP: props.directivo.apellidoP,
     apellidoM: props.directivo.apellidoM,
-    tiDirectivo: props.directivo.idTipoDirectivo,
-    operadores: props.directivo.idOperador,
+    tipDirectivo: props.directivo.idTipoDirectivo,
 });
 
 watch(() => props.directivo, async (newVal) => {
@@ -50,8 +45,7 @@ watch(() => props.directivo, async (newVal) => {
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;
     form.apellidoM = newVal.apellidoM;
-    form.tiDirectivo = newVal.idTipoDirectivo;
-    form.operadores = newVal.idOperador;
+    form.tipDirectivo = newVal.idTipoDirectivo;
 }, { deep: true }
 );
 
@@ -60,7 +54,6 @@ const nombreError = ref('');
 const apellidoPError = ref('');
 const apellidoMError = ref('');
 const tipoDirectivoError = ref('');
-const operadoresError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -85,7 +78,7 @@ const save = async () => {
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
-    tipoDirectivoError.value = validateSelect(form.tiDirectivo) ? '' : 'Seleccione el tipo de directivo';
+    tipoDirectivoError.value = validateSelect(form.tipDirectivo) ? '' : 'Seleccione el tipo de directivo';
 
     if (
         nombreError.value || apellidoPError.value || apellidoMError.value || tipoDirectivoError.value
@@ -107,7 +100,7 @@ const update = async () => {
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
-    tipoDirectivoError.value = validateSelect(form.tiDirectivo) ? '' : 'Seleccione el tipo de directivo';
+    tipoDirectivoError.value = validateSelect(form.tipDirectivo) ? '' : 'Seleccione el tipo de directivo';
 }
 
 </script>
@@ -167,7 +160,7 @@ const update = async () => {
                     <div class="sm:col-span-2">
                         <label for="tipoDirectivo" class="block text-sm font-medium leading-6 text-gray-900">Tipo de Directivo</label>
                         <div class="mt-2">
-                            <select name="tipoDirectivo" :id="'tipoDirectivo' + op" v-model="form.tiDirectivo"
+                            <select name="tipoDirectivo" :id="'tipoDirectivo' + op" v-model="form.tipDirectivo"
                                 placeholder="Seleccione el tipo de directivo"
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="" disabled selected>Seleccione un tipo de directivo</option>

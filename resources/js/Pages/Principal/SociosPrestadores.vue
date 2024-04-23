@@ -34,8 +34,7 @@ const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
     directivo: { type: Object },
-    operador: { type: Object },
-    tipDirectivo: {type: Object},
+    tipDirectivo: { type: Object },
 });
 
 const botones = [
@@ -94,9 +93,9 @@ const columnas = [
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
-    { data: 'nombre' },
     { data: 'apellidoP' },
     { data: 'apellidoM' },
+    { data: 'nombre' },
     {
         data: 'idTipoDirectivo',
         render: function (data, type, row, meta) {
@@ -105,14 +104,14 @@ const columnas = [
             return tDirectivo ? tDirectivo.tipoDirectivo : '';
         }
     },
-    {
-        data: 'idOperador',
-        render: function (data, type, row, meta) {
-            // Modificación para mostrar la descripción del ciclo
-            const chofer = props.operador.find(chofer => chofer.idOperador === data);
-            return chofer ? chofer.nombre : '';
-        }
-    },
+    /*     {
+            data: 'idOperador',
+            render: function (data, type, row, meta) {
+                // Modificación para mostrar la descripción del ciclo
+                const chofer = props.operador.find(chofer => chofer.idOperador === data);
+                return chofer ? chofer.nombre : '';
+            }
+        }, */
 ]
 
 const mostrarModal = ref(false);
@@ -183,10 +182,6 @@ const cerrarModalE = () => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Paterno
                             </th>
                             <th
@@ -195,11 +190,11 @@ const cerrarModalE = () => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo Directivo
+                                Nombre
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Operadores
+                                Tipo Directivo
                             </th>
                         </tr>
                     </thead>
@@ -207,10 +202,10 @@ const cerrarModalE = () => {
             </div>
         </div>
         <FormularioSP :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir operador'" :op="'1'" :modal="'modalCreate'" :operador="props.operador"
-            :tipDirectivo="props.tipDirectivo" :directivo="props.directivo"></FormularioSP>
+            :title="'Añadir directivo'" :op="'1'" :modal="'modalCreate'" :tipDirectivo="props.tipDirectivo"
+            :directivo="props.directivo"></FormularioSP>
         <FormularioSP :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar operador'" :op="'2'" :modal="'modalEdit'" :operador="props.operador"
-            :tipDirectivo="props.tipDirectivo" :directivo="props.directivo"></FormularioSP>
+            :title="'Editar directivo'" :op="'2'" :modal="'modalEdit'" :tipDirectivo="props.tipDirectivo"
+            :directivo="props.directivo"></FormularioSP>
     </PrincipalLayout>
 </template>

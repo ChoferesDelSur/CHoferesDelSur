@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string(column: 'apellidoM')->nullable(false);
             $table->foreignId(column:'idEstado')->references('idEstado')->on('estado');
             $table->foreignId(column:'idTipoOperador')->references('idTipoOperador')->on('tipoOperador');
+            $table->foreignId(column:'idDirectivo')->references('idDirectivo')->on('directivo');
+            $table->text('nombre_completo')->nullable()->fulltext();
             $table->softDeletes();
             $table->timestamps();
         });
