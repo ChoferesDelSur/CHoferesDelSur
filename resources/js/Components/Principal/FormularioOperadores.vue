@@ -93,6 +93,7 @@ const save = async () => {
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Seleccione el tipo de operador';
+    estadoError.value = validateSelect(form.estado) ? '' : 'Seleccione el estado';
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
 
     if (

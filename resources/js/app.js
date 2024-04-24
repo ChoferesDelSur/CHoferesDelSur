@@ -6,6 +6,10 @@ import { createInertiaApp } from '@inertiajs/inertia-vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import VueSelect from 'vue-select';
+import DataTablesLib from 'datatables.net'; //Se agrego esto
+import DataTable from 'datatables.net-vue3';//Se agrego esto
+ 
+DataTable.use(DataTablesLib);//Se agrego esto
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -15,8 +19,9 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue)
+            .use(ZiggyVue, Ziggy) //Le agregué el Ziggy
             .component("v-select",VueSelect)
+            .component('DataTable', DataTable) //Se agregó esto
             .mount(el);
     },
     progress: {

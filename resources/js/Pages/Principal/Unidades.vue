@@ -2,12 +2,12 @@
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
-import pdfmake from 'pdfmake';
 import { useForm } from '@inertiajs/inertia-vue3';
 import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
+import pdfmake from 'pdfmake';
 import { ref, watch } from 'vue';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
 
@@ -69,8 +69,8 @@ const botones = [
         orientation: 'landscape',
         pageSize: 'TABLOID',
     },
-    /* {
-        title: 'Unidades Registrados',
+  /*   /* {
+        title: 'Unidades registrados',
         extend: 'print',
         text: '<i class="fa-solid fa-print"></i> Imprimir',
         className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
@@ -78,6 +78,15 @@ const botones = [
             columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
         },
         orientation: 'landscape',
+    }, 
+    {
+        title: 'Unidades registrados',
+        extend: 'copy',
+        text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        }
     }, */
 ]
 
@@ -103,7 +112,7 @@ const columnas = [
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const oper = props.operador.find(oper => oper.idOperador === data);
-            return oper ? oper.nombre : '';
+            return oper ? oper.nombre_completo : '';
         }
     },
     {
