@@ -2,11 +2,15 @@
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
+import { useForm } from '@inertiajs/inertia-vue3';
 import pdfmake from 'pdfmake';
 import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
+import { ref, onMounted } from 'vue';
+import Swal from 'sweetalert2';
+import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -79,12 +83,12 @@ const botones = [
 ]
 
 const columnas = [
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return "";
-        }
-    },
+    /*  {
+         data: null,
+         render: function (data, type, row, meta) {
+             return "";
+         }
+     }, */
     {
         data: null,
         render: function (data, type, row, meta) {
@@ -95,10 +99,118 @@ const columnas = [
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'nombreRuta' },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idRuta}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
 ]
+
+const mostrarModal = ref(false);
+const mostrarModalE = ref(false);
+const maxWidth = 'xl';
+const closeable = true;
+
+const form = useForm({});
+const rutasSeleccionados = ref([]);
+var rutaE = ({});
+
+const abrirE = ($rutass) => {
+    rutaE = $rutass;
+    mostrarModalE.value = true;
+}
+
+const cerrarModal = () => {
+    mostrarModal.value = false;
+};
+
+const cerrarModalE = () => {
+    mostrarModalE.value = false;
+};
 
 
 console.log("Estoy en Rutas");
+
+const toggleRutaSelection = (ruta) => {
+    if (rutasSeleccionados.value.includes(ruta)) {
+        // Si el alumno ya está seleccionado, la eliminamos del array
+        rutasSeleccionados.value = rutasSeleccionados.value.filter((r) => r !== ruta);
+    } else {
+        // Si el alumno no está seleccionado, la agregamos al array
+        rutasSeleccionados.value.push(ruta);
+    }
+    // Llamado del botón de eliminar para cambiar su estado deshabilitado
+    const botonEliminar = document.getElementById("eliminarABtn");
+    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
+    if (rutasSeleccionados.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+    }
+};
+
+onMounted(() => {
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('rutasTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('ruta-checkboxes')) {
+            const rutaId = parseInt(checkbox.getAttribute('data-id'));
+            // Se asegura que props.materias.data esté definido antes de usar find
+            if (props.ruta) {
+                const rutt = props.ruta.find(rutt => rutt.idRuta === rutaId);
+                if (rutt) {
+                    toggleRutaSelection(rutt);
+                } else {
+                    console.log("No se tiene ruta");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#rutasTablaId').on('click', '.editar-button', function () {
+        const rutaId = $(this).data('id');
+        const rutt = props.ruta.find(r => r.idRuta === rutaId);
+        abrirE(rutt);
+    });
+
+    // Manejar clic en el botón de eliminar
+    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
+        const alumnoId = $(this).data('id');
+        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
+        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
+    }); */
+});
+
+const eliminarRutas = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    swal.fire({
+        title: '¿Estas seguro que desea eliminar la ruta seleccionada?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const rutaE = rutasSeleccionados.value.map((ruta) => ruta.idRuta);
+                const $rutasIds = rutaE.join(',');
+                await form.delete(route('principal.eliminarRuta', $rutasIds));
+                rutasSeleccionados.value = [];
+                const botonEliminar = document.getElementById("eliminarABtn");
+                if (rutasSeleccionados.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");
+                } else {
+                    botonEliminar.setAttribute("disabled", "");
+                }
+            } catch (error) {
+                console.log("Error al eliminar varias rutas: " + error);
+            }
+        }
+    });
+};
 
 </script>
 
@@ -109,6 +221,13 @@ console.log("Estoy en Rutas");
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
+            <!-- <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
+                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
+                <span class="font-medium">
+                    {{ $page.props.flash.message }}
+                </span>
+            </div> -->
+
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
@@ -116,7 +235,7 @@ console.log("Estoy en Rutas");
                 </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarAlumnos">
+                    @click="eliminarRutas">
                     <i class="fa fa-trash mr-2"></i>Borrar Ruta
                 </button>
             </div>
@@ -140,9 +259,6 @@ console.log("Estoy en Rutas");
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 ID
                             </th>
                             <th
@@ -154,6 +270,10 @@ console.log("Estoy en Rutas");
                 </DataTable>
             </div>
         </div>
+        <FormularioRuta :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir ruta'" :op="'1'" :modal="'modalCreate'" :ruta="props.ruta"></FormularioRuta>
+        <FormularioRuta :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar ruta'" :op="'2'" :modal="'modalEdit'" :ruta="rutaE"></FormularioRuta>
     </PrincipalLayout>
 </template>
 <style>

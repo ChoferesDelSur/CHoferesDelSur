@@ -39,15 +39,17 @@ class PrincipalController extends Controller
         ]);
     }
     public function formarUnidades(){
-        /* $unidad = unidad::all();
         $directivo = directivo::all();
+        $unidad = unidad::all();
         $operador = operador::all();
-        $ruta = ruta::all(); */
+        $ruta = ruta::all();
+        $formacionUnidades = formacionunidades::all();
         return Inertia::render('Principal/FormarUnidades',[
-            /* 'unidad ' => $unidad,
             'directivo' => $directivo,
+            'unidad' => $unidad,
             'operador' => $operador,
-            'ruta' => $ruta */
+            'ruta' => $ruta,
+            'formacionUnidades' => $formacionUnidades,
         ]);
     }
     public function unidades(){
@@ -179,5 +181,63 @@ class PrincipalController extends Controller
         ]);
     }
 
+    public function addRuta(Request $request){
+        try{
+            $request->validate([
+                'nombreRuta'=> 'required',
+            ]);
+
+             // Verificar si la ruta ya existe en la base de datos
+            $existingRuta = ruta::where('nombreRuta', $request->nombreRuta)->first();
+
+            if ($existingRuta) {
+                // Si ya existe, maneja la situación como desees, por ejemplo, redirigir con un mensaje de error.
+                return redirect()->route('principal.rutas')->with(['message' => "La ruta ya está registrada: " . $request->nombreRuta, "color" => "red"]);
+            }
+    
+            $ruta = new ruta();
+            $ruta->nombreRuta = $request->nombreRuta;
+            $ruta->save();
+
+            return redirect()->route('principal.rutas')->with(['message' => "Ruta agregado correctamente: . $request->nombreRuta ", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('principal.rutas');
+        }
+    }
+
+    public function actualizarRuta(Request $request, $idRuta)
+    {
+        try{
+            $request->validate([
+                'nombreRuta' => 'required',
+            ]);
+            $ruta = ruta::find($idRuta);
+            $ruta->nombreRuta = $request->nombreRuta;
+            $ruta->save();
+
+            return redirect()->route('principal.rutas')->with(['message' => "Ruta actualizada correctamente: " . $ruta->ruta, "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('principal.rutas')->with(['message' => "La ruta no se actualizó correctamente: " . $ruta->ruta, "color" => "reed"]);
+        }
+
+        /* $ruta->fill($request->input())->saveOrFail(); */
+    }
+
+    public function eliminarRuta($rutasIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $rutasIdsArray = explode(',', $rutasIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $rutasIdsArray = array_map('intval', $rutasIdsArray);
+
+            // Elimina las materias
+            ruta::whereIn('idRuta', $rutasIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('principal.rutas')->with(['message' => "Ruta eliminada correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            
+        }
+    }
 
 }
