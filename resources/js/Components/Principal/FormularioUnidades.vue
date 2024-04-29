@@ -126,13 +126,13 @@ const update = async () => {
                             </div>
                         </div>
                     </div>
-                    <div class="md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                    <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
                         <label for="numeroUnidad" class="block text-sm font-medium leading-6 text-gray-900">Número de
                             unidad</label>
                         <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                             <input type="text" name="numeroUnidad" :id="'numeroUnidad' + op" v-model="form.numeroUnidad"
                                 placeholder="Ingrese el número de la unidad"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         </div>
                         <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                         <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->

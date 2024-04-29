@@ -236,7 +236,7 @@ class PrincipalController extends Controller
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('principal.rutas')->with(['message' => "Ruta eliminada correctamente", "color" => "green"]);
         }catch(Exception $e){
-            
+            return redirect()->route('principal.rutas')->with(['message' => "No se pudo eliminar la ruta", "color" => "red"]);
         }
     }
 

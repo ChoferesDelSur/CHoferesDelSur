@@ -125,13 +125,13 @@ const update = async () => {
                             </div>
                         </div>
                     </div>
-                    <div class="md:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                    <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
                         <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
                             Paterno</label>
                         <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                             <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                 placeholder="Ingrese el apellido paterno"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         </div>
                         <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                         <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
@@ -144,7 +144,7 @@ const update = async () => {
                         <div class="mt-2">
                             <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
                                 placeholder="Ingrese el apellido materno"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         </div>
                         <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}</div>
                     </div>
@@ -153,7 +153,7 @@ const update = async () => {
                         <div class="mt-2">
                             <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                 placeholder="Ingrese el nombre"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         </div>
                         <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
                     </div>

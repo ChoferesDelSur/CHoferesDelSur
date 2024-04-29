@@ -16,7 +16,9 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::get('/principal/rutas', 'rutas')->name('principal.rutas');
 
     Route::post('/principal/operadores', 'addOperador')->name('principal.addOperador');
+
     Route::post('/principal/unidades', 'addUnidad')->name('principal.addUnidad');
+    
     Route::post('/principal/sociosPrestadores', 'addDirectivo')->name('principal.addDirectivo');
 
     Route::post('/principal/rutas', 'addRuta')->name('principal.addRuta');

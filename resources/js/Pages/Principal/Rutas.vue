@@ -34,11 +34,13 @@ DataTable.use(pdfmake);
 DataTable.use(ButtonsHtml5);
 
 const props = defineProps({
-    message: { String, default: '' },
-    color: { String, default: '' },
     ruta: { type: Object },
+    message: { String, default: '' },
+    color: { String, default: '' }
 });
 
+const message = sessionStorage.getItem('message');
+const color = sessionStorage.getItem('color');
 console.log("Rutas");
 console.log(props.ruta);
 
@@ -150,6 +152,20 @@ const toggleRutaSelection = (ruta) => {
 };
 
 onMounted(() => {
+    /* // Verifica si hay un mensaje en la sesión flash
+    console.log("Estoy en onMounted");
+    console.log("Window.flas:",window.flash);
+    if (window.flash) {
+        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
+        Swal.fire({
+            title: window.flash.message,
+            icon: 'success'
+        });
+        console.log("Window.flash:", window.flash);
+        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
+        window.flash = null;
+    } */
+
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('rutasTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
@@ -180,14 +196,22 @@ onMounted(() => {
         const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
         eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
     }); */
+
+    /* // Borra los datos de la sesión después de mostrarlos
+  sessionStorage.removeItem('message');
+  sessionStorage.removeItem('color'); */
 });
 
 const eliminarRutas = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
+    // Obtener los nombres de las rutas seleccionadas
+    const nombresRutas = rutasSeleccionados.value.map((ruta) => ruta.nombreRuta).join(', ');
+
     swal.fire({
-        title: '¿Estas seguro que desea eliminar la ruta seleccionada?',
+        title: '¿Estas seguro que deseas eliminar la(s) ruta(s) seleccionada(s)?',
+        html: `Rutas seleccionadas: ${nombresRutas}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -205,12 +229,28 @@ const eliminarRutas = () => {
                 } else {
                     botonEliminar.setAttribute("disabled", "");
                 }
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    title: 'Ruta(s) eliminada(s) correctamente',
+                    icon: 'success'
+                });
+
+                // Almacenar el mensaje en la sesión flash de Laravel
+                window.flash = { message: 'Ruta(s) eliminada(s) correctamente', color: 'green' };
+
             } catch (error) {
                 console.log("Error al eliminar varias rutas: " + error);
+                // Mostrar mensaje de error si es necesario
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un error al eliminar las rutas. Por favor, inténtalo de nuevo más tarde.',
+                    icon: 'error'
+                });
             }
         }
     });
 };
+
 
 </script>
 
@@ -221,6 +261,7 @@ const eliminarRutas = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
+            <!-- Aquí mostramos el mensaje de sesión si existe -->
             <!-- <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
                 :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
                 <span class="font-medium">

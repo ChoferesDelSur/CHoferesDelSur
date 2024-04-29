@@ -5,9 +5,9 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig({
     server: {
         //port: 5173, // Puedes especificar el puerto que prefieras
-        host: '192.168.0.117', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
+        host: '192.168.0.55', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
         // cuarto = '192.168.1.94'
-        //trabajo = 192.168.0.117
+        //trabajo = 192.168.0.55
       }, 
     plugins: [
         laravel({
