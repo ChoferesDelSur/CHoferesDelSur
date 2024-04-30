@@ -294,9 +294,26 @@ class PrincipalController extends Controller
 
             $directivo->save();
 
-            return redirect()->route('principal.rutas')->with(['message' => "Directivo actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Directivo actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
         }catch(Exception $e){
-            return redirect()->route('principal.rutas')->with(['message' => "El directivo no se actualizó correctamente: " . $nombreCompleto, "color" => "reed"]);
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "El directivo no se actualizó correctamente: " . $nombreCompleto, "color" => "reed"]);
+        }
+    }
+
+    public function eliminarDirectivo($directivosIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $directivosIdsArray = explode(',', $directivosIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $directivosIdsArray = array_map('intval', $directivosIdsArray);
+
+            // Elimina las materias
+            directivo::whereIn('idDirectivo', $directivosIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Directivo eliminada correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "No se pudo eliminar al directivo", "color" => "red"]);
         }
     }
 

@@ -9,6 +9,7 @@ import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
 import { ref, onMounted } from 'vue';
+import Swal from 'sweetalert2';
 import FormularioSP from '../../Components/Principal/FormularioSP.vue';
 
 window.JSZip = jsZip;
@@ -178,7 +179,7 @@ onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('directivosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('directivo-checkboxes')) {
+        if (checkbox.classList.contains('directivos-checkboxes')) {
             const directivoId = parseInt(checkbox.getAttribute('data-id'));
             if (props.directivo) {
                 const dir = props.directivo.find(dir => dir.idDirectivo === directivoId);
@@ -210,6 +211,55 @@ onMounted(() => {
   sessionStorage.removeItem('color'); */
 });
 
+const eliminarDirectivos = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    // Obtener los nombres de las rutas seleccionadas
+    const nombreDirectivos = directivosSeleccionados.value.map((directivo) => directivo.nombre_completo).join(', ');
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar al directivo seleccionado?',
+        html: `Directivo seleccionado: ${nombreDirectivos}`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const directivoE = directivosSeleccionados.value.map((directivo) => directivo.idDirectivo);
+                const $directivosIds = directivoE.join(',');
+                await form.delete(route('principal.eliminarDirectivo', $directivosIds));
+                directivosSeleccionados.value = [];
+                const botonEliminar = document.getElementById("eliminarABtn");
+                if (directivosSeleccionados.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");
+                } else {
+                    botonEliminar.setAttribute("disabled", "");
+                }
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    title: 'Directivo eliminado correctamente',
+                    icon: 'success'
+                });
+
+                // Almacenar el mensaje en la sesión flash de Laravel
+                window.flash = { message: 'Directivo eliminado correctamente', color: 'green' };
+
+            } catch (error) {
+                console.log("Error al eliminar varias directivos: " + error);
+                // Mostrar mensaje de error si es necesario
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un error al eliminar al directivo. Por favor, inténtalo de nuevo más tarde.',
+                    icon: 'error'
+                });
+            }
+        }
+    });
+};
+
 </script>
 
 <template>
@@ -226,7 +276,7 @@ onMounted(() => {
                 </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarAlumnos">
+                    @click="eliminarDirectivos">
                     <i class="fa fa-trash mr-2"></i>Borrar Socio/Prestador
                 </button>
             </div>

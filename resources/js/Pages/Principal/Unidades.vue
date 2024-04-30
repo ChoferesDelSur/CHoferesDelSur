@@ -195,7 +195,7 @@ onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('unidadesTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('unidad-checkboxes')) {
+        if (checkbox.classList.contains('unidades-checkboxes')) {
             const unidadId = parseInt(checkbox.getAttribute('data-id'));
             if (props.unidad) {
                 const uni = props.unidad.find(uni => uni.idUnidad === unidadId);
@@ -236,7 +236,7 @@ const eliminarUnidades = () => {
 
     swal.fire({
         title: '¿Estas seguro que deseas eliminar la(s) unidad(es) seleccionada(s)?',
-        html: `Rutas seleccionadas: ${numerosUnidades}`,
+        html: `Unidades seleccionadas: ${numerosUnidades}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',

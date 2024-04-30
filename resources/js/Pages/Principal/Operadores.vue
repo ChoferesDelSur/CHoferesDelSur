@@ -203,7 +203,7 @@ onMounted(() => {
                 if (oper) {
                     toggleOperadorSelection(oper);
                 } else {
-                    console.log("No se tiene ruta");
+                    console.log("No se tiene operador");
                 }
             }
         }
