@@ -101,6 +101,24 @@ const update = async () => {
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoDirectivoError.value = validateSelect(form.tipDirectivo) ? '' : 'Seleccione el tipo de directivo';
+    if (
+        nombreError.value || apellidoPError.value || apellidoMError.value || tipoDirectivoError.value
+    ) {
+        return;
+    }
+
+    var idDirectivo = document.getElementById('idDirectivo2').value;
+    console.log("idDirectivo:"+idDirectivo);
+    form.put(route('principal.actualizarDirectivo', idDirectivo), {
+        onSuccess: () => {
+            close()
+            console.log("idDirectivo Editando:" + idDirectivo);
+            nombreError.value = '';
+            apellidoPError.value = '';
+            apellidoMError.value = '';
+            tipoDirectivoError.value = '';
+        }
+    });
 }
 
 </script>

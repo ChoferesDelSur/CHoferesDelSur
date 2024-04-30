@@ -119,6 +119,8 @@ var rutaE = ({});
 
 const abrirE = ($rutass) => {
     rutaE = $rutass;
+    console.log("Estoy en editor");
+    console.log($rutass);
     mostrarModalE.value = true;
 }
 
@@ -171,7 +173,6 @@ onMounted(() => {
         const checkbox = event.target;
         if (checkbox.classList.contains('ruta-checkboxes')) {
             const rutaId = parseInt(checkbox.getAttribute('data-id'));
-            // Se asegura que props.materias.data esté definido antes de usar find
             if (props.ruta) {
                 const rutt = props.ruta.find(rutt => rutt.idRuta === rutaId);
                 if (rutt) {
@@ -256,7 +257,7 @@ const eliminarRutas = () => {
 
 <template>
     <PrincipalLayout title="Rutas">
-        <div class="mt-8 bg-white p-4 shadow rounded-lg h-5/6">
+        <div class="mt-2 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-5">Rutas</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>

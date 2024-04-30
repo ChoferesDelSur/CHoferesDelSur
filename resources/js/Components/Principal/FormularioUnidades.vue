@@ -103,6 +103,24 @@ const update = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
     operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
+
+    if (
+        numeroUnidadError.value || rutaError.value || operadorError.value
+    ) {
+        return;
+    }
+
+    var idUnidad = document.getElementById('idUnidad2').value;
+    console.log("idUnidad:"+idUnidad);
+    form.put(route('principal.actualizarUnidad', idUnidad), {
+        onSuccess: () => {
+            close()
+            console.log("idUnidad Editando:" + idUnidad);
+            numeroUnidadError = '';
+            rutaError = '';
+            operadorError = '';
+        }
+    });
 }
 </script>
 

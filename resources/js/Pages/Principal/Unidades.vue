@@ -8,7 +8,8 @@ import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
 import pdfmake from 'pdfmake';
-import { ref, watch } from 'vue';
+import Swal from 'sweetalert2';
+import { ref, onMounted } from 'vue';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
@@ -123,6 +124,11 @@ const columnas = [
             return rut ? rut.nombreRuta : '';
         }
     },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idUnidad}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
 ]
 
 const mostrarModal = ref(false);
@@ -131,12 +137,12 @@ const maxWidth = 'xl';
 const closeable = true;
 
 const form = useForm({});
+const unidadesSeleccionados = ref([]);
 
-const abrirE = ($clasee) => {
-    claseE = $clasee;
+var unidadE = ({});
+const abrirE = ($unidadess) => {
+    unidadE = $unidadess;
     mostrarModalE.value = true;
-    console.log($clasee);
-    console.log(claseE);
 }
 
 const cerrarModal = () => {
@@ -153,11 +159,128 @@ console.log(props.unidad);
 console.log("Operadores Disponibles");
 console.log(props.operadoresDisp);
 
+const toggleUnidadSelection = (unidad) => {
+    if (unidadesSeleccionados.value.includes(unidad)) {
+        // Si el alumno ya está seleccionado, la eliminamos del array
+        unidadesSeleccionados.value = unidadesSeleccionados.value.filter((u) => u !== unidad);
+    } else {
+        // Si el alumno no está seleccionado, la agregamos al array
+        unidadesSeleccionados.value.push(unidad);
+    }
+    // Llamado del botón de eliminar para cambiar su estado deshabilitado
+    const botonEliminar = document.getElementById("eliminarABtn");
+    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
+    if (unidadesSeleccionados.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+    }
+};
+
+onMounted(() => {
+    /* // Verifica si hay un mensaje en la sesión flash
+    console.log("Estoy en onMounted");
+    console.log("Window.flas:",window.flash);
+    if (window.flash) {
+        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
+        Swal.fire({
+            title: window.flash.message,
+            icon: 'success'
+        });
+        console.log("Window.flash:", window.flash);
+        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
+        window.flash = null;
+    } */
+
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('unidadesTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('unidad-checkboxes')) {
+            const unidadId = parseInt(checkbox.getAttribute('data-id'));
+            if (props.unidad) {
+                const uni = props.unidad.find(uni => uni.idUnidad === unidadId);
+                if (uni) {
+                    toggleUnidadSelection(uni);
+                } else {
+                    console.log("No se tiene unidad");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#unidadesTablaId').on('click', '.editar-button', function () {
+        const unidadId = $(this).data('id');
+        const uni = props.unidad.find(u => u.idUnidad === unidadId);
+        abrirE(uni);
+    });
+
+    // Manejar clic en el botón de eliminar
+    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
+        const alumnoId = $(this).data('id');
+        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
+        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
+    }); */
+
+    /* // Borra los datos de la sesión después de mostrarlos
+  sessionStorage.removeItem('message');
+  sessionStorage.removeItem('color'); */
+});
+
+const eliminarUnidades = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    // Obtener los nombres de las rutas seleccionadas
+    const numerosUnidades = unidadesSeleccionados.value.map((unidad) => unidad.numeroUnidad).join(', ');
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar la(s) unidad(es) seleccionada(s)?',
+        html: `Rutas seleccionadas: ${numerosUnidades}`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const unidadE = unidadesSeleccionados.value.map((unidad) => unidad.idUnidad);
+                const $unidadesIds = unidadE.join(',');
+                await form.delete(route('principal.eliminarUnidad', $unidadesIds));
+                unidadesSeleccionados.value = [];
+                const botonEliminar = document.getElementById("eliminarABtn");
+                if (unidadesSeleccionados.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");
+                } else {
+                    botonEliminar.setAttribute("disabled", "");
+                }
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    title: 'Unidad(es) eliminado(s) correctamente',
+                    icon: 'success'
+                });
+
+                // Almacenar el mensaje en la sesión flash de Laravel
+                window.flash = { message: 'Unidad(es) eliminado(s) correctamente', color: 'green' };
+
+            } catch (error) {
+                console.log("Error al eliminar varias unidades: " + error);
+                // Mostrar mensaje de error si es necesario
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un error al eliminar las unidades. Por favor, inténtalo de nuevo más tarde.',
+                    icon: 'error'
+                });
+            }
+        }
+    });
+};
+
 </script>
 
 <template>
     <PrincipalLayout title="Formar Unidades">
-        <div class="mt-8 bg-white p-4 shadow rounded-lg h-5/6">
+        <div class="mt-2 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-5">Unidades</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
@@ -169,7 +292,7 @@ console.log(props.operadoresDisp);
                 </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarAlumnos">
+                    @click="eliminarUnidades">
                     <i class="fa fa-trash mr-2"></i>Borrar Unidad
                 </button>
             </div>
@@ -219,7 +342,7 @@ console.log(props.operadoresDisp);
             :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :unidad="props.unidad"
             :ruta="props.ruta" :operadoresDisp="props.operadoresDisp"></formulario-unidades>
         <formulario-unidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="props.unidad"
+            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE"
             :ruta="props.ruta" :operadoresDisp="props.operadoresDisp"></formulario-unidades>
     </PrincipalLayout>
 </template>

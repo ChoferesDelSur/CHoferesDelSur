@@ -8,7 +8,8 @@ import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
-import { ref, watch } from 'vue';
+import Swal from 'sweetalert2';
+import { ref, onMounted } from 'vue';
 import FormularioOperadores from '../../Components/Principal/FormularioOperadores.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
@@ -92,7 +93,7 @@ const columnas = [
         }
     },
     {
-        data: null, 
+        data: null,
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="operador-checkboxes" data-id="${row.idOperador}" ">`;
         }
@@ -127,20 +128,26 @@ const columnas = [
             return jefe ? jefe.nombre_completo : '';
         }
     },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idOperador}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
 ]
 
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
+const operadoresSeleccionados = ref([]);
 
 const form = useForm({});
 
-const abrirE = ($clasee) => {
-    claseE = $clasee;
+var operadorE = ({});
+const abrirE = ($operadoress) => {
+    operadorE = $operadoress;
+    console.log($operadoress);
     mostrarModalE.value = true;
-    console.log($clasee);
-    console.log(claseE);
 }
 
 const cerrarModal = () => {
@@ -153,13 +160,129 @@ const cerrarModalE = () => {
 
 console.log("Estoy en Operadores");
 
+const toggleOperadorSelection = (operador) => {
+    if (operadoresSeleccionados.value.includes(operador)) {
+        // Si el alumno ya está seleccionado, la eliminamos del array
+        operadoresSeleccionados.value = operadoresSeleccionados.value.filter((r) => r !== operador);
+    } else {
+        // Si el alumno no está seleccionado, la agregamos al array
+        operadoresSeleccionados.value.push(operador);
+    }
+    // Llamado del botón de eliminar para cambiar su estado deshabilitado
+    const botonEliminar = document.getElementById("eliminarABtn");
+    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
+    if (operadoresSeleccionados.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+    }
+};
+
+onMounted(() => {
+    /* // Verifica si hay un mensaje en la sesión flash
+    console.log("Estoy en onMounted");
+    console.log("Window.flas:",window.flash);
+    if (window.flash) {
+        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
+        Swal.fire({
+            title: window.flash.message,
+            icon: 'success'
+        });
+        console.log("Window.flash:", window.flash);
+        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
+        window.flash = null;
+    } */
+
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('operadoresTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('operador-checkboxes')) {
+            const operadorId = parseInt(checkbox.getAttribute('data-id'));
+            if (props.operador) {
+                const oper = props.operador.find(oper => oper.idOperador === operadorId);
+                if (oper) {
+                    toggleOperadorSelection(oper);
+                } else {
+                    console.log("No se tiene ruta");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#operadoresTablaId').on('click', '.editar-button', function () {
+        const operadorId = $(this).data('id');
+        const oper = props.operador.find(o => o.idOperador === operadorId);
+        abrirE(oper);
+    });
+
+    // Manejar clic en el botón de eliminar
+    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
+        const alumnoId = $(this).data('id');
+        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
+        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
+    }); */
+
+    /* // Borra los datos de la sesión después de mostrarlos
+  sessionStorage.removeItem('message');
+  sessionStorage.removeItem('color'); */
+});
+
+const eliminarOperadores = () => {
+    const swal = Swal.mixin({
+        buttonsStyling: true
+    })
+    // Obtener los nombres de las rutas seleccionadas
+    const nombresOperadoores = operadoresSeleccionados.value.map((operador) => operador.nombre_completo).join(', ');
+
+    swal.fire({
+        title: '¿Estas seguro que deseas eliminar al operador seleccionado?',
+        html: `Operadores seleccionados: ${nombresOperadoores}`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const operadorE = operadoresSeleccionados.value.map((operador) => operador.idOperador);
+                const $operadoresIds = operadorE.join(',');
+                await form.delete(route('principal.eliminarOperador', $operadoresIds));
+                operadoresSeleccionados.value = [];
+                const botonEliminar = document.getElementById("eliminarABtn");
+                if (operadoresSeleccionados.value.length > 0) {
+                    botonEliminar.removeAttribute("disabled");
+                } else {
+                    botonEliminar.setAttribute("disabled", "");
+                }
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    title: 'Operador(es) eliminado(s) correctamente',
+                    icon: 'success'
+                });
+
+                // Almacenar el mensaje en la sesión flash de Laravel
+                window.flash = { message: 'Operador(es) eliminado(s) correctamente', color: 'green' };
+
+            } catch (error) {
+                console.log("Error al eliminar varias operadores: " + error);
+                // Mostrar mensaje de error si es necesario
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un error al eliminar al operador. Por favor, inténtalo de nuevo más tarde.',
+                    icon: 'error'
+                });
+            }
+        }
+    });
+};
 
 </script>
 
 <template>
 
     <PrincipalLayout title="Operadores">
-        <div class="mt-8 bg-white p-4 shadow rounded-lg h-5/6">
+        <div class="mt-2 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-5">Operadores</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
@@ -184,7 +307,7 @@ console.log("Estoy en Operadores");
                 </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarAlumnos">
+                    @click="eliminarOperadores">
                     <i class="fa fa-trash mr-2"></i> Eliminar Operador
                 </button>
             </div>
@@ -244,9 +367,10 @@ console.log("Estoy en Operadores");
         </div>
         <formulario-operadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir operador'" :op="'1'" :modal="'modalCreate'" :operador="props.operador"
-            :tipoOperador="props.tipoOperador" :estado="props.estado" :directivo="props.directivo"></formulario-operadores>
+            :tipoOperador="props.tipoOperador" :estado="props.estado"
+            :directivo="props.directivo"></formulario-operadores>
         <formulario-operadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar operador'" :op="'2'" :modal="'modalEdit'" :operador="props.operador"
-            :tipoOperador="props.tipoOperador" :estado="props.estado" :directivo="props.directivo"></formulario-operadores>
+            :title="'Editar operador'" :op="'2'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
+            :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></formulario-operadores>
     </PrincipalLayout>
 </template>

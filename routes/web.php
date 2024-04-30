@@ -16,12 +16,18 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::get('/principal/rutas', 'rutas')->name('principal.rutas');
 
     Route::post('/principal/operadores', 'addOperador')->name('principal.addOperador');
+    Route::put('/principal/operadores/{idOperador}/edit', 'actualizarOperador')->name('principal.actualizarOperador');
+    Route::delete('/principal/operadores/{operadoresIds}', 'eliminarOperador')->name('principal.eliminarOperador');
 
     Route::post('/principal/unidades', 'addUnidad')->name('principal.addUnidad');
+    Route::put('/principal/unidades/{idUnidad}/edit', 'actualizarUnidad')->name('principal.actualizarUnidad');
+    Route::delete('/principal/unidades/{unidadesIds}', 'eliminarUnidad')->name('principal.eliminarUnidad');
     
     Route::post('/principal/sociosPrestadores', 'addDirectivo')->name('principal.addDirectivo');
+    Route::put('/principal/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('principal.actualizarDirectivo');
+    Route::delete('/principal/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('principal.eliminarDirectivo');
 
     Route::post('/principal/rutas', 'addRuta')->name('principal.addRuta');
-    Route::put('/principal/rutas/actualizar/{idRuta}/edit', 'actualizarRuta')->name('principal.actualizarRuta');
-    Route::delete('/principal/rutas/delete/{rutasIds}', 'eliminarRuta')->name('principal.eliminarRuta');
+    Route::put('/principal/rutas/{idRuta}/edit', 'actualizarRuta')->name('principal.actualizarRuta');
+    Route::delete('/principal/rutas/{rutasIds}', 'eliminarRuta')->name('principal.eliminarRuta');
 });

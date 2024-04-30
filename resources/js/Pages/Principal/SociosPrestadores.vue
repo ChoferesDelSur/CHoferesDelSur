@@ -8,7 +8,7 @@ import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
-import { ref, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import FormularioSP from '../../Components/Principal/FormularioSP.vue';
 
 window.JSZip = jsZip;
@@ -104,6 +104,11 @@ const columnas = [
             return tDirectivo ? tDirectivo.tipoDirectivo : '';
         }
     },
+    {
+        data: null, render: function (data, type, row, meta) {
+            return `<button class="editar-button" data-id="${row.idDirectivo}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
+        }
+    },
     /*     {
             data: 'idOperador',
             render: function (data, type, row, meta) {
@@ -121,11 +126,12 @@ const closeable = true;
 
 const form = useForm({});
 
-const abrirE = ($clasee) => {
-    claseE = $clasee;
+const directivosSeleccionados = ref([]);
+
+var directivoE = ({});
+const abrirE = ($directivoss) => {
+    directivoE = $directivoss;
     mostrarModalE.value = true;
-    console.log($clasee);
-    console.log(claseE);
 }
 
 const cerrarModal = () => {
@@ -136,11 +142,79 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
+const toggleDirectivoSelection = (directivo) => {
+    if (directivosSeleccionados.value.includes(directivo)) {
+        // Si el alumno ya está seleccionado, la eliminamos del array
+        directivosSeleccionados.value = directivosSeleccionados.value.filter((d) => d !== directivo);
+    } else {
+        // Si el alumno no está seleccionado, la agregamos al array
+        directivosSeleccionados.value.push(directivo);
+    }
+    // Llamado del botón de eliminar para cambiar su estado deshabilitado
+    const botonEliminar = document.getElementById("eliminarABtn");
+    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
+    if (directivosSeleccionados.value.length > 0) {
+        botonEliminar.removeAttribute("disabled");
+    } else {
+        botonEliminar.setAttribute("disabled", "");
+    }
+};
+
+onMounted(() => {
+    /* // Verifica si hay un mensaje en la sesión flash
+    console.log("Estoy en onMounted");
+    console.log("Window.flas:",window.flash);
+    if (window.flash) {
+        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
+        Swal.fire({
+            title: window.flash.message,
+            icon: 'success'
+        });
+        console.log("Window.flash:", window.flash);
+        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
+        window.flash = null;
+    } */
+
+    // Agrega un escuchador de eventos fuera de la lógica de Vue
+    document.getElementById('directivosTablaId').addEventListener('click', (event) => {
+        const checkbox = event.target;
+        if (checkbox.classList.contains('directivo-checkboxes')) {
+            const directivoId = parseInt(checkbox.getAttribute('data-id'));
+            if (props.directivo) {
+                const dir = props.directivo.find(dir => dir.idDirectivo === directivoId);
+                if (dir) {
+                    toggleDirectivoSelection(dir);
+                } else {
+                    console.log("No se tiene directivo");
+                }
+            }
+        }
+    });
+
+    // Manejar clic en el botón de editar
+    $('#directivosTablaId').on('click', '.editar-button', function () {
+        const directivoId = $(this).data('id');
+        const dir = props.directivo.find(d => d.idDirectivo === directivoId);
+        abrirE(dir);
+    });
+
+    // Manejar clic en el botón de eliminar
+    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
+        const alumnoId = $(this).data('id');
+        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
+        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
+    }); */
+
+    /* // Borra los datos de la sesión después de mostrarlos
+  sessionStorage.removeItem('message');
+  sessionStorage.removeItem('color'); */
+});
+
 </script>
 
 <template>
     <PrincipalLayout title="Directivos">
-        <div class="mt-8 bg-white p-4 shadow rounded-lg h-5/6">
+        <div class="mt-2 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-5">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
@@ -206,6 +280,6 @@ const cerrarModalE = () => {
             :directivo="props.directivo"></FormularioSP>
         <FormularioSP :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar directivo'" :op="'2'" :modal="'modalEdit'" :tipDirectivo="props.tipDirectivo"
-            :directivo="props.directivo"></FormularioSP>
+            :directivo="directivoE"></FormularioSP>
     </PrincipalLayout>
 </template>

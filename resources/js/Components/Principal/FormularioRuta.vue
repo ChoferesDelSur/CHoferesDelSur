@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
+import { route } from '../../../../vendor/tightenco/ziggy/src/js';
 
 const props = defineProps({
     show: {
@@ -70,6 +71,7 @@ const save = async () => {
 }
 
 const update = async () => {
+    console.log("Estoy en editar o update");
     nombreRutaError.value = validateStringNotEmpty(form.nombreRuta) ? '' : 'Ingrese el número de la ruta';
     if (
         nombreRutaError.value
@@ -77,14 +79,15 @@ const update = async () => {
         return;
     }
     var idRuta = document.getElementById('idRuta2').value;
+    console.log("idRuta:"+idRuta);
     form.put(route('principal.actualizarRuta', idRuta), {
         onSuccess: () => {
             close()
+            console.log("idRuta Editando:" + idRuta);
             nombreRutaError = '';
         }
     });
 }
-
 </script>
 
 <template>

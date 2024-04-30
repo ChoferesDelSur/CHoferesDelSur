@@ -119,6 +119,25 @@ const update = async () => {
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Selecciones el tipo de operador';
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
+
+    if (
+        nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value || directivoError.value
+    ) {
+        return;
+    }
+    var idOperador = document.getElementById('idOperador2').value;
+    console.log("idOperador:"+idOperador);
+    form.put(route('principal.actualizarOperador', idOperador), {
+        onSuccess: () => {
+            close()
+            console.log("idOperador Editando:" + idOperador);
+            nombreError = '';
+            apellidoPError = '';
+            apellidoMError = '';
+            tipoOperadorError = '';
+            directivoError = '';
+        }
+    });
 }
 
 </script>
