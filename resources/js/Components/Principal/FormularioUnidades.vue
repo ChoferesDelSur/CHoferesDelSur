@@ -30,6 +30,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    directivo: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -45,6 +49,7 @@ const form = useForm({
     numeroUnidad: props.unidad.numeroUnidad,
     ruta: props.unidad.idRuta,
     operador: props.unidad.idOperador,
+    directivo: props.directivo.idDirectivo,
 });
 
 watch(() => props.unidad, async (newVal) => {
@@ -52,6 +57,7 @@ watch(() => props.unidad, async (newVal) => {
     form.numeroUnidad = newVal.numeroUnidad;
     form.ruta = newVal.idRuta;
     form.operador = newVal.idOperador;
+    form.directivo = newVal.idDirectivo;
 }, { deep: true }
 );
 
@@ -59,6 +65,7 @@ watch(() => props.unidad, async (newVal) => {
 const numeroUnidadError = ref('');
 const rutaError = ref('');
 const operadorError = ref('');
+const directivoError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -83,9 +90,10 @@ const save = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
     operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
+    directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione el dueño de la unidad';
 
     if (
-        numeroUnidadError.value || rutaError.value || operadorError.value
+        numeroUnidadError.value || rutaError.value || operadorError.value || directivoError.value
     ) {
         return;
     }
@@ -95,6 +103,7 @@ const save = async () => {
             numeroUnidadError.value = '';
             rutaError.value = '';
             operadorError.value = '';
+            directivoError.value = '';
         }
     })
 }
@@ -103,9 +112,10 @@ const update = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
     operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
+    directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione el dueño de la unidad';
 
     if (
-        numeroUnidadError.value || rutaError.value || operadorError.value
+        numeroUnidadError.value || rutaError.value || operadorError.value || directivoError.value
     ) {
         return;
     }
@@ -119,6 +129,7 @@ const update = async () => {
             numeroUnidadError = '';
             rutaError = '';
             operadorError = '';
+            directivoError = '';
         }
     });
 }
@@ -184,6 +195,20 @@ const update = async () => {
                             </select>
                         </div>
                         <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Dueño de la unidad</label>
+                        <div class="mt-2">
+                            <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
+                                placeholder="Seleccione al dueño de la unidad"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option value="" disabled selected>Seleccione al dueño de la unidad</option>
+                                <option v-for="dueno in directivo" :key="dueno.idDirectivo" :value="dueno.idDirectivo">
+                                    {{ dueno.nombre_completo}}
+                                </option>
+                            </select>
+                        </div>
+                        <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}</div>
                     </div>
 
                 </div>

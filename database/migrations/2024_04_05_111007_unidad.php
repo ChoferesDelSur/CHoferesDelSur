@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string(column:'numeroUnidad')->unique()->nullable(false);//nullable(false) quiere decir que no puede estar nulo
             $table->foreignId(column:'idRuta')->references('idRuta')->on('ruta');
             $table->foreignId(column:'idOperador')->references('idOperador')->on('operador');
+            $table->foreignId(column:'idDirectivo')->references('idDirectivo')->on('directivo');
             $table->softDeletes();
             $table->timestamps();
         });

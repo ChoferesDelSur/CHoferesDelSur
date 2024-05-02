@@ -13,7 +13,6 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::get('/principal/unidades', 'unidades')->name('principal.unidades');
     Route::get('/principal/sociosPrestadores', 'sociosPrestadores')->name('principal.sociosPrestadores');
     Route::get('/principal/operadores', 'operadores')->name('principal.operadores');
-    Route::get('/principal/rutas', 'rutas')->name('principal.rutas');
 
     Route::post('/principal/operadores', 'addOperador')->name('principal.addOperador');
     Route::put('/principal/operadores/{idOperador}/edit', 'actualizarOperador')->name('principal.actualizarOperador');
@@ -27,6 +26,7 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::put('/principal/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('principal.actualizarDirectivo');
     Route::delete('/principal/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('principal.eliminarDirectivo');
 
+    Route::get('/principal/rutas', 'rutas')->name('principal.rutas');
     Route::post('/principal/rutas', 'addRuta')->name('principal.addRuta');
     Route::put('/principal/rutas/{idRuta}/edit', 'actualizarRuta')->name('principal.actualizarRuta');
     Route::delete('/principal/rutas/{rutasIds}', 'eliminarRuta')->name('principal.eliminarRuta');

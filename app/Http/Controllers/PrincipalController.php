@@ -55,6 +55,7 @@ class PrincipalController extends Controller
     public function unidades(){
         $unidad = unidad::all();
         $operador = operador::all(); 
+        $directivo = directivo::all();
         // Filtrar los operadores disponibles
         $operadoresDisp = operador::where('idEstado', 1) // Filtrar por estado "Alta"
                                 ->whereDoesntHave('unidad') // Verificar que no estén relacionados con otra unidad
@@ -64,7 +65,8 @@ class PrincipalController extends Controller
             'unidad' => $unidad,
             'operador' => $operador,
             'operadoresDisp' => $operadoresDisp,
-            'ruta' => $ruta
+            'ruta' => $ruta,
+            'directivo' => $directivo,
         ]);
     }
 
@@ -74,12 +76,14 @@ class PrincipalController extends Controller
                 'numeroUnidad'=> 'required',
                 'ruta' => 'required',
                 'operador' => 'required',
+                'directivo' => 'required',
             ]);
 
             // Verificar si la unidad ya existe
             $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
             ->where('idRuta', $request->ruta)
             ->where('idOperador', $request->operador)
+            ->where('idDirectivo', $request->directivo)
             ->first();
 
             if($existingUnidad){
@@ -91,6 +95,7 @@ class PrincipalController extends Controller
             $unidad->numeroUnidad = $request -> numeroUnidad;
             $unidad->idOperador = $request->operador;
             $unidad->idRuta = $request->ruta;
+            $unidad->idDirectivo = $request->directivo;
             $unidad->save();
             return redirect()->route('principal.unidades')->with(['message' => "Unidad agregado correctamente:" .$request -> numeroUnidad, "color" => "green"]);
         }catch(Exception $e){

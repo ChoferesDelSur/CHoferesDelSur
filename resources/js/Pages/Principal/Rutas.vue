@@ -119,8 +119,6 @@ var rutaE = ({});
 
 const abrirE = ($rutass) => {
     rutaE = $rutass;
-    console.log("Estoy en editor");
-    console.log($rutass);
     mostrarModalE.value = true;
 }
 
@@ -154,19 +152,6 @@ const toggleRutaSelection = (ruta) => {
 };
 
 onMounted(() => {
-    /* // Verifica si hay un mensaje en la sesión flash
-    console.log("Estoy en onMounted");
-    console.log("Window.flas:",window.flash);
-    if (window.flash) {
-        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
-        Swal.fire({
-            title: window.flash.message,
-            icon: 'success'
-        });
-        console.log("Window.flash:", window.flash);
-        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
-        window.flash = null;
-    } */
 
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('rutasTablaId').addEventListener('click', (event) => {
@@ -188,6 +173,7 @@ onMounted(() => {
     $('#rutasTablaId').on('click', '.editar-button', function () {
         const rutaId = $(this).data('id');
         const rutt = props.ruta.find(r => r.idRuta === rutaId);
+        console.log("Estoy en onMounted: rutaId: "+rutaId );
         abrirE(rutt);
     });
 
@@ -261,14 +247,6 @@ const eliminarRutas = () => {
             <h2 class="font-bold text-center text-xl pt-5">Rutas</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
-
-            <!-- Aquí mostramos el mensaje de sesión si existe -->
-            <!-- <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-                <span class="font-medium">
-                    {{ $page.props.flash.message }}
-                </span>
-            </div> -->
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"

@@ -17,7 +17,8 @@ class unidad extends Model
     protected $fillable = [
         'numeroUnidad',
         'idRuta',
-        'idOperador'
+        'idOperador',
+        'idDirectivo'
     ];
 
     public function operador()

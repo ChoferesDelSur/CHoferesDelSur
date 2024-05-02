@@ -71,22 +71,33 @@ const save = async () => {
 }
 
 const update = async () => {
-    console.log("Estoy en editar o update");
+    console.log("Estoy en editar o update del formulario");
+    console.log(route('principal.actualizarRuta', { idRuta: props.ruta.idRuta }));
     nombreRutaError.value = validateStringNotEmpty(form.nombreRuta) ? '' : 'Ingrese el número de la ruta';
     if (
         nombreRutaError.value
     ) {
         return;
     }
-    var idRuta = document.getElementById('idRuta2').value;
-    console.log("idRuta:"+idRuta);
-    form.put(route('principal.actualizarRuta', idRuta), {
-        onSuccess: () => {
-            close()
-            console.log("idRuta Editando:" + idRuta);
-            nombreRutaError = '';
-        }
-    });
+    try {
+/*         var idRuta = document.getElementById('idRuta2').value;
+        console.log("idRuta:" + idRuta); */
+        form.put(route('principal.actualizarRuta', { idRuta: props.ruta.idRuta }), {
+            onSuccess: () => {
+                close()
+                console.log("Ruta actualizada con éxito. ID de la ruta: " + idRuta);
+                nombreRutaError = '';
+
+            },
+        onError: (error) => {
+                console.error("Error al actualizar la ruta:", error);
+                // Manejar el error aquí, mostrar un mensaje al usuario, etc.
+            }
+        });
+    } catch (error) {
+        console.error("Error en la solicitud de actualización de la ruta:", error);
+        // Manejar el error aquí, mostrar un mensaje al usuario, etc.
+    }
 }
 </script>
 
@@ -100,8 +111,7 @@ const update = async () => {
                     </p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idRuta"
-                                class="block text-sm font-medium leading-6 text-gray-900">idRuta</label>
+                            <label for="idRuta" class="block text-sm font-medium leading-6 text-gray-900">idRuta</label>
                             <div class="mt-2">
                                 <input type="number" name="idRuta" v-model="form.idRuta"
                                     placeholder="Ingrese id de la ruta" :id="'idRuta' + op"
@@ -110,7 +120,8 @@ const update = async () => {
                         </div>
                     </div>
                     <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="nombreRuta" class="block text-sm font-medium leading-6 text-gray-900">Nombre de la ruta</label>
+                        <label for="nombreRuta" class="block text-sm font-medium leading-6 text-gray-900">Nombre de la
+                            ruta</label>
                         <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                             <input type="text" name="nombreRuta" :id="'nombreRuta' + op" v-model="form.nombreRuta"
                                 placeholder="Ingrese el nombre de la ruta"

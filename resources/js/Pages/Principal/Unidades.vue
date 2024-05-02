@@ -39,7 +39,8 @@ const props = defineProps({
     unidad: { type: Object },
     ruta: { type: Object },
     operador: { type: Object },
-    operadoresDisp:{type: Object},
+    directivo: { type: Object },
+    operadoresDisp: { type: Object },
 });
 
 const botones = [
@@ -70,25 +71,25 @@ const botones = [
         orientation: 'landscape',
         pageSize: 'TABLOID',
     },
-  /*   /* {
-        title: 'Unidades registrados',
-        extend: 'print',
-        text: '<i class="fa-solid fa-print"></i> Imprimir',
-        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        },
-        orientation: 'landscape',
-    }, 
-    {
-        title: 'Unidades registrados',
-        extend: 'copy',
-        text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        }
-    }, */
+    /*   /* {
+          title: 'Unidades registrados',
+          extend: 'print',
+          text: '<i class="fa-solid fa-print"></i> Imprimir',
+          className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+          exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+          },
+          orientation: 'landscape',
+      }, 
+      {
+          title: 'Unidades registrados',
+          extend: 'copy',
+          text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
+          className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
+          exportOptions: {
+              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+          }
+      }, */
 ]
 
 const columnas = [
@@ -122,6 +123,14 @@ const columnas = [
             // Modificación para mostrar la descripción del ciclo
             const rut = props.ruta.find(rut => rut.idRuta === data);
             return rut ? rut.nombreRuta : '';
+        }
+    },
+    {
+        data: 'idDirectivo',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const dir = props.directivo.find(dir => dir.idDirectivo === data);
+            return dir ? dir.nombre_completo : '';
         }
     },
     {
@@ -333,16 +342,20 @@ const eliminarUnidades = () => {
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Ruta
                             </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Dueño de la unidad
+                            </th>
                         </tr>
                     </thead>
                 </DataTable>
             </div>
         </div>
         <formulario-unidades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :unidad="props.unidad"
-            :ruta="props.ruta" :operadoresDisp="props.operadoresDisp"></formulario-unidades>
+            :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :unidad="props.unidad" :ruta="props.ruta"
+            :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
         <formulario-unidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE"
-            :ruta="props.ruta" :operadoresDisp="props.operadoresDisp"></formulario-unidades>
+            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE" :ruta="props.ruta"
+            :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
     </PrincipalLayout>
 </template>
