@@ -28,6 +28,6 @@ Route::controller(PrincipalController::class)->group(function () {
 
     Route::get('/principal/rutas', 'rutas')->name('principal.rutas');
     Route::post('/principal/rutas', 'addRuta')->name('principal.addRuta');
-    Route::put('/principal/rutas/{idRuta}/edit', 'actualizarRuta')->name('principal.actualizarRuta');
+    Route::put('/principal/rutas/{idRuta}/edit','actualizarRuta')->name('principal.actualizarRuta');
     Route::delete('/principal/rutas/{rutasIds}', 'eliminarRuta')->name('principal.eliminarRuta');
 });

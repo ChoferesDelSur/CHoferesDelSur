@@ -17,7 +17,17 @@ class formacionUnidades extends Model
     protected $fillable = [
         'fecha',
         'idUnidad',
-        'idEntrada',
-        'idCorte',
+        'horaEntrada',
+        'tipoEntrada',
+        'extremo',
+        'ultimaAyer',
+        'multa',
+        'horaCorte',
+        'causa',
+        'horaRegreso',
+        'notaTalacha',
+        'tiempoCorte',
+        'tipoCorte',
+        'idCastigo',
     ];
 }

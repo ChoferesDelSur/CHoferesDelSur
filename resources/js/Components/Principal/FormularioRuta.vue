@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/inertia-vue3';
+import { useForm, put } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
 import { route } from '../../../../vendor/tightenco/ziggy/src/js';
@@ -82,10 +82,9 @@ const update = async () => {
     try {
 /*         var idRuta = document.getElementById('idRuta2').value;
         console.log("idRuta:" + idRuta); */
-        form.put(route('principal.actualizarRuta', { idRuta: props.ruta.idRuta }), {
+        await form.put(route('principal.actualizarRuta', { idRuta: props.ruta.idRuta }), {
             onSuccess: () => {
                 close()
-                console.log("Ruta actualizada con éxito. ID de la ruta: " + idRuta);
                 nombreRutaError = '';
 
             },

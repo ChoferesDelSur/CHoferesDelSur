@@ -22,13 +22,14 @@ const props = defineProps({
   ruta: { type: Object },
   unidad: { type: Object },
   operador: { type: Object }, 
+  directivo: { type: Object }, 
   formacionUnidades: {type: Object},
 });
 
 console.log("Unidades:");
 console.log(props.unidad);
-console.log("Rutas");
-console.log(props.ruta)
+console.log("Formacion Unidades");
+console.log(props.formacionUnidades)
 
 const botones = [
     {
@@ -81,27 +82,26 @@ const botones = [
 
 const columnas = [
     {
-        /* data: null, */
-        render: function (data, type, row, meta) {
-            return "";
-        }
-    },
-    {
-        /* data: null, */
+        data: null,
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="formacion-checkboxes" data-id="${row.idFormacionUnidades}" ">`;
         }
     },
     {
-        /* data: null,  */
+        data: null, 
         render: function (data, type, row, meta) { 
           return meta.row + 1 }
     },
     {
         data: 'idUnidad',
         render: function (data, type, row, meta) {
-            const carro = props.unidad.find(carro => carro.idUnidad === data);
-            return carro ? carro.idRuta : '';
+          const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+          if (unidad) {
+              const ruta = props.ruta.find(ruta => ruta.idRuta === unidad.idRuta);
+              return ruta ? ruta.nombreRuta : '';
+          } else {
+              return '';
+          }
         }
     },
     {
@@ -109,6 +109,84 @@ const columnas = [
         render: function (data, type, row, meta) {
             const carro = props.unidad.find(carro => carro.idUnidad === data);
             return carro ? carro.numeroUnidad : '';
+        }
+    },
+    {
+        data: 'idUnidad',
+        render: function (data, type, row, meta) {
+          const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+          if (unidad) {
+              const jefe = props.directivo.find(jefe => jefe.idDirectivo === unidad.idDirectivo);
+              return jefe ? jefe.nombre_completo : '';
+          } else {
+              return '';
+          }
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            return "";
+        }
+    },
+    {
+        data: 'idUnidad',
+        render: function (data, type, row, meta) {
+          const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+          if (unidad) {
+              const chofer = props.operador.find(chofer => chofer.idOperador === unidad.idOperador);
+              return chofer ? chofer.nombre_completo : '';
+          } else {
+              return '';
+          }
         }
     },
 ]
@@ -119,7 +197,7 @@ console.log("Estoy en Formar Unidades");
 </script>
 
 <template>
-  <PrincipalLayout title="FormarUnidades">
+  <PrincipalLayout title="Formar Unidades">
     <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6">
       <h2 class="font-bold text-center text-xl pt-5"> Formar Unidades</h2>
       <div class="my-1"></div> <!-- Espacio de separación -->
@@ -128,7 +206,7 @@ console.log("Estoy en Formar Unidades");
       <div class="overflow-x-auto"> <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
           id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="formacionUnidades" :options="{
-            responsive: true, autoWidth: false, dom: 'Bftrip', language: {
+            responsive: false, autoWidth: false, dom: 'Bftrip', language: {
               search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
               info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
               infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
@@ -139,7 +217,7 @@ console.log("Estoy en Formar Unidades");
           }">
           <thead>
             <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th> <!-- Celda vacía para la primera columna -->
+              
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300" ></th> <!-- Celda vacía para la primera columna -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300" ></th> <!-- Celda vacía para la primera columna -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th> <!-- Ruta -->
@@ -151,9 +229,7 @@ console.log("Estoy en Formar Unidades");
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th> <!-- operador -->
             </tr>
             <tr class="text-sm leading-normal border-b border-gray-300" >
-              <th
-                class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th>
+              
               <th
                 class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
               </th>

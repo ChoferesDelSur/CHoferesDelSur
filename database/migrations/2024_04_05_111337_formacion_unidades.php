@@ -13,10 +13,20 @@ return new class extends Migration
     {
         Schema::create('formacionUnidades', function (Blueprint $table) {
             $table->id(column:'idFormacionUnidades');
-            $table->date(column:'fecha')->nullable(false);
+            $table->date(column:'fecha')->nullable(true);
             $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
-            $table->foreignId(column:'idEntrada')->references('idEntrada')->on('entrada');
-            $table->foreignId(column:'idCorte')->references('idCorte')->on('corte');
+            $table->time('horaEntrada')->nullable(true);
+            $table->string(column:'tipoEntrada')->nullable(true);
+            $table->string(column:'extremo')->nullable(true);
+            $table->string(column:'ultimaAyer')->nullable(true);
+            $table->string(column:'multa')->nullable(true);
+            $table->time('horaCorte')->nullable(true);
+            $table->string(column:'causa')->nullable(true);
+            $table->time('horaRegreso')->nullable(true);
+            $table->string(column:'notaTalacha')->nullable(true);
+            $table->string(column:'tiempoCorte')->nullable(true);
+            $table->string(column:'tipoCorte')->nullable(true);
+            $table->foreignId(column:'idCastigo')->nullable()->references('idCastigo')->on('castigo');
             $table->softDeletes();
             $table->timestamps();
         });

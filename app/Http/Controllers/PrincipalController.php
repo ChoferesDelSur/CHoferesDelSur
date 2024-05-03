@@ -97,6 +97,11 @@ class PrincipalController extends Controller
             $unidad->idRuta = $request->ruta;
             $unidad->idDirectivo = $request->directivo;
             $unidad->save();
+
+            // Ahora, registra la misma unidad en la tabla "formacionUnidades"
+            $formacionUnidad = new formacionunidades();
+            $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
+            $formacionUnidad->save();
             return redirect()->route('principal.unidades')->with(['message' => "Unidad agregado correctamente:" .$request -> numeroUnidad, "color" => "green"]);
         }catch(Exception $e){
             return redirect()->route('principal.unidades');
