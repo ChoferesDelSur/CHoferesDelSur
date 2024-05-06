@@ -9,7 +9,6 @@ use App\Http\Controllers\PrincipalController;
 //Route::get('/', [PrincipalController::class, 'formarUnidades'])->name('formarUnidades');
 Route::controller(PrincipalController::class)->group(function () {
     Route::get('/', 'inicio')->name('principal.inicio');
-    Route::get('/principal/formUnidades', 'formarUnidades')->name('principal.formarUni');
     Route::get('/principal/unidades', 'unidades')->name('principal.unidades');
     Route::get('/principal/sociosPrestadores', 'sociosPrestadores')->name('principal.sociosPrestadores');
     Route::get('/principal/operadores', 'operadores')->name('principal.operadores');
@@ -30,4 +29,7 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::post('/principal/rutas', 'addRuta')->name('principal.addRuta');
     Route::put('/principal/rutas/{idRuta}/edit','actualizarRuta')->name('principal.actualizarRuta');
     Route::delete('/principal/rutas/{rutasIds}', 'eliminarRuta')->name('principal.eliminarRuta');
+
+    Route::get('/principal/formUnidades', 'formarUnidades')->name('principal.formarUni');
+    Route::post('/principal/formarUnidades', 'registrarHoraEntrada')->name('principal.registarHoraEntrada');
 });

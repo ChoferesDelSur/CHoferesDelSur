@@ -14,6 +14,7 @@ use App\Models\ruta;
 use App\Models\tipodirectivo;
 use App\Models\tipooperador;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class PrincipalController extends Controller
@@ -52,6 +53,39 @@ class PrincipalController extends Controller
             'formacionUnidades' => $formacionUnidades,
         ]);
     }
+
+    public function registrarHoraEntrada(Request $request)
+    {
+        // Obtener el ID de la unidad y la hora de entrada del formulario
+        $unidadId = $request->input('unidad');
+        $horaEntrada = Carbon::parse($request->input('horaEntrada'))->format('H:i'); // Formatear la hora
+
+        // Buscar si ya existe un registro para esta unidad
+        $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+
+        // Verificar si ya existe un registro para esta unidad
+        if ($formacionUnidad) {
+            // Si ya existe, actualizar la hora de entrada
+            $formacionUnidad->horaEntrada = $horaEntrada;
+            $formacionUnidad->save();
+
+            // Devolver una respuesta de éxito
+            /* return response()->json(['message' => 'Hora de entrada actualizada correctamente']); */
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada registrado correctamente:" .$request -> horaEntrada, "color" => "green"]);
+        } else {
+            // Si no existe, crear un nuevo registro
+            FormacionUnidad::create([
+                'idUnidad' => $unidadId,
+                'horaEntrada' => $horaEntrada
+                // Aquí puedes agregar más columnas si es necesario
+            ]);
+
+            // Devolver una respuesta de éxito
+            /* return response()->json(['message' => 'Hora de entrada registrada correctamente']); */
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada registrado correctamente:" .$horaEntrada, "color" => "green"]);
+        }
+    }
+
     public function unidades(){
         $unidad = unidad::all();
         $operador = operador::all(); 
