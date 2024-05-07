@@ -200,35 +200,22 @@ class PrincipalController extends Controller
     }
 
     public function asignarOperador(Request $request)
-{
-    try {
-        // Valida los datos del formulario
-        $request->validate([
-            'idUnidad' => 'required|exists:unidad,idUnidad',
-            'operador' => 'required|exists:operador,idOperador',
-        ]);
-
-        // Obtiene la unidad seleccionada
-        $unidad = Unidad::findOrFail($request->input('idUnidad'));
-
-        // Asigna el operador a la unidad
-        $unidad->idOperador = $request->input('operador');
+    {
+        // Obtener los IDs de la unidad y el operador del request
+        $unidadId = $request->input('unidad');
+        $operadorId = $request->input('operador');
         
-        // Guarda los cambios
+        // Buscar la unidad y el operador en la base de datos
+        $unidad = Unidad::findOrFail($unidadId);
+        $operador = Operador::findOrFail($operadorId);
+
+        // Asignar el operador a la unidad
+        $unidad->idOperador = $operadorId; // Suponiendo que tienes una columna 'operador_id' en tu tabla de unidades
         $unidad->save();
 
-        // Retorna una respuesta de éxito
-        return redirect()->route('principal.unidades')->with(['message' => "Operador asignado correctamente", "color" => "green"]);
-    } catch(ModelNotFoundException $e) {
-        // Retorna una respuesta de error si no se encuentra la unidad u operador
-        return redirect()->route('principal.unidades')->with(['message' => "Unidad u operador no encontrado", "color" => "red"]);
-    } catch(Exception $e) {
-        // Retorna una respuesta de error genérico
-        return redirect()->route('principal.unidades')->with(['message' => "Error al asignar un operador", "color" => "red"]);
+        // Puedes retornar algún mensaje de éxito si lo deseas
+        return redirect()->route('principal.unidades')->with(['message' => 'Operador asignado correctamente a la unidad.']);
     }
-}
-
-
 
     public function operadores(){
         $operador = operador::all(); 

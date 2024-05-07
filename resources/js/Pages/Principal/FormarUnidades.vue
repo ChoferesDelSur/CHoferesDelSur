@@ -120,6 +120,12 @@ const columnas = [
     }
   },
   {
+    data: null,
+    render: function (data, type, row, meta) {
+      return "";
+    }
+  },
+  {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
       const carro = props.unidad.find(carro => carro.idUnidad === data);
@@ -189,6 +195,30 @@ const columnas = [
         } else {
             return '';
         }
+    }
+  },
+  {
+    data: null,
+    render: function (data, type, row, meta) {
+      return "";
+    }
+  },
+  {
+    data: null,
+    render: function (data, type, row, meta) {
+      return "";
+    }
+  },
+  {
+    data: null,
+    render: function (data, type, row, meta) {
+      return "";
+    }
+  },
+  {
+    data: null,
+    render: function (data, type, row, meta) {
+      return "";
     }
   },
   {
@@ -335,6 +365,7 @@ console.log("Estoy en Formar Unidades");
             <tr class="text-sm leading-normal border-b border-gray-300">
 
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
+              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Celda vacía para la primera columna -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
@@ -342,10 +373,12 @@ console.log("Estoy en Formar Unidades");
               <!-- Unidad -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Socio/Prestador -->
-              <th class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="2">ENTRADA</th>
+              <th class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                colspan="3">ENTRADA</th>
               <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
+                <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                colspan="3">ÚLTIMA CORRIDA</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
@@ -362,6 +395,9 @@ console.log("Estoy en Formar Unidades");
                 Ruta
               </th>
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Trab. Domingo
+              </th>
+              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Unidad
               </th>
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
@@ -373,6 +409,9 @@ console.log("Estoy en Formar Unidades");
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Tipo de entrada
               </th>
+              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Extremo
+              </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hora de Corte
               </th>
@@ -381,6 +420,15 @@ console.log("Estoy en Formar Unidades");
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hora de regreso
+              </th>
+              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Ultima Corrida
+              </th>
+              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hora de inicio
+              </th>
+              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hora fin
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hora de inicio
@@ -417,3 +465,9 @@ console.log("Estoy en Formar Unidades");
 
   </PrincipalLayout>
 </template>
+<style>
+      /* Estilo personalizado para centrar el texto en las celdas de la tabla */
+      #formacionTablaId th {
+        text-align: center !important;
+      }
+    </style>
