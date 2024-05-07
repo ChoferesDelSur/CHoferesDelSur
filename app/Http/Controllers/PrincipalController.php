@@ -86,58 +86,78 @@ class PrincipalController extends Controller
         }
     }
 
+    public function actualizarTipoEntrada($idFormacionUnidades, $tipoEntrada)
+    {
+        $formacionUnidades = formacionunidades::find($idFormacionUnidades);
+        if ($formacionUnidades) {
+            $formacionUnidades->actualizarTipoEntrada($tipoEntrada);
+        }
+    }
+
     public function unidades(){
         $unidad = unidad::all();
         $operador = operador::all(); 
         $directivo = directivo::all();
-        // Filtrar los operadores disponibles
+        
+        // Obtener los operadores disponibles
         $operadoresDisp = operador::where('idEstado', 1) // Filtrar por estado "Alta"
-                                ->whereDoesntHave('unidad') // Verificar que no estén relacionados con otra unidad
-                                ->get();
+                                   ->whereDoesntHave('unidad') // Verificar que no estén relacionados con ninguna unidad
+                                   ->get();
+        
+        // Obtener las unidades disponibles (sin operador asignado)
+        $unidadesDisp = unidad::whereNull('idOperador')->get();
+        
         $ruta = ruta::all();
-        return Inertia::render('Principal/Unidades',[
+        
+        return Inertia::render('Principal/Unidades', [
             'unidad' => $unidad,
             'operador' => $operador,
             'operadoresDisp' => $operadoresDisp,
+            'unidadesDisp' => $unidadesDisp, // Pasar las unidades disponibles a la vista
             'ruta' => $ruta,
             'directivo' => $directivo,
         ]);
     }
+    
 
     public function addUnidad(Request $request){
         try{
             $request->validate([
                 'numeroUnidad'=> 'required',
                 'ruta' => 'required',
-                'operador' => 'required',
                 'directivo' => 'required',
             ]);
-
+    
             // Verificar si la unidad ya existe
             $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
-            ->where('idRuta', $request->ruta)
-            ->where('idOperador', $request->operador)
-            ->where('idDirectivo', $request->directivo)
-            ->first();
-
-            if($existingUnidad){
-            // Unidad ya existe, puedes devolver una respuesta indicando el error
-            return redirect()->route('principal.unidades')->with(['message' => "La unidad ya existe.", "color" => "red"]);
-            }
+                ->where('idRuta', $request->ruta)
+                ->where('idDirectivo', $request->directivo)
+                ->first();
     
+            if($existingUnidad){
+                // Unidad ya existe, puedes devolver una respuesta indicando el error
+                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya existe.", "color" => "red"]);
+            }
+        
             $unidad = new unidad();
-            $unidad->numeroUnidad = $request -> numeroUnidad;
-            $unidad->idOperador = $request->operador;
+            $unidad->numeroUnidad = $request->numeroUnidad;
             $unidad->idRuta = $request->ruta;
             $unidad->idDirectivo = $request->directivo;
+    
+            // Verifica si se proporcionó un operador antes de asignarlo a la unidad
+            if ($request->has('operador')) {
+                $unidad->idOperador = $request->operador;
+            }
+            
             $unidad->save();
-
+    
             // Ahora, registra la misma unidad en la tabla "formacionUnidades"
             $formacionUnidad = new formacionunidades();
             $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
             $formacionUnidad->save();
-            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregado correctamente:" .$request -> numeroUnidad, "color" => "green"]);
-        }catch(Exception $e){
+            
+            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente:" . $request->numeroUnidad, "color" => "green"]);
+        } catch(Exception $e){
             return redirect()->route('principal.unidades');
         }
     }
@@ -178,6 +198,37 @@ class PrincipalController extends Controller
             return redirect()->route('principal.unidades')->with(['message' => "No se pudo eliminar la unidad", "color" => "red"]);
         }
     }
+
+    public function asignarOperador(Request $request)
+{
+    try {
+        // Valida los datos del formulario
+        $request->validate([
+            'idUnidad' => 'required|exists:unidad,idUnidad',
+            'operador' => 'required|exists:operador,idOperador',
+        ]);
+
+        // Obtiene la unidad seleccionada
+        $unidad = Unidad::findOrFail($request->input('idUnidad'));
+
+        // Asigna el operador a la unidad
+        $unidad->idOperador = $request->input('operador');
+        
+        // Guarda los cambios
+        $unidad->save();
+
+        // Retorna una respuesta de éxito
+        return redirect()->route('principal.unidades')->with(['message' => "Operador asignado correctamente", "color" => "green"]);
+    } catch(ModelNotFoundException $e) {
+        // Retorna una respuesta de error si no se encuentra la unidad u operador
+        return redirect()->route('principal.unidades')->with(['message' => "Unidad u operador no encontrado", "color" => "red"]);
+    } catch(Exception $e) {
+        // Retorna una respuesta de error genérico
+        return redirect()->route('principal.unidades')->with(['message' => "Error al asignar un operador", "color" => "red"]);
+    }
+}
+
+
 
     public function operadores(){
         $operador = operador::all(); 

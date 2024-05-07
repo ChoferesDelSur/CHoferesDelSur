@@ -20,6 +20,7 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::post('/principal/unidades', 'addUnidad')->name('principal.addUnidad');
     Route::put('/principal/unidades/{idUnidad}/edit', 'actualizarUnidad')->name('principal.actualizarUnidad');
     Route::delete('/principal/unidades/{unidadesIds}', 'eliminarUnidad')->name('principal.eliminarUnidad');
+    Route::post('/principal/unidades', 'asignarOperador')->name('principal.asignarOperador');
     
     Route::post('/principal/sociosPrestadores', 'addDirectivo')->name('principal.addDirectivo');
     Route::put('/principal/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('principal.actualizarDirectivo');
@@ -32,4 +33,5 @@ Route::controller(PrincipalController::class)->group(function () {
 
     Route::get('/principal/formUnidades', 'formarUnidades')->name('principal.formarUni');
     Route::post('/principal/formarUnidades', 'registrarHoraEntrada')->name('principal.registarHoraEntrada');
+    Route::put('/principal/formarUnidades/{idFormacionUnidades}/edit','actualizarTipoEntrada')->name('principal.actualizarTipoEntrada');
 });

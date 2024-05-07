@@ -11,6 +11,7 @@ import pdfmake from 'pdfmake';
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
+import FormularioAsignarOperador from '../../Components/Principal/FormularioAsignarOperador.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -41,6 +42,7 @@ const props = defineProps({
     operador: { type: Object },
     directivo: { type: Object },
     operadoresDisp: { type: Object },
+    unidadesDisp: { type: Object },
 });
 
 const botones = [
@@ -112,9 +114,14 @@ const columnas = [
     {
         data: 'idOperador',
         render: function (data, type, row, meta) {
-            // Modificación para mostrar la descripción del ciclo
-            const oper = props.operador.find(oper => oper.idOperador === data);
-            return oper ? oper.nombre_completo : '';
+            if (!data) { // Verifica si idOperador está vacío
+                return '<span style="color: red;">Sin asignar</span>'; // Aplica color rojo si está vacío
+            } else {
+                // Modificación para mostrar la descripción del ciclo
+                const oper = props.operador.find(oper => oper.idOperador === data);
+                return oper ? oper.nombre_completo : '';
+            }
+
         }
     },
     {
@@ -141,6 +148,7 @@ const columnas = [
 ]
 
 const mostrarModal = ref(false);
+const mostrarModalAsigOper = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
@@ -156,6 +164,10 @@ const abrirE = ($unidadess) => {
 
 const cerrarModal = () => {
     mostrarModal.value = false;
+};
+
+const cerrarModalAsigOper = () => {
+    mostrarModalAsigOper.value = false;
 };
 
 const cerrarModalE = () => {
@@ -304,6 +316,10 @@ const eliminarUnidades = () => {
                     @click="eliminarUnidades">
                     <i class="fa fa-trash mr-2"></i>Borrar Unidad
                 </button>
+                <button class="bg-cyan-500 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded"
+                    @click="mostrarModalAsigOper = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-male" aria-hidden="true"></i> Asignar Operador
+                </button>
             </div>
 
             <div>
@@ -357,5 +373,9 @@ const eliminarUnidades = () => {
         <formulario-unidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE" :ruta="props.ruta"
             :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
+        <FormularioAsignarOperador :show="mostrarModalAsigOper" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalAsigOper" :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'"
+            :unidad="props.unidad" :unidadesDisp="props.unidadesDisp" :operadoresDisp="props.operadoresDisp">
+        </FormularioAsignarOperador>
     </PrincipalLayout>
 </template>

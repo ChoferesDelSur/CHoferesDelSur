@@ -19,6 +19,7 @@ return new class extends Migration
             $table->id(column:'idCastigo');
             $table->string(column:"castigo");
             $table->string(column:"observaciones");
+            $table->foreignId(column:'idUnidad')->nullable()->references('idUnidad')->on('unidad');
             $table->softDeletes();
             $table->timestamps();
         });

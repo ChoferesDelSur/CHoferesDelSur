@@ -129,8 +129,8 @@ const update = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar a un
-                        nuevo socio o prestador
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar a un
+                        nuevo socio o prestador. Los campos con <span class="text-red-500">*</span> son obligatorios.
                     </p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -145,7 +145,7 @@ const update = async () => {
                     </div>
                     <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
                         <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Paterno</label>
+                            Paterno <span class="text-red-500">*</span></label>
                         <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                             <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                 placeholder="Ingrese el apellido paterno"
@@ -158,7 +158,7 @@ const update = async () => {
                     </div>
                     <div class="sm:col-span-2">
                         <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Materno</label>
+                            Materno <span class="text-red-500">*</span></label>
                         <div class="mt-2">
                             <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
                                 placeholder="Ingrese el apellido materno"
@@ -167,7 +167,7 @@ const update = async () => {
                         <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}</div>
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres</label>
+                        <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres <span class="text-red-500">*</span></label>
                         <div class="mt-2">
                             <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                 placeholder="Ingrese el nombre"
@@ -176,7 +176,7 @@ const update = async () => {
                         <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="tipoDirectivo" class="block text-sm font-medium leading-6 text-gray-900">Tipo de Directivo</label>
+                        <label for="tipoDirectivo" class="block text-sm font-medium leading-6 text-gray-900">Tipo de Directivo <span class="text-red-500">*</span></label>
                         <div class="mt-2">
                             <select name="tipoDirectivo" :id="'tipoDirectivo' + op" v-model="form.tipDirectivo"
                                 placeholder="Seleccione el tipo de directivo"

@@ -14,5 +14,6 @@ class castigo extends Model
     protected $fillable = [
         'castigo',
         'observaciones',
+        'idUnidad',
     ];
 }

@@ -15,19 +15,23 @@ class formacionUnidades extends Model
     protected $primaryKey = "idFormacionUnidades";
 
     protected $fillable = [
-        'fecha',
         'idUnidad',
         'horaEntrada',
         'tipoEntrada',
         'extremo',
-        'ultimaAyer',
-        'multa',
         'horaCorte',
         'causa',
         'horaRegreso',
-        'notaTalacha',
-        'tiempoCorte',
-        'tipoCorte',
+        'ultimaCorrida',
+        'horaInicioUC',
+        'horaFinUC',
         'idCastigo',
     ];
+
+    // Método para actualizar el campo tipoEntrada
+    public function actualizarTipoEntrada($tipoEntrada)
+    {
+        $this->tipoEntrada = $tipoEntrada;
+        $this->save();
+    }
 }

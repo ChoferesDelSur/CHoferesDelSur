@@ -10,6 +10,8 @@ import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
 import { ref, onMounted } from 'vue';
 import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
+import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
+import FormularioRegCastigo from '../../Components/Principal/FormularioRegCastigo.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -234,18 +236,24 @@ const columnas = [
   {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
-      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
-      if (unidad) {
-        const chofer = props.operador.find(chofer => chofer.idOperador === unidad.idOperador);
-        return chofer ? chofer.nombre_completo : '';
-      } else {
-        return '';
-      }
+        const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+        if (unidad) {
+            const chofer = props.operador.find(chofer => chofer.idOperador === unidad.idOperador);
+            if (chofer) {
+                return chofer.nombre_completo;
+            } else {
+                return '<span style="color: red;">Sin asignar</span>'; // Aplica color rojo si no hay operador asignado
+            }
+        } else {
+            return '';
+        }
     }
   },
 ]
 
 const mostrarModal = ref(false);
+const mostrarModalCorte = ref(false);
+const mostrarModalCastigo = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
@@ -260,6 +268,14 @@ const abrirE = ($formacioness) => {
 
 const cerrarModal = () => {
   mostrarModal.value = false;
+};
+
+const cerrarModalCorte = () => {
+  mostrarModalCorte.value = false;
+};
+
+const cerrarModalCastigo = () => {
+  mostrarModalCastigo.value = false;
 };
 
 const cerrarModalE = () => {
@@ -281,16 +297,23 @@ console.log("Estoy en Formar Unidades");
       <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar entrada
+          <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
         </button>
-        <button id="eliminarABtn" disabled
-          class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded" @click="eliminarOperadores">
+        <button class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCorte = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-scissors" aria-hidden="true"></i> Registrar Corte
         </button>
-        <button id="editarABtn" disabled
-          class="bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded" @click="eliminarAlumnos">
-          <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar Castigo
+
+        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCorte = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-history" aria-hidden="true"></i> Registrar Regreso
         </button>
+
+        <button class="bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar castigo
+        </button>
+
       </div>
 
       <div class="overflow-x-auto">
@@ -383,5 +406,14 @@ console.log("Estoy en Formar Unidades");
       :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
       :unidad="props.unidad">
     </FormularioRegHoraEntrada>
+    <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
+      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
+      :unidad="props.unidad">
+    </FormularioRegCorte>
+    <FormularioRegCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCastigo"
+      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
+      :unidad="props.unidad">
+    </FormularioRegCastigo>
+
   </PrincipalLayout>
 </template>

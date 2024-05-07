@@ -37,25 +37,20 @@ const emit = defineEmits(['close']);
 const form = useForm({
     idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
     unidad: props.formacionUnidades.idUnidad,
-    horaEntrada: props.formacionUnidades.horaEntrada,
+    horaInicio: props.formacionUnidades.horaInicio,
+    horaFin: props.formacionUnidades.horaFin,
+    castigo: props.formacionUnidades.castigo,
+
 });
 
 watch(() => props.formacionUnidades, async (newVal) => {
     form.idFormacionUnidades = newVal.idFormacionUnidades;
     form.unidad = newVal.unidad;
-    form.horaEntrada = newVal.horaEntrada;
+    form.horaCorte = newVal.horaCorte;
+    form.causa= props.formacionUnidades.causa;
+    form.horaRegreso = props.formacionUnidades.horaRegreso;
 }, { deep: true }
 );
-
-const actualizarTipoEntrada = async (idFormacionUnidades, tipoEntrada) => {
-    try {
-        const response = await axios.put(route('principal.actualizarTipoEntrada', { idFormacionUnidades }), { tipoEntrada });
-        console.log(response.data); // Maneja la respuesta del servidor según sea necesario
-    } catch (error) {
-        console.error('Error al actualizar el tipo de entrada:', error);
-    }
-}
-
 
 // Validación de los select 
 const validateSelect = (selectedValue) => {
@@ -65,8 +60,15 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
+// Validación de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+
 const unidadError = ref('');
-const horaEntradaError = ref('');
+const horaCorteError = ref('');
+const causaError = ref('');
+const horaRegresoError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -75,35 +77,35 @@ const close = async () => {
 }
 
 const save = async () => {
-    horaEntradaError.value = validateSelect(form.horaEntrada) ? '' : 'Seleccione la hora de entrada';
+    horaCorteError.value = validateSelect(form.horaCorte) ? '' : 'Seleccione la hora de corte';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
+    causaError.value = validateStringNotEmpty(form.causa)?'': 'Ingrese la causa del corte';
+    horaRegresoError.value = validateSelect(form.horaRegreso) ? '': 'Seleccione la hora de regreso';
 
     if (
-        horaEntradaError.value || unidadError.value
+        horaCorteError.value || unidadError.value || causaError.value || horaRegresoError.value
     ) {
         return;
     }
-    form.post(route('principal.registarHoraEntrada'), {
+    form.post(route('principal.registarCorte'), {
         onSuccess: () => {
             close()
-            horaEntradaError.value = '';
+            horaCorteError.value = '';
             unidadError.value = '';
+            causaError.value = '';
+            horaRegresoError.value = '';
         }
     })
 }
-console.log("Unidades en formulario:");
-console.log(props.unidad);
-
 </script>
 
 <template>
-    <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
+<Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar la
-                        hora de Entrada de una unidad
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar un castigo
                     </p>
                     <div class="sm:col-span-2">
                         <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
@@ -113,8 +115,8 @@ console.log(props.unidad);
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="" disabled selected>Seleccione la unidad</option>
                                 <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
-                                    {{ carro.numeroUnidad}}
-                                    
+                                    {{ carro.numeroUnidad }}
+
                                 </option>
                             </select>
                         </div>
@@ -122,14 +124,35 @@ console.log(props.unidad);
                         </div>
                     </div>
                     <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="horaEntrada" class="block text-sm font-medium leading-6 text-gray-900">Hora de
-                            entrada</label>
+                        <label for="horaInicio" class="block text-sm font-medium leading-6 text-gray-900">Hora de
+                            inicio</label>
                         <div class="mt-2">
-                            <input type="time" name="horaEntrada" :id="'horaEntrada' + op" v-model="form.horaEntrada"
-                                placeholder="Seleccione la hora de entrada"
+                            <input type="time" name="horaInicio" :id="'horaInicio' + op" v-model="form.hora"
+                                placeholder="Seleccione la hora de corte"
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
-                        <div v-if="horaEntradaError != ''" class="text-red-500 text-xs">{{ horaEntradaError }}</div>
+                        <div v-if="horaCorteError != ''" class="text-red-500 text-xs">{{ horaCorteError }}</div>
+                    </div>
+                    <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                        <label for="causa" class="block text-sm font-medium leading-6 text-gray-900">Causa</label>
+                        <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
+                            <input type="text" name="causa" :id="'causa' + op" v-model="form.causa"
+                                placeholder="Ingrese la causa del corte"
+                                class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        </div>
+                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                        <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
+                        <div v-if="causaError != ''" class="text-red-500 text-xs mt-1">{{ causaError }}</div>
+                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                    </div>
+                    <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
+                        <label for="horaRegreso" class="block text-sm font-medium leading-6 text-gray-900">Hora de
+                            regreso</label>
+                        <div class="mt-2">
+                            <input type="time" name="horaRegreso" :id="'horaRegreso' + op" v-model="form.horaRegreso"
+                                placeholder="Seleccione la hora de regreso"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        </div>
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">

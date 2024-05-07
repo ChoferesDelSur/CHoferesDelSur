@@ -89,11 +89,11 @@ const validateSelect = (selectedValue) => {
 const save = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
-    operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
+    /* operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador'; */
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione el dueño de la unidad';
 
     if (
-        numeroUnidadError.value || rutaError.value || operadorError.value || directivoError.value
+        numeroUnidadError.value || rutaError.value || /* operadorError.value || */ directivoError.value
     ) {
         return;
     }
@@ -102,7 +102,7 @@ const save = async () => {
             close()
             numeroUnidadError.value = '';
             rutaError.value = '';
-            operadorError.value = '';
+            /* operadorError.value = ''; */
             directivoError.value = '';
         }
     })
@@ -111,11 +111,11 @@ const save = async () => {
 const update = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
-    operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador';
+    /* operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador'; */
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione el dueño de la unidad';
 
     if (
-        numeroUnidadError.value || rutaError.value || operadorError.value || directivoError.value
+        numeroUnidadError.value || rutaError.value /* || operadorError.value */ || directivoError.value
     ) {
         return;
     }
@@ -128,7 +128,7 @@ const update = async () => {
             console.log("idUnidad Editando:" + idUnidad);
             numeroUnidadError = '';
             rutaError = '';
-            operadorError = '';
+            /* operadorError = ''; */
             directivoError = '';
         }
     });
@@ -141,8 +141,8 @@ const update = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene todos los campos para poder registrar una
-                        unidad
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar una
+                        unidad. Los campos con <span class="text-red-500">*</span> son obligatorios
                     </p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -156,8 +156,7 @@ const update = async () => {
                         </div>
                     </div>
                     <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="numeroUnidad" class="block text-sm font-medium leading-6 text-gray-900">Número de
-                            unidad</label>
+                        <label for="numeroUnidad" class="block text-sm font-medium leading-6 text-gray-900">Número de unidad <span class="text-red-500">*</span></label>
                         <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                             <input type="text" name="numeroUnidad" :id="'numeroUnidad' + op" v-model="form.numeroUnidad"
                                 placeholder="Ingrese el número de la unidad"
@@ -169,7 +168,7 @@ const update = async () => {
                         <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta</label>
+                        <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta <span class="text-red-500">*</span></label>
                         <div class="mt-2">
                             <select name="ruta" :id="'ruta' + op" v-model="form.ruta" placeholder="Seleccione la ruta"
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -194,10 +193,10 @@ const update = async () => {
                                 </option>
                             </select>
                         </div>
-                        <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div>
+                        <!-- <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div> -->
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Dueño de la unidad</label>
+                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Dueño de la unidad <span class="text-red-500">*</span></label>
                         <div class="mt-2">
                             <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
                                 placeholder="Seleccione al dueño de la unidad"
