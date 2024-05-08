@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('formacionUnidades', function (Blueprint $table) {
             $table->id(column:'idFormacionUnidades');
             $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
+            /* $table->string(column:'trabajaDomingo')->nullable(true); */
             $table->time('horaEntrada')->nullable(true);
             $table->string(column:'tipoEntrada')->nullable(true);
             $table->string(column:'extremo')->nullable(true);

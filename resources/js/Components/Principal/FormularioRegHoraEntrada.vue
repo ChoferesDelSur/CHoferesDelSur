@@ -58,9 +58,8 @@ const validateSelect = (selectedValue) => {
 };
 
 const validateRadio = (selectedValue) => {
-    return selectedValue !== null; // Validar si el valor seleccionado no es 'null'
+    return selectedValue !== null && selectedValue !== undefined; // Validar si el valor seleccionado no es 'null' ni 'undefined'
 };
-
 
 const unidadError = ref('');
 const horaEntradaError = ref('');

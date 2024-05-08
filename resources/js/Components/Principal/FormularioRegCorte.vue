@@ -79,10 +79,10 @@ const save = async () => {
     horaCorteError.value = validateSelect(form.horaCorte) ? '' : 'Seleccione la hora de corte';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
     causaError.value = validateStringNotEmpty(form.causa)?'': 'Ingrese la causa del corte';
-    horaRegresoError.value = validateSelect(form.horaRegreso) ? '': 'Seleccione la hora de regreso';
+
 
     if (
-        horaCorteError.value || unidadError.value || causaError.value || horaRegresoError.value
+        horaCorteError.value || unidadError.value || causaError.value
     ) {
         return;
     }
@@ -92,7 +92,6 @@ const save = async () => {
             horaCorteError.value = '';
             unidadError.value = '';
             causaError.value = '';
-            horaRegresoError.value = '';
         }
     })
 }
@@ -104,11 +103,11 @@ const save = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene los 3 primeros campos para poder registrar la
-                        hora de corte de una unidad
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar la
+                        hora de corte de una unidad. Los campos con <span class="text-red-500">*</span> son obligatorios.
                     </p>
                     <div class="sm:col-span-2">
-                        <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                        <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span class="text-red-500">*</span></label>
                         <div class="mt-2">
                             <select name="unidad" :id="'unidad' + op" v-model="form.unidad"
                                 placeholder="Seleccione la unidad"
@@ -125,16 +124,16 @@ const save = async () => {
                     </div>
                     <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
                         <label for="horaCorte" class="block text-sm font-medium leading-6 text-gray-900">Hora de
-                            corte</label>
+                            corte <span class="text-red-500">*</span></label>
                         <div class="mt-2">
-                            <input type="time" name="horaCorte" :id="'horaCorte' + op" v-model="form.horaEntrada"
+                            <input type="time" name="horaCorte" :id="'horaCorte' + op" v-model="form.horaCorte"
                                 placeholder="Seleccione la hora de corte"
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                         <div v-if="horaCorteError != ''" class="text-red-500 text-xs">{{ horaCorteError }}</div>
                     </div>
                     <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="causa" class="block text-sm font-medium leading-6 text-gray-900">Causa</label>
+                        <label for="causa" class="block text-sm font-medium leading-6 text-gray-900">Causa <span class="text-red-500">*</span></label>
                         <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                             <input type="text" name="causa" :id="'causa' + op" v-model="form.causa"
                                 placeholder="Ingrese la causa del corte"

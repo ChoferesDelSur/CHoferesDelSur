@@ -6,8 +6,6 @@ use App\Models\unidad;
 use App\Models\directivo;
 use App\Models\operador;
 use App\Models\calificacion;
-use App\Models\corte;
-use App\Models\entrada;
 use App\Models\estado;
 use App\Models\formacionunidades;
 use App\Models\ruta;
@@ -67,16 +65,19 @@ public function registrarHoraEntrada(Request $request)
     $fecha = Carbon::now();
     $diaSemana = $fecha->dayOfWeek;
 
-    // Definir los límites de tiempo según el día de la semana
-    if ($diaSemana >= 1 && $diaSemana <= 5) { // Lunes a viernes
-        $limiteNormal = Carbon::createFromTime(6, 15);
-        $limiteMulta = Carbon::createFromTime(6, 30);
-    } elseif ($diaSemana === 6) { // Sábado
+    // Definir los límites de tiempo según el día de la semana y el valor de extremo
+    if ($diaSemana === 6 && $extremo === 'si') { // Sábado y extremo es 'si'
+        $limiteNormal = Carbon::createFromTime(6, 45);
+        $limiteMulta = Carbon::createFromTime(7, 0);//Quizá se quite porque no se considera multa
+    } elseif ($diaSemana === 6) { // Sábado (sin considerar extremo)
         $limiteNormal = Carbon::createFromTime(6, 30);
         $limiteMulta = Carbon::createFromTime(7, 0);
     } elseif ($diaSemana === 0) { // Domingo
         $limiteNormal = Carbon::createFromTime(7, 30);
         $limiteMulta = Carbon::createFromTime(7, 45);
+    } else { // Lunes a viernes
+        $limiteNormal = Carbon::createFromTime(6, 15);
+        $limiteMulta = Carbon::createFromTime(6, 30);
     }
 
     // Convertir la hora de entrada a un objeto Carbon
@@ -115,6 +116,49 @@ public function registrarHoraEntrada(Request $request)
     dd($e);
 }
 }
+
+public function registrarCorte(Request $request)
+{
+    // Validar los datos recibidos del formulario
+    $request->validate([
+        'unidad' => 'required',
+        'horaCorte' => 'required',
+        'causa' => 'required',
+    ]);
+
+    try {
+        // Obtener el ID de la unidad seleccionada del formulario
+        $unidadId = $request->input('unidad');
+
+        // Buscar si ya existe un registro para esta unidad
+        $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+
+        // Si ya existe un registro para esta unidad, actualizar la hora de corte, causa y hora de regreso
+        if ($formacionUnidad) {
+            $formacionUnidad->horaCorte = $request->input('horaCorte');
+            $formacionUnidad->causa = $request->input('causa');
+            $formacionUnidad->horaRegreso = $request->input('horaRegreso');
+            // Otros campos necesarios...
+
+            $formacionUnidad->save();
+        } else { // Si no existe un registro para esta unidad, crear uno nuevo
+            formacionunidades::create([
+                'idUnidad' => $unidadId,
+                'horaCorte' => $request->input('horaCorte'),
+                'causa' => $request->input('causa'),
+                'horaRegreso' => $request->input('horaRegreso'),
+                // Otros campos necesarios...
+            ]);
+        }
+
+        // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
+        return redirect()->route('principal.formarUni')->with(['message' => "Hora de corte registrada correctamente: ", "color" => "green"]);
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir durante la operación
+        return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
+    }
+}
+
 
     public function unidades(){
         $unidad = unidad::all();

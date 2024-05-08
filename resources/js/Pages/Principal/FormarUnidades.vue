@@ -172,19 +172,30 @@ const columnas = [
   {
     data: null,
     render: function (data, type, row, meta) {
-      return "";
+      const hCorte = props.formacionUnidades.find(hCorte => hCorte === data);
+      if (hCorte && hCorte.horaCorte) { // Verificar si hCorte no es nulo
+        return hCorte.horaCorte.substring(0, 5); // Obtener solo la hora y los minutos
+      } else {
+        return ''; // Devolver una cadena vacía si el valor es nulo
+      }
+    }
+  },
+  {
+    data: 'idFormacionUnidades',
+    render: function (data, type, row, meta) {
+      const caus = props.formacionUnidades.find(caus => caus.idFormacionUnidades === data);
+      return caus ? caus.causa : '';
     }
   },
   {
     data: null,
     render: function (data, type, row, meta) {
-      return "";
-    }
-  },
-  {
-    data: null,
-    render: function (data, type, row, meta) {
-      return "";
+      const hRegreso = props.formacionUnidades.find(hRegreso => hRegreso === data);
+      if (hRegreso && hRegreso.horaRegreso) { // Verificar si hCorte no es nulo
+        return hRegreso.horaRegreso.substring(0, 5); // Obtener solo la hora y los minutos
+      } else {
+        return ''; // Devolver una cadena vacía si el valor es nulo
+      }
     }
   },
   {
