@@ -54,45 +54,67 @@ class PrincipalController extends Controller
         ]);
     }
 
-    public function registrarHoraEntrada(Request $request)
-    {
-        // Obtener el ID de la unidad y la hora de entrada del formulario
-        $unidadId = $request->input('unidad');
-        $horaEntrada = Carbon::parse($request->input('horaEntrada'))->format('H:i'); // Formatear la hora
+    
+public function registrarHoraEntrada(Request $request)
+{ 
+    try{
+    // Obtener el ID de la unidad y la hora de entrada del formulario
+    $unidadId = $request->input('unidad');
+    $horaEntrada = Carbon::parse($request->input('horaEntrada'))->format('H:i'); // Formatear la hora
+    $extremo = $request->input('extremo');
 
-        // Buscar si ya existe un registro para esta unidad
-        $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+    // Obtener el día de la semana
+    $fecha = Carbon::now();
+    $diaSemana = $fecha->dayOfWeek;
 
-        // Verificar si ya existe un registro para esta unidad
-        if ($formacionUnidad) {
-            // Si ya existe, actualizar la hora de entrada
-            $formacionUnidad->horaEntrada = $horaEntrada;
-            $formacionUnidad->save();
-
-            // Devolver una respuesta de éxito
-            /* return response()->json(['message' => 'Hora de entrada actualizada correctamente']); */
-            return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada registrado correctamente:" .$request -> horaEntrada, "color" => "green"]);
-        } else {
-            // Si no existe, crear un nuevo registro
-            FormacionUnidad::create([
-                'idUnidad' => $unidadId,
-                'horaEntrada' => $horaEntrada
-                // Aquí puedes agregar más columnas si es necesario
-            ]);
-
-            // Devolver una respuesta de éxito
-            /* return response()->json(['message' => 'Hora de entrada registrada correctamente']); */
-            return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada registrado correctamente:" .$horaEntrada, "color" => "green"]);
-        }
+    // Definir los límites de tiempo según el día de la semana
+    if ($diaSemana >= 1 && $diaSemana <= 5) { // Lunes a viernes
+        $limiteNormal = Carbon::createFromTime(6, 15);
+        $limiteMulta = Carbon::createFromTime(6, 30);
+    } elseif ($diaSemana === 6) { // Sábado
+        $limiteNormal = Carbon::createFromTime(6, 30);
+        $limiteMulta = Carbon::createFromTime(7, 0);
+    } elseif ($diaSemana === 0) { // Domingo
+        $limiteNormal = Carbon::createFromTime(7, 30);
+        $limiteMulta = Carbon::createFromTime(7, 45);
     }
 
-    public function actualizarTipoEntrada($idFormacionUnidades, $tipoEntrada)
-    {
-        $formacionUnidades = formacionunidades::find($idFormacionUnidades);
-        if ($formacionUnidades) {
-            $formacionUnidades->actualizarTipoEntrada($tipoEntrada);
-        }
+    // Convertir la hora de entrada a un objeto Carbon
+    $horaEntradaCarbon = Carbon::createFromFormat('H:i', $horaEntrada);
+
+    // Determinar el tipo de entrada
+    if ($horaEntradaCarbon < $limiteNormal) {
+        $tipoEntrada = 'Normal';
+    } elseif ($horaEntradaCarbon >= $limiteNormal && $horaEntradaCarbon <= $limiteMulta) {
+        $tipoEntrada = 'Multa';
+    } else {
+        $tipoEntrada = '';
     }
+
+    // Buscar si ya existe un registro para esta unidad
+    $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+
+    // Si ya existe un registro para esta unidad, actualizar la hora de entrada y el tipo de entrada
+    if ($formacionUnidad) {
+        $formacionUnidad->horaEntrada = $horaEntrada;
+        $formacionUnidad->tipoEntrada = $tipoEntrada;
+        $formacionUnidad->extremo = $extremo; // Actualizar el valor extremo
+        $formacionUnidad->save();
+    } else { // Si no existe un registro para esta unidad, crear uno nuevo
+        formacionunidades::create([
+            'idUnidad' => $unidadId,
+            'horaEntrada' => $horaEntrada,
+            'tipoEntrada' => $tipoEntrada,
+            'extremo' => $extremo // Guardar el valor extremo
+        ]);
+    }
+
+    // Devolver una respuesta de éxito
+    return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada registrada correctamente: " . $horaEntrada, "color" => "green"]);
+}catch(Exception $e){
+    dd($e);
+}
+}
 
     public function unidades(){
         $unidad = unidad::all();

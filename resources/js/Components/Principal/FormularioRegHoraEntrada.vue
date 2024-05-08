@@ -38,24 +38,16 @@ const form = useForm({
     idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
     unidad: props.formacionUnidades.idUnidad,
     horaEntrada: props.formacionUnidades.horaEntrada,
+    extremo: props.formacionUnidades.extremo,
 });
 
 watch(() => props.formacionUnidades, async (newVal) => {
     form.idFormacionUnidades = newVal.idFormacionUnidades;
     form.unidad = newVal.unidad;
     form.horaEntrada = newVal.horaEntrada;
+    form.extremo = newVal.extremo;
 }, { deep: true }
 );
-
-const actualizarTipoEntrada = async (idFormacionUnidades, tipoEntrada) => {
-    try {
-        const response = await axios.put(route('principal.actualizarTipoEntrada', { idFormacionUnidades }), { tipoEntrada });
-        console.log(response.data); // Maneja la respuesta del servidor según sea necesario
-    } catch (error) {
-        console.error('Error al actualizar el tipo de entrada:', error);
-    }
-}
-
 
 // Validación de los select 
 const validateSelect = (selectedValue) => {
@@ -65,8 +57,14 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
+const validateRadio = (selectedValue) => {
+    return selectedValue !== null; // Validar si el valor seleccionado no es 'null'
+};
+
+
 const unidadError = ref('');
 const horaEntradaError = ref('');
+const extremoError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -77,9 +75,10 @@ const close = async () => {
 const save = async () => {
     horaEntradaError.value = validateSelect(form.horaEntrada) ? '' : 'Seleccione la hora de entrada';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
+    extremoError.value = validateRadio(form.extremo) ? '' : 'Seleccione una opción';
 
     if (
-        horaEntradaError.value || unidadError.value
+        horaEntradaError.value || unidadError.value || extremoError.value
     ) {
         return;
     }
@@ -88,12 +87,10 @@ const save = async () => {
             close()
             horaEntradaError.value = '';
             unidadError.value = '';
+            extremoError.value = '';
         }
     })
 }
-console.log("Unidades en formulario:");
-console.log(props.unidad);
-
 </script>
 
 <template>
@@ -113,8 +110,8 @@ console.log(props.unidad);
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="" disabled selected>Seleccione la unidad</option>
                                 <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
-                                    {{ carro.numeroUnidad}}
-                                    
+                                    {{ carro.numeroUnidad }}
+
                                 </option>
                             </select>
                         </div>
@@ -131,6 +128,16 @@ console.log(props.unidad);
                         </div>
                         <div v-if="horaEntradaError != ''" class="text-red-500 text-xs">{{ horaEntradaError }}</div>
                     </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">¿Es de extremo?</label>
+                        <div class="mt-2">
+                            <input type="radio" id="si" value="SI" v-model="form.extremo">
+                            <label for="si" class="radio-label"> Sí</label>
+                            <input type="radio" id="no" value="NO" v-model="form.extremo">
+                            <label for="no" class="radio-label"> No</label>
+                        </div>
+                        <div v-if="extremoError != ''" class="text-red-500 text-xs">{{ extremoError }}</div>
+                    </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
@@ -146,4 +153,8 @@ console.log(props.unidad);
 </template>
 <style>
 @import "vue-select/dist/vue-select.css";
+
+.radio-label {
+    margin-right: 10px; /* Ajusta este valor según lo que necesites */
+}
 </style>

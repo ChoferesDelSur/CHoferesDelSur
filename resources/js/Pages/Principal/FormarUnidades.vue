@@ -156,51 +156,17 @@ const columnas = [
     }
   },
   {
-    data: null,
+    data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
-      const hEntrada = props.formacionUnidades.find(hEntrada => hEntrada === data);
-        if (hEntrada && hEntrada.horaEntrada) {
-            // Obtener el día de la semana
-            var fecha = new Date(hEntrada.fecha);
-            var diaSemana = fecha.getDay();
-
-            // Obtener solo la hora y los minutos
-            var horaEntrada = hEntrada.horaEntrada.substring(0, 5);
-
-            // Convertir la hora de entrada a un objeto de tipo Date
-            var horaEntradaDate = new Date("01/01/2000 " + horaEntrada);
-
-            // Definir los límites de tiempo según el día de la semana
-            var limiteNormal, limiteMulta;
-
-            if (diaSemana >= 1 && diaSemana <= 5) { // Lunes a viernes
-                limiteNormal = new Date("01/01/2000 06:15");
-                limiteMulta = new Date("01/01/2000 06:30");
-            } else if (diaSemana === 6) { // Sábado
-                limiteNormal = new Date("01/01/2000 06:30");
-                limiteMulta = new Date("01/01/2000 07:00");
-            } else if (diaSemana === 0) { // Domingo
-                limiteNormal = new Date("01/01/2000 07:30");
-                limiteMulta = new Date("01/01/2000 07:45");
-            }
-
-            // Verificar el tipo de entrada
-            if (horaEntradaDate < limiteNormal) {
-                return 'Normal';
-            } else if (horaEntradaDate >= limiteNormal && horaEntradaDate <= limiteMulta) {
-                return 'Multa';
-            } else {
-                return '';
-            }
-        } else {
-            return '';
-        }
+      const formacion = props.formacionUnidades.find(formacion => formacion.idFormacionUnidades === data);
+      return formacion ? formacion.tipoEntrada : '';
     }
   },
   {
-    data: null,
+    data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
-      return "";
+      const tipoFormacion = props.formacionUnidades.find(tipoFormacion => tipoFormacion.idFormacionUnidades === data);
+      return tipoFormacion ? tipoFormacion.extremo : '';
     }
   },
   {
@@ -324,7 +290,7 @@ console.log("Estoy en Formar Unidades");
       <div class="my-1"></div> <!-- Espacio de separación -->
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 ">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
@@ -343,6 +309,24 @@ console.log("Estoy en Formar Unidades");
           @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar castigo
         </button>
+
+        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
+        </button> 
+
+      </div>
+
+      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 ">
+        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
+        </button> 
+
+        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-calendar" aria-hidden="true"></i> Trabaja domingo
+        </button> 
 
       </div>
 

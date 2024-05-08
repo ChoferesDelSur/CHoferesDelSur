@@ -321,9 +321,9 @@ const eliminarOperadores = () => {
                             infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
                             infoFiltered: '(filtrado de un total de _MAX_ registros)',
                             lengthMenu: 'Mostrar _MENU_ registros',
-                            /* paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
+                            paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
                         }, buttons: [botones],
-                        pageLength: -1 // Esto elimina el límite de registros por página
+                        /* pageLength: -1 */ // Esto elimina el límite de registros por página
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
