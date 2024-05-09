@@ -11,8 +11,10 @@ import jsZip from 'jszip';
 import { ref, onMounted } from 'vue';
 import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
 import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
-import FormularioRegCastigo from '../../Components/Principal/FormularioRegCastigo.vue';
 import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
+import FormularioCastigo from '../../Components/Principal/FormularioCastigo.vue';
+import FormularioRegUC from '../../Components/Principal/FormularioRegUC.vue';
+import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -30,6 +32,7 @@ const props = defineProps({
   operador: { type: Object },
   directivo: { type: Object },
   formacionUnidades: { type: Object },
+  castigo: { type: Object },
 });
 
 console.log("Unidades:");
@@ -200,21 +203,32 @@ const columnas = [
     }
   },
   {
-    data: null,
+    data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
-      return "";
+      const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
+      return ultimaC ? ultimaC.ultimaCorrida : '';
     }
   },
   {
-    data: null,
+    data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
-      return "";
+      const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
+      if (ultimaC && ultimaC.horaInicioUC) { // Verificar si hCorte no es nulo
+        return ultimaC.horaInicioUC.substring(0, 5); // Obtener solo la hora y los minutos
+      } else {
+        return ''; // Devolver una cadena vacía si el valor es nulo
+      }
     }
   },
   {
-    data: null,
+    data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
-      return "";
+      const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
+      if (ultimaC && ultimaC.horaFinUC) { 
+        return ultimaC.horaFinUC.substring(0, 5); // Obtener solo la hora y los minutos
+      } else {
+        return ''; // Devolver una cadena vacía si el valor es nulo
+      }
     }
   },
   {
@@ -263,6 +277,8 @@ const mostrarModal = ref(false);
 const mostrarModalCorte = ref(false);
 const mostrarModalCastigo = ref(false);
 const mostrarModalRegreso = ref(false);
+const mostrarModalRegUC = ref(false);
+const mostrarModalRegresoUC = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
@@ -289,6 +305,14 @@ const cerrarModalCastigo = () => {
 
 const cerrarModalRegreso = () => {
   mostrarModalRegreso.value = false;
+};
+
+const cerrarModalUC = () => {
+  mostrarModalRegUC.value = false;
+};
+
+const cerrarModalRegresoUC = () => {
+  mostrarModalRegresoUC.value = false;
 };
 
 const cerrarModalE = () => {
@@ -328,7 +352,7 @@ console.log("Estoy en Formar Unidades");
         </button>
 
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          @click="mostrarModalRegUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
         </button>
 
@@ -336,12 +360,12 @@ console.log("Estoy en Formar Unidades");
 
       <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          @click="mostrarModalRegresoUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
         </button>
 
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          @click="mostrarModalTrabDom = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-calendar" aria-hidden="true"></i> Trabaja domingo
         </button>
 
@@ -409,37 +433,37 @@ console.log("Estoy en Formar Unidades");
                 Hora entrada
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo de entrada
+                Tipo entrada
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Extremo
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora de Corte
+                Hora Corte
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Causa
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora de regreso
+                Hora regreso
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Ultima Corrida
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora de inicio
+                Hora inicio
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora fin
+                Hora regreso
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora de inicio
+                Hora inicio
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora fin
+                Hora finaliza
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Castigo
+                Motivo
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Otras observaciones
@@ -460,14 +484,23 @@ console.log("Estoy en Formar Unidades");
       :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
       :unidad="props.unidad">
     </FormularioRegCorte>
-    <FormularioRegCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
-      @close="cerrarModalCastigo" :title="'Registrar castigo'" :op="'1'" :modal="'modalCreate'"
-      :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
-    </FormularioRegCastigo>
     <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
       :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
     </FormularioRegRegreso>
+    <FormularioCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalCastigo" :title="'Registrar un castigo'" :op="'1'" :modal="'modalCreate'"
+      :formacionUnidades="props.formacionUnidades" :unidad="props.unidad" :castigo="props.castigo">
+    </FormularioCastigo>
+    <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
+      :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
+      :unidad="props.unidad">
+    </FormularioRegUC>
+    <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalRegresoUC"
+      :title="'Registrar hora de regreso de última corrida'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
+      :unidad="props.unidad">
+    </FormularioRegresoUC>
+    
 
   </PrincipalLayout>
 </template>

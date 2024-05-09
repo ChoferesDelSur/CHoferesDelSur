@@ -18,7 +18,9 @@ return new class extends Migration
         Schema::create('castigo', function (Blueprint $table) {
             $table->id(column:'idCastigo');
             $table->string(column:"castigo");
-            $table->string(column:"observaciones");
+            $table->time('horaInicio')->nullable(true);
+            $table->time('horaFin')->nullable(true);
+            $table->string(column:"observaciones")->nullable(true);
             $table->foreignId(column:'idUnidad')->nullable()->references('idUnidad')->on('unidad');
             $table->softDeletes();
             $table->timestamps();
