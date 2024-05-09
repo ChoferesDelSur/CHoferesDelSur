@@ -12,6 +12,7 @@ import { ref, onMounted } from 'vue';
 import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
 import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
 import FormularioRegCastigo from '../../Components/Principal/FormularioRegCastigo.vue';
+import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -243,17 +244,17 @@ const columnas = [
   {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
-        const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
-        if (unidad) {
-            const chofer = props.operador.find(chofer => chofer.idOperador === unidad.idOperador);
-            if (chofer) {
-                return chofer.nombre_completo;
-            } else {
-                return '<span style="color: red;">Sin asignar</span>'; // Aplica color rojo si no hay operador asignado
-            }
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        const chofer = props.operador.find(chofer => chofer.idOperador === unidad.idOperador);
+        if (chofer) {
+          return chofer.nombre_completo;
         } else {
-            return '';
+          return '<span style="color: red;">Sin asignar</span>'; // Aplica color rojo si no hay operador asignado
         }
+      } else {
+        return '';
+      }
     }
   },
 ]
@@ -261,6 +262,7 @@ const columnas = [
 const mostrarModal = ref(false);
 const mostrarModalCorte = ref(false);
 const mostrarModalCastigo = ref(false);
+const mostrarModalRegreso = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
@@ -285,6 +287,10 @@ const cerrarModalCastigo = () => {
   mostrarModalCastigo.value = false;
 };
 
+const cerrarModalRegreso = () => {
+  mostrarModalRegreso.value = false;
+};
+
 const cerrarModalE = () => {
   mostrarModalE.value = false;
 };
@@ -297,9 +303,9 @@ console.log("Estoy en Formar Unidades");
 <template>
   <PrincipalLayout title="Formar Unidades">
     <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6">
-      <h2 class="font-bold text-center text-xl pt-5"> Formar Unidades</h2>
+      <h2 class="font-bold text-center text-xl pt-1"> Formar Unidades</h2>
       <div class="my-1"></div> <!-- Espacio de separación -->
-      <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+      <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
 
       <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 ">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -312,7 +318,7 @@ console.log("Estoy en Formar Unidades");
         </button>
 
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalCorte = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          @click="mostrarModalRegreso = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-history" aria-hidden="true"></i> Registrar Regreso
         </button>
 
@@ -324,20 +330,20 @@ console.log("Estoy en Formar Unidades");
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
-        </button> 
+        </button>
 
       </div>
 
-      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 ">
+      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
-        </button> 
+        </button>
 
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-calendar" aria-hidden="true"></i> Trabaja domingo
-        </button> 
+        </button>
 
       </div>
 
@@ -368,11 +374,12 @@ console.log("Estoy en Formar Unidades");
               <!-- Unidad -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Socio/Prestador -->
-              <th class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+              <th
+                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
                 colspan="3">ENTRADA</th>
               <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
-                <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+              <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="3">ÚLTIMA CORRIDA</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
@@ -453,16 +460,20 @@ console.log("Estoy en Formar Unidades");
       :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
       :unidad="props.unidad">
     </FormularioRegCorte>
-    <FormularioRegCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCastigo"
-      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
-      :unidad="props.unidad">
+    <FormularioRegCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalCastigo" :title="'Registrar castigo'" :op="'1'" :modal="'modalCreate'"
+      :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
     </FormularioRegCastigo>
+    <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
+      :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
+    </FormularioRegRegreso>
 
   </PrincipalLayout>
 </template>
 <style>
-      /* Estilo personalizado para centrar el texto en las celdas de la tabla */
-      #formacionTablaId th {
-        text-align: center !important;
-      }
-    </style>
+/* Estilo personalizado para centrar el texto en las celdas de la tabla */
+#formacionTablaId th {
+  text-align: center !important;
+}
+</style>

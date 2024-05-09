@@ -121,7 +121,7 @@ const update = async () => {
     }
 
     var idUnidad = document.getElementById('idUnidad2').value;
-    console.log("idUnidad:"+idUnidad);
+    console.log("idUnidad:" + idUnidad);
     form.put(route('principal.actualizarUnidad', idUnidad), {
         onSuccess: () => {
             close()
@@ -141,77 +141,86 @@ const update = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar una
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar una
                         unidad. Los campos con <span class="text-red-500">*</span> son obligatorios
                     </p>
-                    <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idUnidad"
-                                class="block text-sm font-medium leading-6 text-gray-900">idUnidad</label>
+                    <div class="flex flex-wrap -mx-4">
+                        <div class="sm:col-span-2">
+                            <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
+                                <label for="idUnidad"
+                                    class="block text-sm font-medium leading-6 text-gray-900">idUnidad</label>
+                                <div class="mt-2">
+                                    <input type="number" name="idUnidad" v-model="form.idUnidad"
+                                        placeholder="Ingrese id de la unidad" :id="'idUnidad' + op"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="numeroUnidad" class="block text-sm font-medium leading-6 text-gray-900">Número
+                                de unidad <span class="text-red-500">*</span></label>
+                            <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
+                                <input type="text" name="numeroUnidad" :id="'numeroUnidad' + op"
+                                    v-model="form.numeroUnidad" placeholder="Ingrese el número de la unidad"
+                                    class="block w-60 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
+                            <div v-if="numeroUnidadError != ''" class="text-red-500 text-xs mt-1">{{ numeroUnidadError
+                                }}</div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta <span
+                                    class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <input type="number" name="idUnidad" v-model="form.idUnidad"
-                                    placeholder="Ingrese id de la unidad" :id="'idUnidad' + op"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <select name="ruta" :id="'ruta' + op" v-model="form.ruta"
+                                    placeholder="Seleccione la ruta"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione la ruta</option>
+                                    <option v-for="rut in ruta" :key="rut.idRuta" :value="rut.idRuta">
+                                        {{ rut.nombreRuta }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="rutaError != ''" class="text-red-500 text-xs mt-1">{{ rutaError }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="operador"
+                                class="block text-sm font-medium leading-6 text-gray-900">Operador</label>
+                            <div class="mt-2">
+                                <select name="operador" :id="'operador' + op" v-model="form.operador"
+                                    placeholder="Seleccione al operador"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione al operador para esta unidad</option>
+                                    <option v-for="chofer in operadoresDisp" :key="chofer.idOperador"
+                                        :value="chofer.idOperador">
+                                        {{ chofer.nombre_completo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <!-- <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div> -->
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Dueño de la
+                                unidad <span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
+                                    placeholder="Seleccione al dueño de la unidad"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione al dueño de la unidad</option>
+                                    <option v-for="dueno in directivo" :key="dueno.idDirectivo"
+                                        :value="dueno.idDirectivo">
+                                        {{ dueno.nombre_completo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}
                             </div>
                         </div>
                     </div>
-                    <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="numeroUnidad" class="block text-sm font-medium leading-6 text-gray-900">Número de unidad <span class="text-red-500">*</span></label>
-                        <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
-                            <input type="text" name="numeroUnidad" :id="'numeroUnidad' + op" v-model="form.numeroUnidad"
-                                placeholder="Ingrese el número de la unidad"
-                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                        <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
-                        <div v-if="numeroUnidadError != ''" class="text-red-500 text-xs mt-1">{{ numeroUnidadError }}</div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="ruta" :id="'ruta' + op" v-model="form.ruta" placeholder="Seleccione la ruta"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione la ruta</option>
-                                <option v-for="rut in ruta" :key="rut.idRuta" :value="rut.idRuta">
-                                    {{ rut.nombreRuta }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="rutaError != ''" class="text-red-500 text-xs mt-1">{{ rutaError }}
-                        </div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="operador" class="block text-sm font-medium leading-6 text-gray-900">Operador</label>
-                        <div class="mt-2">
-                            <select name="operador" :id="'operador' + op" v-model="form.operador"
-                                placeholder="Seleccione al operador"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione al operador para esta unidad</option>
-                                <option v-for="chofer in operadoresDisp" :key="chofer.idOperador" :value="chofer.idOperador">
-                                    {{ chofer.nombre_completo}}
-                                </option>
-                            </select>
-                        </div>
-                        <!-- <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div> -->
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Dueño de la unidad <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
-                                placeholder="Seleccione al dueño de la unidad"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione al dueño de la unidad</option>
-                                <option v-for="dueno in directivo" :key="dueno.idDirectivo" :value="dueno.idDirectivo">
-                                    {{ dueno.nombre_completo}}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}</div>
-                    </div>
-
                 </div>
-
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
                         class="text-sm font-semibold leading-6 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white py-2 px-4 rounded"

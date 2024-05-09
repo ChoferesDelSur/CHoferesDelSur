@@ -117,48 +117,90 @@ public function registrarHoraEntrada(Request $request)
 }
 }
 
-public function registrarCorte(Request $request)
-{
-    // Validar los datos recibidos del formulario
-    $request->validate([
-        'unidad' => 'required',
-        'horaCorte' => 'required',
-        'causa' => 'required',
-    ]);
+    public function registrarCorte(Request $request)
+    {
+        // Validar los datos recibidos del formulario
+        $request->validate([
+            'unidad' => 'required',
+            'horaCorte' => 'required',
+            'causa' => 'required',
+        ]);
 
-    try {
-        // Obtener el ID de la unidad seleccionada del formulario
-        $unidadId = $request->input('unidad');
+        try {
+            // Obtener el ID de la unidad seleccionada del formulario
+            $unidadId = $request->input('unidad');
 
-        // Buscar si ya existe un registro para esta unidad
-        $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+            // Buscar si ya existe un registro para esta unidad
+            $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
 
-        // Si ya existe un registro para esta unidad, actualizar la hora de corte, causa y hora de regreso
-        if ($formacionUnidad) {
-            $formacionUnidad->horaCorte = $request->input('horaCorte');
-            $formacionUnidad->causa = $request->input('causa');
-            $formacionUnidad->horaRegreso = $request->input('horaRegreso');
-            // Otros campos necesarios...
-
-            $formacionUnidad->save();
-        } else { // Si no existe un registro para esta unidad, crear uno nuevo
-            formacionunidades::create([
-                'idUnidad' => $unidadId,
-                'horaCorte' => $request->input('horaCorte'),
-                'causa' => $request->input('causa'),
-                'horaRegreso' => $request->input('horaRegreso'),
+            // Si ya existe un registro para esta unidad, actualizar la hora de corte, causa y hora de regreso
+            if ($formacionUnidad) {
+                $formacionUnidad->horaCorte = $request->input('horaCorte');
+                $formacionUnidad->causa = $request->input('causa');
+                $formacionUnidad->horaRegreso = $request->input('horaRegreso');
                 // Otros campos necesarios...
-            ]);
+
+                $formacionUnidad->save();
+            } else { // Si no existe un registro para esta unidad, crear uno nuevo
+                formacionunidades::create([
+                    'idUnidad' => $unidadId,
+                    'horaCorte' => $request->input('horaCorte'),
+                    'causa' => $request->input('causa'),
+                    'horaRegreso' => $request->input('horaRegreso'),
+                    // Otros campos necesarios...
+                ]);
+            }
+
+            // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de corte registrada correctamente: ", "color" => "green"]);
+        } catch (Exception $e) {
+            // Manejar cualquier error que pueda ocurrir durante la operación
+            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
         }
-
-        // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
-        return redirect()->route('principal.formarUni')->with(['message' => "Hora de corte registrada correctamente: ", "color" => "green"]);
-    } catch (Exception $e) {
-        // Manejar cualquier error que pueda ocurrir durante la operación
-        return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
     }
-}
 
+    public function RegistrarHoraRegreso(Request $request){
+        $request->validate([
+            'unidad' => 'required',
+            'horaRegreso' => 'required',
+        ]);
+    
+        try{
+            $unidadId = $request->input('unidad');
+    
+            // Buscar si ya existe un registro para esta unidad
+            $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+    
+            if ($formacionUnidad) {
+                // Verificar si la unidad tiene horaCorte registrada
+                if (!$formacionUnidad->horaCorte) {
+                    return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene registrada la hora de corte", "color" => "red"]);
+                }
+    
+                // Verificar que la hora de regreso sea mayor o igual a la hora de corte
+                $horaCorte = \Carbon\Carbon::parse($formacionUnidad->horaCorte);
+                $horaRegreso = \Carbon\Carbon::parse($request->input('horaRegreso'));
+                if ($horaRegreso->lessThan($horaCorte)) {
+                    return redirect()->route('principal.formarUni')->with(['message' => "La hora de regreso no puede ser menor a la hora de corte", "color" => "red"]);
+                }
+    
+                // Actualizar la hora de regreso
+                $formacionUnidad->horaRegreso = $request->input('horaRegreso');
+                $formacionUnidad->save();
+            } else {
+                // Si no existe un registro para esta unidad, crear uno nuevo
+                formacionunidades::create([
+                    'idUnidad' => $unidadId,
+                    'horaRegreso' => $request->input('horaRegreso'),
+                ]);
+            }
+    
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de regreso registrado correctamente", "color" => "green"]);
+        } catch(Exception $e){
+            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de regreso", "color" => "red"]);
+        }
+    }
+    
 
     public function unidades(){
         $unidad = unidad::all();

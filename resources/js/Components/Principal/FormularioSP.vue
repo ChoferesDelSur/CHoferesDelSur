@@ -108,7 +108,7 @@ const update = async () => {
     }
 
     var idDirectivo = document.getElementById('idDirectivo2').value;
-    console.log("idDirectivo:"+idDirectivo);
+    console.log("idDirectivo:" + idDirectivo);
     form.put(route('principal.actualizarDirectivo', idDirectivo), {
         onSuccess: () => {
             close()
@@ -129,70 +129,76 @@ const update = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar a un
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar a un
                         nuevo socio o prestador. Los campos con <span class="text-red-500">*</span> son obligatorios.
                     </p>
-                    <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idDirectivo"
-                                class="block text-sm font-medium leading-6 text-gray-900">idDirectivo</label>
+                    <div class="flex flex-wrap -mx-4">
+                        <div class="sm:col-span-2">
+                            <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
+                                <label for="idDirectivo"
+                                    class="block text-sm font-medium leading-6 text-gray-900">idDirectivo</label>
+                                <div class="mt-2">
+                                    <input type="number" name="idDirectivo" v-model="form.idDirectivo"
+                                        placeholder="Ingrese id del directivo" :id="'idDirectivo' + op"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
+                                Paterno <span class="text-red-500">*</span></label>
+                            <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
+                                <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
+                                    placeholder="Ingrese el apellido paterno"
+                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
+                            <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
+                                Materno <span class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <input type="number" name="idDirectivo" v-model="form.idDirectivo"
-                                    placeholder="Ingrese id del directivo" :id="'idDirectivo' + op"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
+                                    placeholder="Ingrese el apellido materno"
+                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres <span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
+                                    placeholder="Ingrese el nombre"
+                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="tipoDirectivo" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                Directivo <span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="tipoDirectivo" :id="'tipoDirectivo' + op" v-model="form.tipDirectivo"
+                                    placeholder="Seleccione el tipo de directivo"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione un tipo de directivo</option>
+                                    <option v-for="tDir in tipDirectivo" :key="tDir.idTipoDirectivo"
+                                        :value="tDir.idTipoDirectivo">
+                                        {{ tDir.tipoDirectivo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="tipoDirectivoError != ''" class="text-red-500 text-xs mt-1">{{ tipoDirectivoError
+                                }}
                             </div>
                         </div>
                     </div>
-                    <div class="sm:col-span-2"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Paterno <span class="text-red-500">*</span></label>
-                        <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
-                            <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
-                                placeholder="Ingrese el apellido paterno"
-                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                        <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
-                        <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}</div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Materno <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
-                                placeholder="Ingrese el apellido materno"
-                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}</div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
-                                placeholder="Ingrese el nombre"
-                                class="block w-full sm:w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="tipoDirectivo" class="block text-sm font-medium leading-6 text-gray-900">Tipo de Directivo <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="tipoDirectivo" :id="'tipoDirectivo' + op" v-model="form.tipDirectivo"
-                                placeholder="Seleccione el tipo de directivo"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione un tipo de directivo</option>
-                                <option v-for="tDir in tipDirectivo" :key="tDir.idTipoDirectivo"
-                                    :value="tDir.idTipoDirectivo">
-                                    {{ tDir.tipoDirectivo}}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="tipoDirectivoError != ''" class="text-red-500 text-xs mt-1">{{ tipoDirectivoError }}
-                        </div>
-                    </div>
                 </div>
-
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
                         class="text-sm font-semibold leading-6 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white py-2 px-4 rounded"

@@ -34,4 +34,5 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::get('/principal/formUnidades', 'formarUnidades')->name('principal.formarUni');
     Route::post('/principal/formarUnidades', 'registrarHoraEntrada')->name('principal.registarHoraEntrada');
     Route::post('/principal/formarUnidades/corte', 'registrarCorte')->name('principal.registarCorte');
+    Route::post('/principal/formarUnidades/regreso', 'RegistrarHoraRegreso')->name('principal.registrarHoraRegreso');
 });

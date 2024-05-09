@@ -3,7 +3,6 @@ import { useForm, put } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
 import { route } from '../../../../vendor/tightenco/ziggy/src/js';
-import axios from 'axios';
 
 const props = defineProps({
     show: {
@@ -37,15 +36,13 @@ const emit = defineEmits(['close']);
 const form = useForm({
     idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
     unidad: props.formacionUnidades.idUnidad,
-    horaEntrada: props.formacionUnidades.horaEntrada,
-    extremo: props.formacionUnidades.extremo,
+    horaRegreso: props.formacionUnidades.horaRegreso,
 });
 
 watch(() => props.formacionUnidades, async (newVal) => {
     form.idFormacionUnidades = newVal.idFormacionUnidades;
     form.unidad = newVal.unidad;
-    form.horaEntrada = newVal.horaEntrada;
-    form.extremo = newVal.extremo;
+    form.horaRegreso = props.formacionUnidades.horaRegreso;
 }, { deep: true }
 );
 
@@ -57,13 +54,8 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
-const validateRadio = (selectedValue) => {
-    return selectedValue !== null && selectedValue !== undefined; // Validar si el valor seleccionado no es 'null' ni 'undefined'
-};
-
 const unidadError = ref('');
-const horaEntradaError = ref('');
-const extremoError = ref('');
+const horaRegresoError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -72,38 +64,37 @@ const close = async () => {
 }
 
 const save = async () => {
-    horaEntradaError.value = validateSelect(form.horaEntrada) ? '' : 'Seleccione la hora de entrada';
+    horaRegresoError.value = validateSelect(form.horaRegreso) ? '' : 'Seleccione la hora de regreso';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
-    extremoError.value = validateRadio(form.extremo) ? '' : 'Seleccione una opción';
+
 
     if (
-        horaEntradaError.value || unidadError.value || extremoError.value
+        horaRegresoError.value || unidadError.value
     ) {
         return;
     }
-    form.post(route('principal.registarHoraEntrada'), {
+    form.post(route('principal.registrarHoraRegreso'), {
         onSuccess: () => {
             close()
-            horaEntradaError.value = '';
+            horaRegresoError.value = '';
             unidadError.value = '';
-            extremoError.value = '';
         }
     })
 }
 </script>
-
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene todos los campos para poder registrar la
-                        hora de Entrada de una unidad
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar la
+                        hora de regreso del corte de una unidad.
                     </p>
                     <div class="flex flex-wrap -mx-4">
                         <div class="sm:col-span-2 px-4">
-                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
+                                    class="text-red-500">*</span></label>
                             <div class="mt-2">
                                 <select name="unidad" :id="'unidad' + op" v-model="form.unidad"
                                     placeholder="Seleccione la unidad"
@@ -119,24 +110,15 @@ const save = async () => {
                             </div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="horaEntrada" class="block text-sm font-medium leading-6 text-gray-900">Hora de
-                                entrada</label>
+                            <label for="horaRegreso" class="block text-sm font-medium leading-6 text-gray-900">Hora de
+                                regreso <span class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <input type="time" name="horaEntrada" :id="'horaEntrada' + op"
-                                    v-model="form.horaEntrada" placeholder="Seleccione la hora de entrada"
+                                <input type="time" name="horaRegreso" :id="'horaRegreso' + op"
+                                    v-model="form.horaRegreso" placeholder="Seleccione la hora de regreso"
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
-                            <div v-if="horaEntradaError != ''" class="text-red-500 text-xs">{{ horaEntradaError }}</div>
-                        </div>
-                        <div class="sm:col-span-2 px-4">
-                            <label class="block text-sm font-medium leading-6 text-gray-900">¿Es de extremo?</label>
-                            <div class="mt-2">
-                                <input type="radio" id="si" value="SI" v-model="form.extremo">
-                                <label for="si" class="radio-label"> Sí</label>
-                                <input type="radio" id="no" value="NO" v-model="form.extremo">
-                                <label for="no" class="radio-label"> No</label>
+                            <div v-if="horaRegresoError != ''" class="text-red-500 text-xs mt-1">{{ horaRegresoError }}
                             </div>
-                            <div v-if="extremoError != ''" class="text-red-500 text-xs">{{ extremoError }}</div>
                         </div>
                     </div>
                 </div>
@@ -152,11 +134,3 @@ const save = async () => {
         </div>
     </Modal>
 </template>
-<style>
-@import "vue-select/dist/vue-select.css";
-
-.radio-label {
-    margin-right: 10px;
-    /* Ajusta este valor según lo que necesites */
-}
-</style>

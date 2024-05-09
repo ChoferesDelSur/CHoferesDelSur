@@ -119,38 +119,42 @@ const update = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder asignar un operador
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder asignar un operador
                         a una unidad.
                     </p>
-                    <div class="sm:col-span-2">
-                        <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="unidad" :id="'unidad' + op" v-model="form.unidad"
-                                placeholder="Seleccione la unidad"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione la unidad</option>
-                                <option v-for="carro in unidadesDisp" :key="carro.idUnidad" :value="carro.idUnidad">
-                                    {{ carro.numeroUnidad}}
-                                </option>
-                            </select>
+                    <div class="flex flex-wrap -mx-4">
+                        <div class="sm:col-span-2 px-4">
+                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="unidad" :id="'unidad' + op" v-model="form.unidad"
+                                    placeholder="Seleccione la unidad"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione la unidad</option>
+                                    <option v-for="carro in unidadesDisp" :key="carro.idUnidad" :value="carro.idUnidad">
+                                        {{ carro.numeroUnidad }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
                         </div>
-                        <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="operador" class="block text-sm font-medium leading-6 text-gray-900">Operador <span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="operador" :id="'operador' + op" v-model="form.operador"
-                                placeholder="Seleccione al operador"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione al operador para esta unidad</option>
-                                <option v-for="chofer in operadoresDisp" :key="chofer.idOperador" :value="chofer.idOperador">
-                                    {{ chofer.nombre_completo}}
-                                </option>
-                            </select>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="operador" class="block text-sm font-medium leading-6 text-gray-900">Operador
+                                <span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="operador" :id="'operador' + op" v-model="form.operador"
+                                    placeholder="Seleccione al operador"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione al operador para esta unidad</option>
+                                    <option v-for="chofer in operadoresDisp" :key="chofer.idOperador"
+                                        :value="chofer.idOperador">
+                                        {{ chofer.nombre_completo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div>
                         </div>
-                        <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div>
                     </div>
-
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
