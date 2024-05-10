@@ -3,11 +3,9 @@ import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
-import ButtonsHtml5 from 'datatables.net-buttons/js/buttons.html5.mjs';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
-import pdfmake from 'pdfmake';
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
@@ -16,23 +14,9 @@ import FormularioAsignarOperador from '../../Components/Principal/FormularioAsig
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
 window.JSZip = jsZip;
-//pdfmake.vfs = pdfFonts.pdfMake.vfs;
-pdfmake.fonts = {
-    Roboto: {
-        normal:
-            "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italics:
-            "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalics:
-            "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-};
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
-DataTable.use(pdfmake);
-DataTable.use(ButtonsHtml5);
 
 const props = defineProps({
     message: { String, default: '' },
@@ -44,55 +28,6 @@ const props = defineProps({
     operadoresDisp: { type: Object },
     unidadesDisp: { type: Object },
 });
-
-const botones = [
-    {
-        title: 'Unidades Registrados',
-        extend: 'excelHtml5',
-        text: '<i class="fa-solid fa-file-excel"></i> Excel',
-        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        },
-    },
-    {
-        title: 'Unidades Registrados',
-        extend: 'pdfHtml5',
-        customize: function (doc) {
-            doc.content.splice(0, 0, {
-                margin: [0, 0, 0, 0],
-                alignment: 'center',
-
-            });
-        },
-        text: '<i class="fa-solid fa-file-pdf"></i> PDF',
-        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        },
-        orientation: 'landscape',
-        pageSize: 'TABLOID',
-    },
-    /*   /* {
-          title: 'Unidades registrados',
-          extend: 'print',
-          text: '<i class="fa-solid fa-print"></i> Imprimir',
-          className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
-          exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-          },
-          orientation: 'landscape',
-      }, 
-      {
-          title: 'Unidades registrados',
-          extend: 'copy',
-          text: '<i class="fa-solid fa-copy"></i> Copiar Texto',
-          className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2',
-          exportOptions: {
-              columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-          }
-      }, */
-]
 
 const columnas = [
     {
@@ -332,7 +267,7 @@ const eliminarUnidades = () => {
                             infoFiltered: '(filtrado de un total de _MAX_ registros)',
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                        }, buttons: [botones],
+                        }
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
