@@ -9,6 +9,8 @@ import jsZip from 'jszip';
 import { ref, onMounted } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
 import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
 import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
@@ -19,6 +21,10 @@ import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
 window.JSZip = jsZip;
+
+// Cargar fuentes personalizadas
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
 
@@ -71,9 +77,27 @@ const botonesPersonalizados = [
         extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
-        exports: {
-            columns: [0, 2]
-        }
+        orientation: 'landscape', // Configurar la orientación horizontal
+        customize: function (doc) {
+        doc.content.splice(1, 0, {
+            margin: [0, 0, 0, 12], // Ajustar los márgenes si es necesario
+            table: {
+                headerRows: 1,
+                widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*'],
+                body: [
+                    // Aquí debes proporcionar los datos de tu tabla
+                    // Debes asegurarte de que la tabla tenga las mismas columnas y el mismo contenido que la tabla que estás mostrando en tu interfaz
+                    // Por ejemplo:
+                    // ['Columna 1', 'Columna 2', 'Columna 3', ...]
+                    // [dato1, dato2, dato3, ...]
+                ]
+            },
+            layout: 'autoTable' // Utilizar autoTable para ajustar automáticamente el tamaño de la tabla
+        });
+    },
+        exportOptions: {
+            columns: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+        },
     },
     {
         title: 'Formación de unidades',

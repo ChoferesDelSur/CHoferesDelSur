@@ -10,11 +10,16 @@ import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioOperadores from '../../Components/Principal/FormularioOperadores.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
 window.JSZip = jsZip;
+
+// Cargar fuentes personalizadas
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -55,8 +60,9 @@ const botonesPersonalizados = [
         extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
-        exports: {
-            columns: [0, 2]
+        orientation: 'landscape', // Configurar la orientación horizontal
+        exportOptions: {
+            columns: [2,3,4,5,6,7,8]
         }
     },
     {

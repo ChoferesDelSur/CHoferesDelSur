@@ -11,11 +11,16 @@ import Swal from 'sweetalert2';
 import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
 window.JSZip = jsZip;
+
+// Cargar fuentes personalizadas
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
 DataTable.use(DataTablesLib);
@@ -55,9 +60,9 @@ const botonesPersonalizados = [
         extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
-        exports: {
-            columns: [0, 2]
-        }
+        exportOptions: {
+            columns: [1, 2]
+        },
     },
     {
         title: 'Rutas registradas',
