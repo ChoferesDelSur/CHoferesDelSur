@@ -31,7 +31,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <!-- Estoy en body y a continuación sigue @inertia -->
+
     @inertia
 </body>
 

@@ -8,6 +8,8 @@ import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
+import 'datatables.net-buttons/js/buttons.html5';
+import 'datatables.net-buttons/js/buttons.print';
 import FormularioOperadores from '../../Components/Principal/FormularioOperadores.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
@@ -28,6 +30,45 @@ const props = defineProps({
 
 console.log("Operadores");
 console.log(props.operador);
+
+const botonesPersonalizados = [
+    {
+        extend: 'copyHtml5',
+        text: '<i class="fa-solid fa-copy"></i> Copiar', // Texto del botón
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exportOptions: {
+            columns: [0, 2] // Indica qué columnas deben ser copiadas (por ejemplo, aquí se copiarían las columnas 0 y 2)
+        },
+        button: true
+    },
+    {
+        title: 'Operadores registrados',
+        extend: 'excelHtml5',
+        text: '<i class="fa-solid fa-file-excel"></i> Excel',
+        className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [2, 3, 4, 5, 6, 7, 8]
+        }
+    },
+    {
+        title: 'Operadores registrados',
+        extend: 'pdfHtml5',
+        text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
+        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exports: {
+            columns: [0, 2]
+        }
+    },
+    {
+        title: 'Operadores registrados',
+        extend: 'print',
+        text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
+        className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exportOptions: {
+        columns: [2,3,4,5,6,7, 8] // Índices de las columnas que deseas imprimir 
+    }
+    }
+];
 
 const columnas = [
     {
@@ -266,7 +307,7 @@ const eliminarOperadores = () => {
                             infoFiltered: '(filtrado de un total de _MAX_ registros)',
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                        }
+                        }, buttons: [botonesPersonalizados],
                         /* pageLength: -1 */ // Esto elimina el límite de registros por página
                     }">
                     <thead>

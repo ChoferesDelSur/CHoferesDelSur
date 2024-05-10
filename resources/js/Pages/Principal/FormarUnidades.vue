@@ -7,6 +7,8 @@ import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
 import { ref, onMounted } from 'vue';
+import 'datatables.net-buttons/js/buttons.html5';
+import 'datatables.net-buttons/js/buttons.print';
 import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
 import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
 import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
@@ -44,6 +46,45 @@ function obtenerDiaSemana(diaNumero) {
   const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
   return diasSemana[diaNumero];
 }
+
+const botonesPersonalizados = [
+    {
+        extend: 'copyHtml5',
+        text: '<i class="fa-solid fa-copy"></i> Copiar', // Texto del botón
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exportOptions: {
+            columns: [0, 2] // Indica qué columnas deben ser copiadas (por ejemplo, aquí se copiarían las columnas 0 y 2)
+        },
+        button: true
+    },
+    {
+        title: 'Formación de unidades',
+        extend: 'excelHtml5',
+        text: '<i class="fa-solid fa-file-excel"></i> Excel',
+        className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
+        exportOptions: {
+            columns: [1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        }
+    },
+    {
+        title: 'Formación de unidades',
+        extend: 'pdfHtml5',
+        text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
+        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exports: {
+            columns: [0, 2]
+        }
+    },
+    {
+        title: 'Formación de unidades',
+        extend: 'print',
+        text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
+        className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exportOptions: {
+        columns: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+    }
+    }
+];
 
 const columnas = [
   {
@@ -329,7 +370,7 @@ console.log("Estoy en Formar Unidades");
               infoFiltered: '(filtrado de un total de _MAX_ registros)',
               lengthMenu: 'Mostrar _MENU_ registros',
               paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-            },
+            }, buttons: [botonesPersonalizados],
             /* editable: true, // Habilitar la edición
             editField: 'edit', // Campo que indica si una celda está en modo de edición */
           }">

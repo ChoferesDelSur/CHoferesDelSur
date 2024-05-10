@@ -9,6 +9,9 @@ import jsZip from 'jszip';
 import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
+import 'datatables.net-buttons/js/buttons.html5';
+import 'datatables.net-buttons/js/buttons.print';
+
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -43,8 +46,8 @@ const botonesPersonalizados = [
         extend: 'excelHtml5',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
-        exports: {
-            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        exportOptions: {
+            columns: [1,2]
         }
     },
     {
@@ -57,9 +60,13 @@ const botonesPersonalizados = [
         }
     },
     {
-        etend: 'print',
+        title: 'Rutas registradas',
+        extend: 'print',
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        exportOptions: {
+        columns: [1, 2] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+    }
     }
 ];
 
