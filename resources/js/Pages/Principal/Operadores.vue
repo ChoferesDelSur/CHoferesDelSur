@@ -153,15 +153,14 @@ console.log("Estoy en Operadores");
 
 const toggleOperadorSelection = (operador) => {
     if (operadoresSeleccionados.value.includes(operador)) {
-        // Si el alumno ya está seleccionado, la eliminamos del array
+        // Si el operador ya está seleccionado, la eliminamos del array
         operadoresSeleccionados.value = operadoresSeleccionados.value.filter((r) => r !== operador);
     } else {
-        // Si el alumno no está seleccionado, la agregamos al array
+        // Si el operador no está seleccionado, la agregamos al array
         operadoresSeleccionados.value.push(operador);
     }
     // Llamado del botón de eliminar para cambiar su estado deshabilitado
     const botonEliminar = document.getElementById("eliminarABtn");
-    // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
     if (operadoresSeleccionados.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
     } else {
@@ -170,19 +169,6 @@ const toggleOperadorSelection = (operador) => {
 };
 
 onMounted(() => {
-    /* // Verifica si hay un mensaje en la sesión flash
-    console.log("Estoy en onMounted");
-    console.log("Window.flas:",window.flash);
-    if (window.flash) {
-        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
-        Swal.fire({
-            title: window.flash.message,
-            icon: 'success'
-        });
-        console.log("Window.flash:", window.flash);
-        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
-        window.flash = null;
-    } */
 
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('operadoresTablaId').addEventListener('click', (event) => {
@@ -206,17 +192,6 @@ onMounted(() => {
         const oper = props.operador.find(o => o.idOperador === operadorId);
         abrirE(oper);
     });
-
-    // Manejar clic en el botón de eliminar
-    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
-        const alumnoId = $(this).data('id');
-        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
-        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
-    }); */
-
-    /* // Borra los datos de la sesión después de mostrarlos
-  sessionStorage.removeItem('message');
-  sessionStorage.removeItem('color'); */
 });
 
 const eliminarOperadores = () => {

@@ -69,7 +69,7 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
         exportOptions: {
-            columns: [1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+            columns: [0,1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
         }
     },
     {
@@ -78,25 +78,8 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
         orientation: 'landscape', // Configurar la orientación horizontal
-        customize: function (doc) {
-        doc.content.splice(1, 0, {
-            margin: [0, 0, 0, 12], // Ajustar los márgenes si es necesario
-            table: {
-                headerRows: 1,
-                widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*'],
-                body: [
-                    // Aquí debes proporcionar los datos de tu tabla
-                    // Debes asegurarte de que la tabla tenga las mismas columnas y el mismo contenido que la tabla que estás mostrando en tu interfaz
-                    // Por ejemplo:
-                    // ['Columna 1', 'Columna 2', 'Columna 3', ...]
-                    // [dato1, dato2, dato3, ...]
-                ]
-            },
-            layout: 'autoTable' // Utilizar autoTable para ajustar automáticamente el tamaño de la tabla
-        });
-    },
         exportOptions: {
-            columns: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+            columns: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
         },
     },
     {
@@ -105,18 +88,18 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
         exportOptions: {
-        columns: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+        columns: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
     }
     }
 ];
 
 const columnas = [
-  {
+  /* {
     data: null,
     render: function (data, type, row, meta) {
       return `<input type="checkbox" class="formacion-checkboxes" data-id="${row.idFormacionUnidades}" ">`;
     }
-  },
+  }, */
   {
     data: null,
     render: function (data, type, row, meta) {
@@ -338,12 +321,12 @@ console.log("Estoy en Formar Unidades");
 
 <template>
   <PrincipalLayout title="Formar Unidades">
-    <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6">
+    <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6 ">
       <h2 class="font-bold text-center text-xl pt-1"> Formar Unidades</h2>
       <div class="my-1"></div> <!-- Espacio de separación -->
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
 
-      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 ">
+      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
@@ -367,10 +350,10 @@ console.log("Estoy en Formar Unidades");
           @click="mostrarModalRegUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
         </button>
-
       </div>
 
       <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
+
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalRegresoUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
@@ -378,13 +361,12 @@ console.log("Estoy en Formar Unidades");
 
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalTrabDom = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-calendar" aria-hidden="true"></i> Trabaja domingo
+          <i class="fa fa-calendar" aria-hidden="true"></i> Rol domingo
         </button>
 
       </div>
 
-      <div class="overflow-x-auto">
-        <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
+      <div class="overflow-x-auto"> <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
           id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="formacionUnidades" :options="{
             responsive: false, autoWidth: false, dom: 'Bftrip', language: {
@@ -395,13 +377,9 @@ console.log("Estoy en Formar Unidades");
               lengthMenu: 'Mostrar _MENU_ registros',
               paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
             }, buttons: [botonesPersonalizados],
-            /* editable: true, // Habilitar la edición
-            editField: 'edit', // Campo que indica si una celda está en modo de edición */
           }">
           <thead>
             <tr class="text-sm leading-normal border-b border-gray-300">
-
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Celda vacía para la primera columna -->
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
@@ -423,9 +401,6 @@ console.log("Estoy en Formar Unidades");
               <!-- operador -->
             </tr>
             <tr class="text-sm leading-normal border-b border-gray-300">
-
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th>
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 ID
               </th>

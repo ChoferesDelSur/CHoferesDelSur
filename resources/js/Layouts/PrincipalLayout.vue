@@ -16,7 +16,7 @@ const props = defineProps({
 
     <Head :title="title" />
 
-    <TopContent/> <!--LLama al componente TopContent-->
+    <TopContent /> <!--LLama al componente TopContent-->
 
     <div class="flex-1 flex flex-wrap">
       <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->

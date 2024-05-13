@@ -16,7 +16,7 @@ class formacionUnidades extends Model
 
     protected $fillable = [
         'idUnidad',
-        /* 'trabajaDomingo', */
+        'trabajaDomingo',
         'horaEntrada',
         'tipoEntrada',
         'extremo',
