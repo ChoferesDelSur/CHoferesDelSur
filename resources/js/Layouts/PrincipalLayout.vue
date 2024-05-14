@@ -12,7 +12,7 @@ const props = defineProps({
 
 
 <template>
-  <div class="flex flex-col h-screen bg-gray-100">
+  <div class="flex flex-col h-screen bg-gray-100"><!-- Es lo que está de fondo fondo -->
 
     <Head :title="title" />
 
@@ -20,7 +20,7 @@ const props = defineProps({
 
     <div class="flex-1 flex flex-wrap">
       <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
-      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col md:flex" id="sideNav"> <!--Color de la barra de menu-->
+      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col md:flex " id="sideNav"> <!--Color de la barra de menu-->
         <nav>
           <div class="w-60 h-16 justify-start items-center px-2 inline-flex">
             <div class="w-12 h-12 relative">

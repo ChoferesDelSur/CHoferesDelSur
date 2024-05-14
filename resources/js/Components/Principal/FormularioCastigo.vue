@@ -43,6 +43,7 @@ const form = useForm({
     observaciones: props.castigo.observaciones,
     horaInicio: props.castigo.horaInicio,
     horaFin: props.castigo.horaFin,
+    unidad: props.castigo.idUnidad,
 });
 
 watch(() => props.castigo, async (newVal) => {
@@ -51,6 +52,7 @@ watch(() => props.castigo, async (newVal) => {
     form.observaciones = newVal.observaciones;
     form.horaInicio = newVal.horaInicio;
     form.horaFin = props.horaFin;
+    form.unidad = props.unidad;
 }, { deep: true }
 );
 
@@ -79,10 +81,15 @@ const close = async () => {
 }
 
 const save = async () => {
+    console.log("Entró en save de FormularioCastigo");
     horaInicioError.value = validateSelect(form.horaInicio) ? '' : 'Seleccione la hora de inicio del castigo';
+    console.log("Hora inicio: "+ form.horaInicio);
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
+    console.log("Unidad: "+ form.unidad);
     castigoError.value = validateStringNotEmpty(form.castigo) ? '' : 'Ingrese motivo del castigo';
+    console.log("Castigo: "+form.castigo);
     horaFinError.value = validateSelect(form.horaFin) ? '' : 'Seleccione la hora de fin del castigo';
+    console.log("Hora fin: "+ form.horaFin);
 
 
     if (
@@ -90,8 +97,9 @@ const save = async () => {
     ) {
         return;
     }
-    form.post(route('principal.registarCorte'), {
+    form.post(route('principal.registrarCastigo'), {
         onSuccess: () => {
+            console.log("Estoy después de principal.registrarCastigo");
             close()
             horaInicioError.value = '';
             unidadError.value = '';
@@ -107,8 +115,7 @@ const save = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar la
-                        hora de corte de una unidad. Los campos con <span class="text-red-500">*</span> son
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar el castigo. Los campos con <span class="text-red-500">*</span> son
                         obligatorios.
                     </p>
                     <div class="flex flex-wrap -mx-4">

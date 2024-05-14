@@ -174,6 +174,48 @@ public function registrarHoraEntrada(Request $request)
         }
     }
 
+    public function registrarCastigo(Request $request){
+        // Validar los datos recibidos del formulario
+        
+        $request->validate([
+            'unidad' => 'required',
+            'castigo' => 'required',
+            'horaInicio' => 'required',
+            'horaFin' => 'required',
+            'observaciones' => 'required',
+        ]);
+        try{
+            // Obtener el ID de la unidad seleccionada del formulario
+            $unidadId = $request->input('unidad');
+            
+            // Buscar si ya existe un registro para esta unidad
+            $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+
+            // Verificar si la unidad tiene registrada la hora de entrada
+            if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
+                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar la hora de corte porque la unidad no tiene registrada la hora de entrada.", "color" => "red"]);
+            }
+
+            // Crear una nueva instancia del modelo castigo
+            $nuevoCastigo = new castigo();
+            
+            // Asignar los valores a los atributos del modelo
+            $nuevoCastigo->idUnidad = $unidadId;
+            $nuevoCastigo->castigo = $request->input('castigo');
+            $nuevoCastigo->horaInicio = $request->input('horaInicio');
+            $nuevoCastigo->horaFin = $request->input('horaFin');
+            $nuevoCastigo->observaciones = $request->input('observaciones');
+            
+            // Guardar el nuevo castigo en la base de datos
+            $nuevoCastigo->save();
+
+            return redirect()->route('principal.formarUni')->with(['message' => "Castigo registrado correctamente: ", "color" => "green"]);
+        }catch(Exception $e){
+            dd("Error: " + $e);
+            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
+        }
+    }
+
     public function RegistrarHoraRegreso(Request $request){
         $request->validate([
             'unidad' => 'required',

@@ -39,10 +39,8 @@ const props = defineProps({
   castigo: { type: Object },
 });
 
-console.log("Unidades:");
-console.log(props.unidad);
-console.log("Formacion Unidades");
-console.log(props.formacionUnidades)
+console.log("Castigo: ");
+console.log(props.castigo);
 
 // Dentro del bloque <script setup>
 const fechaActual = new Date().toLocaleDateString(); // Obtiene la fecha actual en formato de cadena
@@ -54,43 +52,43 @@ function obtenerDiaSemana(diaNumero) {
 }
 
 const botonesPersonalizados = [
-    {
-        extend: 'copyHtml5',
-        text: '<i class="fa-solid fa-copy"></i> Copiar', // Texto del botón
-        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
-        exportOptions: {
-            columns: [0, 2] // Indica qué columnas deben ser copiadas (por ejemplo, aquí se copiarían las columnas 0 y 2)
-        },
-        button: true
+  {
+    extend: 'copyHtml5',
+    text: '<i class="fa-solid fa-copy"></i> Copiar', // Texto del botón
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+    exportOptions: {
+      columns: [0, 2] // Indica qué columnas deben ser copiadas (por ejemplo, aquí se copiarían las columnas 0 y 2)
     },
-    {
-        title: 'Formación de unidades',
-        extend: 'excelHtml5',
-        text: '<i class="fa-solid fa-file-excel"></i> Excel',
-        className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
-        exportOptions: {
-            columns: [0,1,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-        }
-    },
-    {
-        title: 'Formación de unidades',
-        extend: 'pdfHtml5',
-        text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
-        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
-        orientation: 'landscape', // Configurar la orientación horizontal
-        exportOptions: {
-            columns: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
-        },
-    },
-    {
-        title: 'Formación de unidades',
-        extend: 'print',
-        text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
-        className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
-        exportOptions: {
-        columns: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+    button: true
+  },
+  {
+    title: 'Formación de unidades',
+    extend: 'excelHtml5',
+    text: '<i class="fa-solid fa-file-excel"></i> Excel',
+    className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
+    exportOptions: {
+      columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     }
+  },
+  {
+    title: 'Formación de unidades',
+    extend: 'pdfHtml5',
+    text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
+    className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+    orientation: 'landscape', // Configurar la orientación horizontal
+    exportOptions: {
+      columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    },
+  },
+  {
+    title: 'Formación de unidades',
+    extend: 'print',
+    text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
+    className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+    exportOptions: {
+      columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
     }
+  }
 ];
 
 const columnas = [
@@ -219,7 +217,7 @@ const columnas = [
     data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
       const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
-      if (ultimaC && ultimaC.horaFinUC) { 
+      if (ultimaC && ultimaC.horaFinUC) {
         return ultimaC.horaFinUC.substring(0, 5); // Obtener solo la hora y los minutos
       } else {
         return ''; // Devolver una cadena vacía si el valor es nulo
@@ -227,28 +225,102 @@ const columnas = [
     }
   },
   {
-    data: null,
-    render: function (data, type, row, meta) {
-      return "";
+    data: 'idUnidad',
+  render: function (data, type, row, meta) {
+    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+    if (castigosUnidad.length > 0) {
+      // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
+      const castigosRows = castigosUnidad.map(castigo => {
+        return {
+          horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
+          horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
+          castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
+          observaciones: castigo.observaciones || '', // Obtener observaciones si existen
+        };
+      });
+      // Devolver un array de filas con los datos de castigos
+      return castigosRows.map((castigoRow, index) => {
+        // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
+        const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid  #b2b2b2;' : '';
+        return `
+          <div style="${borderStyle}">
+            <div>${castigoRow.horaInicio}</div>
+          </div>
+        `;
+      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
     }
+    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+    return '';
+  }
   },
   {
-    data: null,
-    render: function (data, type, row, meta) {
-      return "";
+    data: 'idUnidad',
+  render: function (data, type, row, meta) {
+    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+    if (castigosUnidad.length > 0) {
+      // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
+      const castigosRows = castigosUnidad.map(castigo => {
+        return {
+          horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
+          horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
+          castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
+          observaciones: castigo.observaciones || '', // Obtener observaciones si existen
+        };
+      });
+      // Devolver un array de filas con los datos de castigos
+      return castigosRows.map((castigoRow, index) => {
+        // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
+        const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+        return `
+          <div style="${borderStyle}">
+            <div>${castigoRow.horaFin}</div>
+          </div>
+        `;
+      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
     }
+    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+    return '';
+  }
   },
   {
-    data: null,
-    render: function (data, type, row, meta) {
-      return "";
+    data: 'idUnidad',
+  render: function (data, type, row, meta) {
+    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+    if (castigosUnidad.length > 0) {
+      // Crear un array de nombres de castigos
+      const nombresCastigos = castigosUnidad.map(castigo => {
+        return castigo.castigo || ''; // Obtener el nombre del castigo si existe
+      });
+      // Devolver un array de filas con los nombres de castigos
+      return nombresCastigos.map((nombreCastigo, index) => {
+        // Renderizar cada nombre de castigo en una fila diferente con un borde inferior si hay más de un nombre de castigo
+        const borderStyle = nombresCastigos.length > 1 && index !== nombresCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+        return `<div style="${borderStyle}">${nombreCastigo}</div>`;
+      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
     }
+    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+    return '';
+  }
   },
   {
-    data: null,
-    render: function (data, type, row, meta) {
-      return "";
+    data: 'idUnidad',
+  render: function (data, type, row, meta) {
+    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+    if (castigosUnidad.length > 0) {
+      // Crear un array de observaciones de castigos
+      const observacionesCastigos = castigosUnidad.map(castigo => {
+        return castigo.observaciones || ''; // Obtener la observación del castigo si existe
+      });
+      // Devolver un array de filas con las observaciones de castigos
+      return observacionesCastigos.map((observacion, index) => {
+        // Renderizar cada observación en una fila diferente con un borde inferior si hay más de una observación de castigo
+        const borderStyle = observacionesCastigos.length > 1 && index !== observacionesCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+        return `<div style="${borderStyle}">${observacion}</div>`;
+      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
     }
+    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+    return '';
+  }
   },
   {
     data: 'idUnidad',
@@ -314,9 +386,6 @@ const cerrarModalE = () => {
   mostrarModalE.value = false;
 };
 
-
-console.log("Estoy en Formar Unidades");
-
 </script>
 
 <template>
@@ -366,7 +435,8 @@ console.log("Estoy en Formar Unidades");
 
       </div>
 
-      <div class="overflow-x-auto"> <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
+      <div class="overflow-x-auto">
+        <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
           id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="formacionUnidades" :options="{
             responsive: false, autoWidth: false, dom: 'Bftrip', language: {
@@ -483,11 +553,11 @@ console.log("Estoy en Formar Unidades");
       :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
       :unidad="props.unidad">
     </FormularioRegUC>
-    <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalRegresoUC"
-      :title="'Registrar hora de regreso de última corrida'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
-      :unidad="props.unidad">
+    <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalRegresoUC" :title="'Registrar hora de regreso de última corrida'" :op="'1'"
+      :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
     </FormularioRegresoUC>
-    
+
 
   </PrincipalLayout>
 </template>
