@@ -38,4 +38,5 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::post('/principal/formarUnidades/regUC', 'registrarUC')->name('principal.registrarUC');
     Route::post('/principal/formarUnidades/regresoUC', 'RegistrarHoraRegresoUC')->name('principal.regresoUC');
     Route::post('/principal/formarUnidades/regCastigo', 'registrarCastigo')->name('principal.registrarCastigo');
+    Route::post('/principal/formarUnidades/trabajaDomingo', 'registrarTrabajanDomingo')->name('principal.trabDomingo');
 });

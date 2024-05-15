@@ -39,9 +39,6 @@ const props = defineProps({
     op: { type: String },
 })
 
-console.log("Operadores:");
-console.log(props.operadoresDisp);
-
 const emit = defineEmits(['close']);
 
 const form = useForm({

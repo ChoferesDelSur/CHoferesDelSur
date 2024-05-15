@@ -33,8 +33,6 @@ const props = defineProps({
 
 const message = sessionStorage.getItem('message');
 const color = sessionStorage.getItem('color');
-console.log("Rutas");
-console.log(props.ruta);
 
 const botonesPersonalizados = [
     {
@@ -122,9 +120,6 @@ const cerrarModal = () => {
 const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
-
-
-console.log("Estoy en Rutas");
 
 const toggleRutaSelection = (ruta) => {
     if (rutasSeleccionados.value.includes(ruta)) {

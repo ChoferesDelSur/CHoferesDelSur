@@ -13,6 +13,7 @@ use App\Models\tipodirectivo;
 use App\Models\tipooperador;
 use App\Models\castigo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
@@ -182,7 +183,7 @@ public function registrarHoraEntrada(Request $request)
             'castigo' => 'required',
             'horaInicio' => 'required',
             'horaFin' => 'required',
-            'observaciones' => 'required',
+            /* 'observaciones' => 'required', */
         ]);
         try{
             // Obtener el ID de la unidad seleccionada del formulario
@@ -339,7 +340,35 @@ public function registrarHoraEntrada(Request $request)
             return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de regreso de la UC", "color" => "red"]);
         }
     }
+
+    public function registrarTrabajanDomingo(Request $request)
+    {
+        try {
+            // Obtener los datos del formulario
+            $datosFormulario = $request->validate([
+                'unidadesSeleccionadas' => 'required|array', // Array con las IDs de las unidades seleccionadas
+            ]);
     
+            // Actualizar las unidades seleccionadas a 'NO'
+            formacionunidades::whereIn('idUnidad', $datosFormulario['unidadesSeleccionadas'])
+                ->update(['trabajaDomingo' => 'NO']);
+    
+            // Obtener todas las unidades que NO se han seleccionado
+            $unidadesNoSeleccionadas = formacionunidades::whereNotIn('idUnidad', $datosFormulario['unidadesSeleccionadas'])
+                ->get();
+    
+            // Asignar 'NO' a la columna trabajaDomingo de las unidades NO seleccionadas
+            foreach ($unidadesNoSeleccionadas as $unidad) {
+                $unidad->update(['trabajaDomingo' => 'SI']);
+            }
+    
+            // Redireccionar con un mensaje de éxito
+            return redirect()->route('principal.formarUni')->with(['message' => "Unidades registradas correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            // Manejo de excepciones
+            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
+        }
+    } 
 
     public function unidades(){
         $unidad = unidad::all();

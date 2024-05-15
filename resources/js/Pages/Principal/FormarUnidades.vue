@@ -17,6 +17,7 @@ import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegres
 import FormularioCastigo from '../../Components/Principal/FormularioCastigo.vue';
 import FormularioRegUC from '../../Components/Principal/FormularioRegUC.vue';
 import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.vue';
+import FormularioDomingo from '../../Components/Principal/FormularioDomingo.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -38,9 +39,6 @@ const props = defineProps({
   formacionUnidades: { type: Object },
   castigo: { type: Object },
 });
-
-console.log("Castigo: ");
-console.log(props.castigo);
 
 // Dentro del bloque <script setup>
 const fechaActual = new Date().toLocaleDateString(); // Obtiene la fecha actual en formato de cadena
@@ -117,9 +115,10 @@ const columnas = [
     }
   },
   {
-    data: null,
+    data: 'idFormacionUnidades',
     render: function (data, type, row, meta) {
-      return "";
+      const tDom = props.formacionUnidades.find(tDom => tDom.idFormacionUnidades === data);
+      return tDom ? tDom.trabajaDomingo : '';
     }
   },
   {
@@ -346,6 +345,7 @@ const mostrarModalCastigo = ref(false);
 const mostrarModalRegreso = ref(false);
 const mostrarModalRegUC = ref(false);
 const mostrarModalRegresoUC = ref(false);
+const mostrarModalDomingo = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
@@ -380,6 +380,10 @@ const cerrarModalUC = () => {
 
 const cerrarModalRegresoUC = () => {
   mostrarModalRegresoUC.value = false;
+};
+
+const cerrarModalDomingo = () => {
+  mostrarModalDomingo.value = false;
 };
 
 const cerrarModalE = () => {
@@ -429,7 +433,7 @@ const cerrarModalE = () => {
         </button>
 
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalTrabDom = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          @click="mostrarModalDomingo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-calendar" aria-hidden="true"></i> Rol domingo
         </button>
 
@@ -478,7 +482,7 @@ const cerrarModalE = () => {
                 Ruta
               </th>
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Trab. Domingo
+                Trab. DomINGO
               </th>
               <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Unidad
@@ -557,6 +561,10 @@ const cerrarModalE = () => {
       @close="cerrarModalRegresoUC" :title="'Registrar hora de regreso de última corrida'" :op="'1'"
       :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
     </FormularioRegresoUC>
+    <FormularioDomingo :show="mostrarModalDomingo" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalDomingo" :title="'Registrar unidades que trabajaran domingo'" :op="'1'"
+      :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
+    </FormularioDomingo>
 
 
   </PrincipalLayout>

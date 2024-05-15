@@ -33,9 +33,6 @@ const props = defineProps({
     directivo: { type: Object },
 });
 
-console.log("Operadores");
-console.log(props.operador);
-
 const botonesPersonalizados = [
     {
         extend: 'copyHtml5',
@@ -148,8 +145,6 @@ const cerrarModal = () => {
 const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
-
-console.log("Estoy en Operadores");
 
 const toggleOperadorSelection = (operador) => {
     if (operadoresSeleccionados.value.includes(operador)) {

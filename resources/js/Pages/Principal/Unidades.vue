@@ -156,12 +156,6 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-
-console.log("Estoy en Unidades");
-console.log(props.unidad);
-console.log("Operadores Disponibles");
-console.log(props.operadoresDisp);
-
 const toggleUnidadSelection = (unidad) => {
     if (unidadesSeleccionados.value.includes(unidad)) {
         // Si el alumno ya está seleccionado, la eliminamos del array
