@@ -98,14 +98,14 @@ const DomingoAnterior = formatearDomingoAnterior(obtenerDomingoAnterior());
 
 // Calcular la fecha del próximo domingo
 const obtenerProximoDomingo = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
+    const hoy = new Date();
+    const diaDeSemana = hoy.getDay();
     // Calcula cuántos días faltan para llegar al próximo domingo (si hoy es domingo, será 7)
-    const daysUntilSunday = 7 - dayOfWeek;
-    const nextSunday = new Date(today);
+    const diasParaDomingo = 7 - diaDeSemana;
+    const proxDomingo = new Date(hoy);
     // Suma los días restantes para llegar al próximo domingo
-    nextSunday.setDate(today.getDate() + daysUntilSunday);
-    return nextSunday;
+    proxDomingo.setDate(hoy.getDate() + diasParaDomingo);
+    return proxDomingo;
 };
 
 // Formatear la fecha del próximo domingo

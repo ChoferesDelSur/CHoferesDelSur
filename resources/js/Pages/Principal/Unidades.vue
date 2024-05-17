@@ -14,6 +14,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
 import FormularioAsignarOperador from '../../Components/Principal/FormularioAsignarOperador.vue';
+import Mensaje from '../../Components/Mensaje.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -282,6 +283,8 @@ const eliminarUnidades = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
+            <Mensaje/>
+
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
@@ -350,7 +353,7 @@ const eliminarUnidades = () => {
             :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE" :ruta="props.ruta"
             :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
         <FormularioAsignarOperador :show="mostrarModalAsigOper" :max-width="maxWidth" :closeable="closeable"
-            @close="cerrarModalAsigOper" :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'"
+            @close="cerrarModalAsigOper" :title="'Asignar operador'" :op="'1'" :modal="'modalCreate'"
             :unidad="props.unidad" :unidadesDisp="props.unidadesDisp" :operadoresDisp="props.operadoresDisp">
         </FormularioAsignarOperador>
     </PrincipalLayout>

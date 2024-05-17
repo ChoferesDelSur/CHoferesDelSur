@@ -8,6 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import VueSelect from 'vue-select';
 import DataTablesLib from 'datatables.net'; //Se agrego esto
 import DataTable from 'datatables.net-vue3';//Se agrego esto
+
  
 DataTable.use(DataTablesLib);//Se agrego esto
 

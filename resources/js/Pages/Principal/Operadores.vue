@@ -13,6 +13,7 @@ import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioOperadores from '../../Components/Principal/FormularioOperadores.vue';
+import Mensaje from '../../Components/Mensaje.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -248,13 +249,7 @@ const eliminarOperadores = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <!-- Para mostrar el mensaje de que se ha borrado o agregado correctamente al operador    -->
-            <!-- <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-                :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-                <span class="font-medium">
-                    {{ $page.props.flash.message }}
-                </span>
-            </div> -->
+            <Mensaje/>
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"

@@ -18,6 +18,7 @@ import FormularioCastigo from '../../Components/Principal/FormularioCastigo.vue'
 import FormularioRegUC from '../../Components/Principal/FormularioRegUC.vue';
 import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.vue';
 import FormularioDomingo from '../../Components/Principal/FormularioDomingo.vue';
+import Mensaje from '../../Components/Mensaje.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -398,6 +399,8 @@ const cerrarModalE = () => {
       <h2 class="font-bold text-center text-xl pt-1"> Formar Unidades</h2>
       <div class="my-1"></div> <!-- Espacio de separación -->
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
+
+      <Mensaje/>
 
       <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"

@@ -13,6 +13,7 @@ import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioSP from '../../Components/Principal/FormularioSP.vue';
+import Mensaje from '../../Components/Mensaje.vue';
 
 window.JSZip = jsZip;
 
@@ -258,6 +259,8 @@ const eliminarDirectivos = () => {
             <h2 class="font-bold text-center text-xl pt-5">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+
+            <Mensaje/>
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"

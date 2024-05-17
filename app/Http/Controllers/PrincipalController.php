@@ -36,7 +36,9 @@ class PrincipalController extends Controller
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
-            'ruta' => $ruta
+            'ruta' => $ruta,
+            'message' => session('message'),
+            'color' => session('color'),
         ]);
     }
     public function formarUnidades(){
@@ -53,6 +55,8 @@ class PrincipalController extends Controller
             'ruta' => $ruta,
             'castigo' => $castigo,
             'formacionUnidades' => $formacionUnidades,
+            'message' => session('message'),
+            'color' => session('color'),
         ]);
     }
 
@@ -341,35 +345,27 @@ public function registrarHoraEntrada(Request $request)
         }
     }
 
-    public function registrarTrabajanDomingo(Request $request)
-    {
+    public function registrarTrabajanDomingo(Request $request){
         try {
             // Obtener los datos del formulario
             $datosFormulario = $request->validate([
                 'unidadesSeleccionadas' => 'required|array', // Array con las IDs de las unidades seleccionadas
             ]);
-    
+            
             // Actualizar las unidades seleccionadas a 'NO'
-            formacionunidades::whereIn('idUnidad', $datosFormulario['unidadesSeleccionadas'])
-                ->update(['trabajaDomingo' => 'NO']);
-    
-            // Obtener todas las unidades que NO se han seleccionado
-            $unidadesNoSeleccionadas = formacionunidades::whereNotIn('idUnidad', $datosFormulario['unidadesSeleccionadas'])
-                ->get();
-    
-            // Asignar 'NO' a la columna trabajaDomingo de las unidades NO seleccionadas
-            foreach ($unidadesNoSeleccionadas as $unidad) {
-                $unidad->update(['trabajaDomingo' => 'SI']);
+            foreach ($datosFormulario['unidadesSeleccionadas'] as $idUnidad) {
+                formacionunidades::where('idUnidad', $idUnidad)
+                    ->update(['trabajaDomingo' => 'NO']);
             }
-    
+             
             // Redireccionar con un mensaje de éxito
             return redirect()->route('principal.formarUni')->with(['message' => "Unidades registradas correctamente", "color" => "green"]);
-        } catch (Exception $e) {
+        } catch (Exception $e){
             // Manejo de excepciones
             return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
         }
     } 
-
+     
     public function unidades(){
         $unidad = unidad::all();
         $operador = operador::all(); 
@@ -392,6 +388,8 @@ public function registrarHoraEntrada(Request $request)
             'unidadesDisp' => $unidadesDisp, // Pasar las unidades disponibles a la vista
             'ruta' => $ruta,
             'directivo' => $directivo,
+            'message' => session('message'),
+            'color' => session('color'),
         ]);
     }
     
@@ -412,7 +410,7 @@ public function registrarHoraEntrada(Request $request)
     
             if($existingUnidad){
                 // Unidad ya existe, puedes devolver una respuesta indicando el error
-                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya existe.", "color" => "red"]);
+                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya existe", "color" => "yellow"]);
             }
         
             $unidad = new unidad();
@@ -432,7 +430,7 @@ public function registrarHoraEntrada(Request $request)
             $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
             $formacionUnidad->save();
             
-            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente:" . $request->numeroUnidad, "color" => "green"]);
+            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente: " . $request->numeroUnidad, "color" => "green"]);
         } catch(Exception $e){
             return redirect()->route('principal.unidades');
         }
@@ -503,6 +501,8 @@ public function registrarHoraEntrada(Request $request)
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
             'directivo' => $directivo,
+            'message' => session('message'),
+            'color' => session('color'),
         ]);
     }
 
@@ -564,7 +564,6 @@ public function registrarHoraEntrada(Request $request)
             $operador->idEstado = $request->estado;
             $operador->idDirectivo = $request->directivo;
             $operador->save();
-
             return redirect()->route('principal.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre, "color" => "green"]);
         }catch(Exception $e){
             return redirect()->route('principal.operadores')->with(['message' => "El operador no se actualizó correctamente: " . $requests->nombre, "color" => "reed"]);
@@ -596,6 +595,8 @@ public function registrarHoraEntrada(Request $request)
             'directivo' => $directivo,
             'operador' => $operador,
             'tipDirectivo' => $tipDirectivo,
+            'message' => session('message'),
+            'color' => session('color'),
         ]);
     }
 
@@ -679,6 +680,8 @@ public function registrarHoraEntrada(Request $request)
         $ruta = ruta::all();
         return Inertia::render('Principal/Rutas',[
             'ruta' => $ruta,
+            'message' => session('message'),
+            'color' => session('color'),
         ]);
     }
 
@@ -693,16 +696,15 @@ public function registrarHoraEntrada(Request $request)
 
             if ($existingRuta) {
                 // Si ya existe, maneja la situación como desees, por ejemplo, redirigir con un mensaje de error.
-                return redirect()->route('principal.rutas')->with(['message' => "La ruta ya está registrada: " . $request->nombreRuta, "color" => "red"]);
+                return redirect()->route('principal.rutas')->with(['message' => "La ruta ya está registrada: " . $request->nombreRuta, 'color' => 'yellow']);
             }
     
             $ruta = new ruta();
             $ruta->nombreRuta = $request->nombreRuta;
             $ruta->save();
-
-            return redirect()->route('principal.rutas')->with(['message' => "Ruta agregado correctamente: . $request->nombreRuta ", "color" => "green"]);
+            return redirect()->route('principal.rutas')->with(['message' => "Ruta agregado correctamente", 'color' => 'green']);
         }catch(Exception $e){
-            return redirect()->route('principal.rutas');
+            return redirect()->back()->with(['message' => "Error al agregar la ruta: " . $e->getMessage(), 'color' => 'red']);
         }
     }
 

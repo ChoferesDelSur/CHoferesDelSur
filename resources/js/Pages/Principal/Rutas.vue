@@ -12,8 +12,8 @@ import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-
+import pdfFonts from 'pdfmake/build/vfs_fonts'; 
+import Mensaje from '../../Components/Mensaje.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -27,12 +27,7 @@ DataTable.use(DataTablesLib);
 DataTable.use(Select);
 const props = defineProps({
     ruta: { type: Object },
-    message: { String, default: '' },
-    color: { String, default: '' }
 });
-
-const message = sessionStorage.getItem('message');
-const color = sessionStorage.getItem('color');
 
 const botonesPersonalizados = [
     {
@@ -50,7 +45,7 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
         exportOptions: {
-            columns: [1,2]
+            columns: [1, 2]
         }
     },
     {
@@ -68,20 +63,12 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
         exportOptions: {
-        columns: [1, 2] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
-    }
+            columns: [1, 2] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+        }
     }
 ];
 
-
-
 const columnas = [
-    /*  {
-         data: null,
-         render: function (data, type, row, meta) {
-             return "";
-         }
-     }, */
     {
         data: null,
         render: function (data, type, row, meta) {
@@ -161,20 +148,9 @@ onMounted(() => {
     $('#rutasTablaId').on('click', '.editar-button', function () {
         const rutaId = $(this).data('id');
         const rutt = props.ruta.find(r => r.idRuta === rutaId);
-        console.log("Estoy en onMounted: rutaId: "+rutaId );
+        console.log("Estoy en onMounted: rutaId: " + rutaId);
         abrirE(rutt);
     });
-
-    // Manejar clic en el botón de eliminar
-    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
-        const alumnoId = $(this).data('id');
-        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
-        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
-    }); */
-
-    /* // Borra los datos de la sesión después de mostrarlos
-  sessionStorage.removeItem('message');
-  sessionStorage.removeItem('color'); */
 });
 
 const eliminarRutas = () => {
@@ -226,7 +202,6 @@ const eliminarRutas = () => {
     });
 };
 
-
 </script>
 
 <template>
@@ -235,6 +210,8 @@ const eliminarRutas = () => {
             <h2 class="font-bold text-center text-xl pt-5">Rutas</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
+
+        <Mensaje/>
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
