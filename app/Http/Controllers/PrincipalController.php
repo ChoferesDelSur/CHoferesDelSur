@@ -102,11 +102,11 @@ public function registrarHoraEntrada(Request $request)
         $tipoEntrada = '';
     }
 
-    // Verificar si la unidad tiene un operador asignado
+    // Verificar si la unidad tiene un operador asignado.
     $unidad = unidad::find($unidadId);
     if (!$unidad->operador) {
         // La unidad no tiene un operador asignado, puedes manejar el error aquí
-        return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene operador asignado", "color" => "red"]);
+        return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene operador asignado", "color" => "yellow", 'type' => 'info']);
     }
 
     // Buscar si ya existe un registro para esta unidad
@@ -127,9 +127,13 @@ public function registrarHoraEntrada(Request $request)
         ]);
     }
 
+    // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+    $numeroUnidad = $unidad->numeroUnidad;
+
     // Devolver una respuesta de éxito
-    return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada registrada correctamente: " . $horaEntrada, "color" => "green"]);
+    return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada " . $request->horaEntrada ." registrado correctamente para la unidad " .$numeroUnidad, "color" => "green", 'type' => 'success']);
 }catch(Exception $e){
+    return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de entrada", "color" => "red", 'type' => 'error']);
     dd($e);
 }
 }
@@ -146,13 +150,14 @@ public function registrarHoraEntrada(Request $request)
         try {
             // Obtener el ID de la unidad seleccionada del formulario
             $unidadId = $request->input('unidad');
+            $unidad = unidad::find($unidadId);
 
             // Buscar si ya existe un registro para esta unidad
             $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
 
             // Verificar si la unidad tiene registrada la hora de entrada
             if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar la hora de corte porque la unidad no tiene registrada la hora de entrada.", "color" => "red"]);
+                return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene registrada la hora de entrada.", "color" => "yellow",'type'=>'info']);
             }
 
             // Si ya existe un registro para esta unidad, actualizar la hora de corte, causa y hora de regreso
@@ -173,11 +178,14 @@ public function registrarHoraEntrada(Request $request)
                 ]);
             }
 
+            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+            $numeroUnidad = $unidad->numeroUnidad;
+
             // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
-            return redirect()->route('principal.formarUni')->with(['message' => "Hora de corte registrada correctamente: ", "color" => "green"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de corte " .$request->horaCorte ." registrado correctamente para la unidad " .$numeroUnidad ." por " .$request->causa, "color" => "green",'type'=>'success']);
         } catch (Exception $e) {
             // Manejar cualquier error que pueda ocurrir durante la operación
-            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red",'type' => 'error']);
         }
     }
 
@@ -194,13 +202,16 @@ public function registrarHoraEntrada(Request $request)
         try{
             // Obtener el ID de la unidad seleccionada del formulario
             $unidadId = $request->input('unidad');
+            $unidad = unidad::find($unidadId);
+            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+            $numeroUnidad = $unidad->numeroUnidad;
             
             // Buscar si ya existe un registro para esta unidad
             $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
 
             // Verificar si la unidad tiene registrada la hora de entrada
             if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar la hora de corte porque la unidad no tiene registrada la hora de entrada.", "color" => "red"]);
+                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar el castigo para la unidad " .$numeroUnidad ." porque no tiene registrado la hora de entrada", "color" => "yellow", 'type' => 'info']);
             }
 
             // Crear una nueva instancia del modelo castigo
@@ -216,10 +227,10 @@ public function registrarHoraEntrada(Request $request)
             // Guardar el nuevo castigo en la base de datos
             $nuevoCastigo->save();
 
-            return redirect()->route('principal.formarUni')->with(['message' => "Castigo registrado correctamente: ", "color" => "green"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Castigo registrado correctamente para la unidad " .$numeroUnidad, "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
             dd("Error: " + $e);
-            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -231,6 +242,9 @@ public function registrarHoraEntrada(Request $request)
     
         try{
             $unidadId = $request->input('unidad');
+            $unidad = unidad::find($unidadId);
+            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+            $numeroUnidad = $unidad->numeroUnidad;
     
             // Buscar si ya existe un registro para esta unidad
             $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
@@ -238,14 +252,19 @@ public function registrarHoraEntrada(Request $request)
             if ($formacionUnidad) {
                 // Verificar si la unidad tiene horaCorte registrada
                 if (!$formacionUnidad->horaCorte) {
-                    return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene registrada la hora de corte", "color" => "red"]);
+                    return redirect()->route('principal.formarUni')->with(['message' => "La unidad " .$numeroUnidad ." no tiene registrado hora de corte", "color" => "yellow", 'type' => 'info']);
                 }
     
                 // Verificar que la hora de regreso sea mayor o igual a la hora de corte
                 $horaCorte = \Carbon\Carbon::parse($formacionUnidad->horaCorte);
                 $horaRegreso = \Carbon\Carbon::parse($request->input('horaRegreso'));
+
+                // Formatear las horas para mostrar solo horas y minutos
+                $horaCorteFormateada = $horaCorte->format('H:i');
+                $horaRegresoFormateada = $horaRegreso->format('H:i');
+
                 if ($horaRegreso->lessThan($horaCorte)) {
-                    return redirect()->route('principal.formarUni')->with(['message' => "La hora de regreso no puede ser menor a la hora de corte", "color" => "red"]);
+                    return redirect()->route('principal.formarUni')->with(['message' => "La hora de regreso " .$horaRegresoFormateada ." no puede ser menor que la hora de corte " .$horaCorteFormateada, "color" => "red", 'type' => 'error']);
                 }
     
                 // Actualizar la hora de regreso
@@ -259,9 +278,9 @@ public function registrarHoraEntrada(Request $request)
                 ]);
             }
     
-            return redirect()->route('principal.formarUni')->with(['message' => "Hora de regreso registrado correctamente", "color" => "green"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de regreso de la unidad " .$numeroUnidad ." registrado correctamente", "color" => "green", 'type' => 'success']);
         } catch(Exception $e){
-            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de regreso", "color" => "red"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de regreso", "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -273,13 +292,16 @@ public function registrarHoraEntrada(Request $request)
         try{
             // Obtener el ID de la unidad seleccionada del formulario
             $unidadId = $request->input('unidad');
+            $unidad = unidad::find($unidadId);
+            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+            $numeroUnidad = $unidad->numeroUnidad;
 
             // Buscar si ya existe un registro para esta unidad
             $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
 
             // Verificar si la unidad tiene registrada la hora de entrada
             if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar la hora de inicio de la UC porque la unidad no formó.", "color" => "red"]);
+                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar la hora de inicio de UC porque la unidad " .$numeroUnidad ." no formó.", "color" => "red", 'type' => 'error']);
             }
 
             // Si ya existe un registro para esta unidad, actualizar la hora de corte, causa y hora de regreso
@@ -298,10 +320,10 @@ public function registrarHoraEntrada(Request $request)
                     // Otros campos necesarios...
                 ]);
             }
-            return redirect()->route('principal.formarUni')->with(['message' => "Última corrida de la unidad registrado correctamente ", "color" => "green"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Última corrida de la unidad " .$numeroUnidad ." registrado correctamente", "color" => "green" , 'type' => 'success']);
 
         }catch(Exception $e){
-            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la última corrida de la unidad", "color" => "red"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la última corrida de la unidad", "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -313,6 +335,9 @@ public function registrarHoraEntrada(Request $request)
     
         try{
             $unidadId = $request->input('unidad');
+            $unidad = unidad::find($unidadId);
+            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+            $numeroUnidad = $unidad->numeroUnidad;
     
             // Buscar si ya existe un registro para esta unidad
             $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
@@ -320,14 +345,19 @@ public function registrarHoraEntrada(Request $request)
             if ($formacionUnidad) {
                 // Verificar si la unidad tiene horaCorte registrada
                 if (!$formacionUnidad->horaInicioUC) {
-                    return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene registrada la hora de inicio de la UC", "color" => "red"]);
+                    return redirect()->route('principal.formarUni')->with(['message' => "La unidad " .$numeroUnidad ." no tiene registrada la hora de inicio de la UC", "color" => "yellow", 'type' => 'info']);
                 }
     
                 // Verificar que la hora de regreso sea mayor o igual a la hora de corte
                 $horaInicioUC = \Carbon\Carbon::parse($formacionUnidad->horaInicioUC);
                 $horaFinUC = \Carbon\Carbon::parse($request->input('horaFinUC'));
+
+                // Formatear las horas para mostrar solo horas y minutos
+                $horaInicioUCFormateada = $horaInicioUC->format('H:i');
+                $horaFinUCFormateada = $horaFinUC->format('H:i');
+
                 if ($horaFinUC->lessThan($horaInicioUC)) {
-                    return redirect()->route('principal.formarUni')->with(['message' => "La hora de regreso no puede ser menor a la hora de inicio de la UC", "color" => "red"]);
+                    return redirect()->route('principal.formarUni')->with(['message' => "La hora de regreso " .$horaFinUCFormateada ." no puede ser menor a la hora de inicio de la UC " .$horaInicioUCFormateada, "color" => "red", 'type' => 'error']);
                 }
     
                 // Actualizar la hora de regreso
@@ -341,9 +371,9 @@ public function registrarHoraEntrada(Request $request)
                 ]);
             }
     
-            return redirect()->route('principal.formarUni')->with(['message' => "Hora de regreso de la UC registrado correctamente", "color" => "green"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Hora de regreso de UC de la unidad " .$numeroUnidad ." registrado correctamente", "color" => "green", 'type' => 'success']);
         } catch(Exception $e){
-            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de regreso de la UC", "color" => "red"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de regreso de la UC", "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -413,7 +443,7 @@ public function registrarHoraEntrada(Request $request)
     
             if($existingUnidad){
                 // Unidad ya existe, puedes devolver una respuesta indicando el error
-                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya existe", "color" => "yellow"]);
+                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya está registrada: " .$request->numeroUnidad, "color" => "yellow", 'type' => 'info']);
             }
         
             $unidad = new unidad();
@@ -433,9 +463,9 @@ public function registrarHoraEntrada(Request $request)
             $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
             $formacionUnidad->save();
             
-            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente: " . $request->numeroUnidad, "color" => "green"]);
+            return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente: " . $request->numeroUnidad, "color" => "green", 'type' => 'success']);
         } catch(Exception $e){
-            return redirect()->route('principal.unidades');
+            return redirect()->route('principal.unidades')->with(['message' => "Error al agregar la unidad " .$request->numeroUnidad, "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -528,7 +558,7 @@ public function registrarHoraEntrada(Request $request)
 
             if($existingOperador){
             // Operador ya existe, puedes devolver una respuesta indicando el error
-            return redirect()->route('principal.operadores')->with(['message' => "El operador ya existe.", "color" => "red"]);
+            return redirect()->route('principal.operadores')->with(['message' => "El operador ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, "color" => "yellow", 'type' => 'info']);
             }
     
             $operador = new operador();
@@ -543,9 +573,9 @@ public function registrarHoraEntrada(Request $request)
             $operador->nombre_completo = $nombreCompleto;
 
             $operador->save();
-            return redirect()->route('principal.operadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green"]);
+            return redirect()->route('principal.operadores')->with(['message' => "Operador agregado correctamente: $request->nombreCompleto", "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
-            return redirect()->route('principal.operadores');
+            return redirect()->route('principal.operadores')->with(['message' => "Error al agregar al operador", "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -620,7 +650,7 @@ public function registrarHoraEntrada(Request $request)
             
             if($directivoExistente) {
                 // Si ya existe un directivo con el mismo nombre completo, retornar un mensaje de error o realizar la acción correspondiente
-                return redirect()->route('principal.sociosPrestadores')->with(['message' => "El directivo .$request->nombreCompleto ya existe.", "color" => "red"]);
+                return redirect()->route('principal.sociosPrestadores')->with(['message' => "El directivo ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, "color" => "yellow", 'type' => 'info']);
             }
     
             $directivo = new directivo();
@@ -632,9 +662,9 @@ public function registrarHoraEntrada(Request $request)
             $directivo->nombre_completo = $nombreCompleto;
 
             $directivo->save();
-            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Operador agregado correctamente: .$request->nombreCompleto", "color" => "green"]);
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Directivo agregado correctamente: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
-            return redirect()->route('principal.sociosPrestadores');
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Error al agregar al directivo", "color" => "red", 'type' => 'error']);
         }
     }
 

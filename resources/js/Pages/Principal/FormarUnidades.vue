@@ -494,7 +494,7 @@ const cerrarModalE = () => {
                 Socio / Prestador
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora entrada
+                Hr. entrada
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Tipo entrada
@@ -503,28 +503,28 @@ const cerrarModalE = () => {
                 Extremo
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora Corte
+                Hr. Corte
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Causa
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora regreso
+                Hr. regreso
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Ultima Corrida
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora inicio
+                Hr. inicio
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora regreso
+                Hr. regreso
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora inicio
+                Hr. inicio
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hora finaliza
+                Hr. finaliza
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Motivo
