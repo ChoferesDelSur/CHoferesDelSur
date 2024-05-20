@@ -39,6 +39,7 @@ class PrincipalController extends Controller
             'ruta' => $ruta,
             'message' => session('message'),
             'color' => session('color'),
+            'type' => session('type'),
         ]);
     }
     public function formarUnidades(){
@@ -57,6 +58,7 @@ class PrincipalController extends Controller
             'formacionUnidades' => $formacionUnidades,
             'message' => session('message'),
             'color' => session('color'),
+            'type' => session('type'),
         ]);
     }
 
@@ -390,6 +392,7 @@ public function registrarHoraEntrada(Request $request)
             'directivo' => $directivo,
             'message' => session('message'),
             'color' => session('color'),
+            'type' => session('type'),
         ]);
     }
     
@@ -503,6 +506,7 @@ public function registrarHoraEntrada(Request $request)
             'directivo' => $directivo,
             'message' => session('message'),
             'color' => session('color'),
+            'type' => session('type'),
         ]);
     }
 
@@ -597,6 +601,7 @@ public function registrarHoraEntrada(Request $request)
             'tipDirectivo' => $tipDirectivo,
             'message' => session('message'),
             'color' => session('color'),
+            'type' => session('type'),
         ]);
     }
 
@@ -615,7 +620,7 @@ public function registrarHoraEntrada(Request $request)
             
             if($directivoExistente) {
                 // Si ya existe un directivo con el mismo nombre completo, retornar un mensaje de error o realizar la acción correspondiente
-                return redirect()->route('principal.sociosPrestadores')->with(['message' => "El directivo $nombreCompleto ya existe.", "color" => "red"]);
+                return redirect()->route('principal.sociosPrestadores')->with(['message' => "El directivo .$request->nombreCompleto ya existe.", "color" => "red"]);
             }
     
             $directivo = new directivo();
@@ -627,7 +632,7 @@ public function registrarHoraEntrada(Request $request)
             $directivo->nombre_completo = $nombreCompleto;
 
             $directivo->save();
-            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green"]);
+            return redirect()->route('principal.sociosPrestadores')->with(['message' => "Operador agregado correctamente: .$request->nombreCompleto", "color" => "green"]);
         }catch(Exception $e){
             return redirect()->route('principal.sociosPrestadores');
         }
@@ -682,6 +687,7 @@ public function registrarHoraEntrada(Request $request)
             'ruta' => $ruta,
             'message' => session('message'),
             'color' => session('color'),
+            'type' => session('type'),
         ]);
     }
 
@@ -696,15 +702,15 @@ public function registrarHoraEntrada(Request $request)
 
             if ($existingRuta) {
                 // Si ya existe, maneja la situación como desees, por ejemplo, redirigir con un mensaje de error.
-                return redirect()->route('principal.rutas')->with(['message' => "La ruta ya está registrada: " . $request->nombreRuta, 'color' => 'yellow']);
+                return redirect()->route('principal.rutas')->with(['message' => "La ruta ya está registrada: " . $request->nombreRuta, 'color' => 'yellow', 'type' => 'info']);
             }
     
             $ruta = new ruta();
             $ruta->nombreRuta = $request->nombreRuta;
             $ruta->save();
-            return redirect()->route('principal.rutas')->with(['message' => "Ruta agregado correctamente", 'color' => 'green']);
+            return redirect()->route('principal.rutas')->with(['message' => "Ruta agregado correctamente: " .$request->nombreRuta, 'color' => 'green', 'type' => 'success']);
         }catch(Exception $e){
-            return redirect()->back()->with(['message' => "Error al agregar la ruta: " . $e->getMessage(), 'color' => 'red']);
+            return redirect()->back()->with(['message' => "Error al agregar la ruta: " . $e->getMessage(), 'color' => 'error', 'type' => 'error']);
         }
     }
 
