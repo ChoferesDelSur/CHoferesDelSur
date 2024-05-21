@@ -18,9 +18,9 @@ const props = defineProps({
 
     <TopContent /> <!--LLama al componente TopContent-->
 
-    <div class="flex-1 flex flex-wrap">
+    <div class="flex-1 flex">
       <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
-      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col md:flex " id="sideNav"> <!--Color de la barra de menu-->
+      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col md:flex" id="sideNav"> <!--Color de la barra de menu-->
         <nav>
           <div class="w-60 h-16 justify-start items-center px-2 inline-flex">
             <div class="w-12 h-12 relative">
@@ -46,7 +46,7 @@ const props = defineProps({
       </div>
 
       <!-- Área de contenido principal -->
-      <div class="flex-1 p-4 w-full md:w-1/2">
+      <div class="flex-1 p-4 overflow-y-auto">
         <!-- Page Content -->
         <main>
           <slot />
@@ -77,5 +77,25 @@ const props = defineProps({
 
 .logout-button:hover i {
   transform: rotate(360deg);
+}
+
+/* Estilos CSS para el contenido principal */
+main {
+  /* Establece una altura máxima para el contenido principal */
+  max-height: calc(100vh - 64px); /* Ajusta el valor según el tamaño de la barra de navegación superior */
+}
+
+/* Opcional: Estilos para el scroll si el contenido excede la altura del contenido principal */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+
+main::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+main::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 </style>

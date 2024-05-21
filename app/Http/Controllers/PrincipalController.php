@@ -211,8 +211,21 @@ public function registrarHoraEntrada(Request $request)
 
             // Verificar si la unidad tiene registrada la hora de entrada
             if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar el castigo para la unidad " .$numeroUnidad ." porque no tiene registrado la hora de entrada", "color" => "yellow", 'type' => 'info']);
+                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar el castigo para la unidad " .$numeroUnidad ." porque no ha formado.", "color" => "yellow", 'type' => 'info']);
             }
+
+             // Obtener la hora de inicio y la hora de fin del request
+             $horaInicio = \Carbon\Carbon::parse($request->input('horaInicio'));
+             $horaFin = \Carbon\Carbon::parse($request->input('horaFin'));
+ 
+             // Formatear las horas para mostrar solo horas y minutos
+             $horaInicioFormateada = $horaInicio->format('H:i');
+             $horaFinFormateada = $horaFin->format('H:i');
+ 
+             // Verificar que la hora de fin sea posterior a la hora de inicio
+             if ($horaFin->lessThan($horaInicio)) {
+                 return redirect()->route('principal.formarUni')->with(['message' => "La hora de fin del castigo " .$horaFinFormateada ." no puede ser menor que la hora de inicio del castigo " .$horaInicioFormateada, "color" => "red", 'type' => 'error']);
+             }
 
             // Crear una nueva instancia del modelo castigo
             $nuevoCastigo = new castigo();
@@ -382,16 +395,27 @@ public function registrarHoraEntrada(Request $request)
             // Obtener los datos del formulario
             $datosFormulario = $request->validate([
                 'unidadesSeleccionadas' => 'required|array', // Array con las IDs de las unidades seleccionadas
-            ]);
+            ]);                                                                                                                                                                                                 
+
+            // Extraer los IDs de las unidades seleccionadas
+            $unidadesSeleccionadas = $datosFormulario['unidadesSeleccionadas'];
+
+            formacionunidades::whereIn('idUnidad', $unidadesSeleccionadas)
+            ->update(['trabajaDomingo' => 'NO']);
+
+            // Calcular el próximo domingo
+            Carbon::setLocale('es'); // Establecer el idioma a español
+            $proximoDomingo = Carbon::now()->next(Carbon::SUNDAY);
+            $diaSemana = ucfirst($proximoDomingo->translatedFormat('l')); // Nombre del día (Sunday)
+            $fecha = $proximoDomingo->format('d/m/Y'); // Fecha en formato día/mes/año
             
-            // Actualizar las unidades seleccionadas a 'NO'
-            foreach ($datosFormulario['unidadesSeleccionadas'] as $idUnidad) {
-                formacionunidades::where('idUnidad', $idUnidad)
-                    ->update(['trabajaDomingo' => 'NO']);
+            foreach ($unidadesSeleccionadas as $unidad) {
+                $unidad->trabajaDomingo = 'NO';
+                $unidad->save();
             }
-             
+
             // Redireccionar con un mensaje de éxito
-            return redirect()->route('principal.formarUni')->with(['message' => "Unidades registradas correctamente", "color" => "green"]);
+            return redirect()->route('principal.formarUni')->with(['message' => "Unidades registradas correctamente para trabajar el próximo " .$diaSemana ." " .$fecha, "color" => "green", 'type' => 'success']);
         } catch (Exception $e){
             // Manejo de excepciones
             return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);

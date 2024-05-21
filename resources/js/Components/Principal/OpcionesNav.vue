@@ -48,6 +48,6 @@ defineProps
 }
 
 .menu-button:hover i {
-  transform: translateY(-3px); /* El ícono salta 3px hacia arriba al pasar el puntero */
+  transform: translateY(-5px); /* El ícono salta 3px hacia arriba al pasar el puntero */
 }
 </style>

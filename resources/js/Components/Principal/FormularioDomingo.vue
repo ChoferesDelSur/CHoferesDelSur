@@ -63,18 +63,18 @@ const validateSelect = (selectedValue) => {
 const unidadError = ref('');
 
 const save = async () => {
-/*     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione al menos una unidad';
-    if (
-        unidadError.value
-    ) {
-        return;
-    } */
+    /*     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione al menos una unidad';
+        if (
+            unidadError.value
+        ) {
+            return;
+        } */
 
     form.post(route('principal.trabDomingo'), {
         data: form.data, // Envía los datos del formulario al controlador
         onSuccess: () => {
             close()
-           /*  unidadError.value = ''; */
+            /*  unidadError.value = ''; */
         }
     })
 }
@@ -126,23 +126,20 @@ const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                 <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Seleccione las unidades que trabajarán el próximo:
-                    <strong >{{ proximoDomingo }}</strong>.
+                    <strong>{{ proximoDomingo }}</strong>.
                 </p>
-                <div class="border-b border-gray-900/10 pb-12">
-                    <div class="sm:col-span-2 px-4">
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
-                                class="text-red-500">*</span></label>
-                        <div class="mt-2" style="max-height: 380px; overflow-y: auto;">
-                            <!-- Utilizamos v-for para iterar sobre cada opción de unidad -->
-                            <div v-for="carro in unidad" :key="carro.idUnidad">
-                                <!-- Cada opción es representada por un checkbox con su propio modelo -->
-                                <input type="checkbox" :id="'unidad' + carro.idUnidad" :value="carro.idUnidad"
-                                    v-model="form.unidadesSeleccionadas[carro.idUnidad]"
-                                    class="rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <!-- Etiqueta para el checkbox -->
-                                <label :for="'unidad' + carro.idUnidad" class="ml-2">{{ carro.numeroUnidad }}</label>
-                            </div>
-                        </div>
+
+                <div class="sm:col-span-2 px-4">
+                    <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad<span
+                            class="text-red-500">*</span></label>
+                    <div class="mt-2">
+                        <select name="unidad" id="unidad" v-model="form.unidadesSeleccionadas" multiple size="10"
+                            class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option disabled>Seleccione una o más unidades</option>
+                            <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
+                                {{ carro.numeroUnidad }}
+                            </option>
+                        </select>
                     </div>
                     <!-- <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div> -->
                 </div>

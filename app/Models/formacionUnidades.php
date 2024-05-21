@@ -35,4 +35,10 @@ class formacionUnidades extends Model
         $this->tipoEntrada = $tipoEntrada;
         $this->save();
     }
+
+    // Definición de la relación con la tabla Unidad
+    public function unidad()
+    {
+        return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
 }

@@ -7,7 +7,6 @@ const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
 });
-console.log("Estoy en Inicio");
 </script>
 
 <template>
@@ -16,8 +15,8 @@ console.log("Estoy en Inicio");
 
             <Mensaje/>
 
-            <h2 class="font-bold text-center text-xl pt-5"> Bienvenido al sistema de la empresa Choferes del Sur</h2>
-            <h3 class="font-bold text-center text-xl pt-5"> Ha iniciado sesión como administrador</h3>
+            <h1 class="font-bold text-center text-xl pt-5"> Bienvenido al sistema de la empresa Choferes del Sur</h1>
+            
         </div>
     </PrincipalLayout>
 </template>
