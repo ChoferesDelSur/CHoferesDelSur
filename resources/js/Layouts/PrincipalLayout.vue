@@ -40,7 +40,7 @@ const props = defineProps({
         <div class="bg-gradient-to-r from-white to-white h-px mt-2"></div> <!-- Esto es una linea -->
         <!-- Ítem de Cerrar Sesión -->
         <a
-          class="block text-white py-2.5 px-4 my-2 rounded transition duration-200 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-500 hover:text-white mt-auto">
+          class="logout-button block text-white py-2.5 px-4 my-2 rounded transition duration-200 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-500 hover:text-white mt-auto">
           <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
         </a>
       </div>
@@ -55,3 +55,27 @@ const props = defineProps({
     </div>
   </div>
 </template>
+
+<style>
+.logout-button {
+  border: 2px solid transparent;
+  transition: background-color 0.3s, transform 0.3s, border-color 0.3s;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.logout-button:hover {
+  background-color: #e60000; /* Color rojo */
+  transform: scale(1.05);
+  border-color: #e60000;
+}
+
+.logout-button i {
+  transition: transform 0.3s;
+}
+
+.logout-button:hover i {
+  transform: rotate(360deg);
+}
+</style>
