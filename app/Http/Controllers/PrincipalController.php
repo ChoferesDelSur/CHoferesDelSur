@@ -801,4 +801,24 @@ public function registrarHoraEntrada(Request $request)
         }
     }
 
+    public function reportes()
+    {
+        $directivo = directivo::all();
+        $operador = operador::all(); 
+        $tipoOperador = tipooperador::all();
+        $estado = estado::all();
+        $unidad = unidad::all();
+        $ruta = ruta::all();
+        return Inertia::render('Principal/Reportes',[
+            'unidad' => $unidad,
+            'operador' => $operador,
+            'tipoOperador' => $tipoOperador,
+            'estado' => $estado,
+            'ruta' => $ruta,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
 }
