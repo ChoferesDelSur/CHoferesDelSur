@@ -54,7 +54,7 @@ const botonesPersonalizados = [
   {
     extend: 'copyHtml5',
     text: '<i class="fa-solid fa-copy"></i> Copiar', // Texto del botón
-    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+    className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
     exportOptions: {
       columns: [0, 2] // Indica qué columnas deben ser copiadas (por ejemplo, aquí se copiarían las columnas 0 y 2)
     },
@@ -64,7 +64,7 @@ const botonesPersonalizados = [
     title: 'Formación de unidades',
     extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
-    className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
+    className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
     exportOptions: {
       columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     }
@@ -73,7 +73,7 @@ const botonesPersonalizados = [
     title: 'Formación de unidades',
     extend: 'pdfHtml5',
     text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
-    className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+    className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
     orientation: 'landscape', // Configurar la orientación horizontal
     exportOptions: {
       columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
@@ -83,7 +83,7 @@ const botonesPersonalizados = [
     title: 'Formación de unidades',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
-    className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+    className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
     exportOptions: {
       columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
     }
@@ -395,14 +395,13 @@ const cerrarModalE = () => {
 
 <template>
   <PrincipalLayout title="Formar Unidades">
-    <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6 ">
-      <h2 class="font-bold text-center text-xl pt-1"> Formar Unidades</h2>
-      <div class="my-1"></div> <!-- Espacio de separación -->
-      <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
+    <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
+      <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
+      <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
       <Mensaje/>
 
-      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
+      <div class="py-0 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
@@ -576,5 +575,10 @@ const cerrarModalE = () => {
 /* Estilo personalizado para centrar el texto en las celdas de la tabla */
 #formacionTablaId th {
   text-align: center !important;
+}
+
+.jump-icon:hover i {
+    transition: transform 0.2s ease-in-out;
+    transform: translateY(-3px);
 }
 </style>

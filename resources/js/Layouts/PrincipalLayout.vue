@@ -18,9 +18,11 @@ const props = defineProps({
 
     <TopContent /> <!--LLama al componente TopContent-->
 
-    <div class="flex-1 flex">
+    <div class="flex-1 flex overflow-hidden"><!-- el overflow-hidden: es el encargaddo de ocultar la barra de dezplazamiento 
+    que afecta al menu y el encabezado -->
+
       <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
-      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col md:flex" id="sideNav"> <!--Color de la barra de menu-->
+      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col" id="sideNav"> <!--Color de la barra de menu-->
         <nav>
           <div class="w-60 h-16 justify-start items-center px-2 inline-flex">
             <div class="w-12 h-12 relative">

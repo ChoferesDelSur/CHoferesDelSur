@@ -1,5 +1,4 @@
 <script setup>
-//import { defineProps } from 'vue';
 import { ref, watchEffect} from 'vue';
 import { usePage } from '@inertiajs/inertia-vue3';
 
@@ -7,7 +6,6 @@ const page = usePage();
 const show = ref(true);
 const style = ref('success');
 const message = ref('');
-//const sideNav = ref(null); // Definir sideNav como una referencia a un elemento HTML
 
 const props = defineProps({
     //usuario: { type: Object }

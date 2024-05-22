@@ -25,12 +25,16 @@ defineProps
       <i class="fa fa-id-card" aria-hidden="true"></i> Operadores
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('principal.sociosPrestadores')">
+      <i class="fa fa-briefcase" aria-hidden="true"></i> Socios y Prestadores
+    </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
       :href="route('principal.rutas')">
       <i class="fa fa-map" aria-hidden="true"></i> Rutas
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
       :href="route('principal.sociosPrestadores')">
-      <i class="fa fa-briefcase" aria-hidden="true"></i> Socios y Prestadores
+      <i class="fa fa-folder-open" aria-hidden="true"></i> Reportes
     </a>
   </div>
 </template>
@@ -44,10 +48,12 @@ defineProps
 }
 
 .menu-button i {
-  transition: transform 0.2s; /* Añadimos una transición suave al cambio de transformación */
+  transition: transform 0.2s;
+  /* Añadimos una transición suave al cambio de transformación */
 }
 
 .menu-button:hover i {
-  transform: translateY(-5px); /* El ícono salta 3px hacia arriba al pasar el puntero */
+  transform: translateY(-5px);
+  /* El ícono salta 3px hacia arriba al pasar el puntero */
 }
 </style>

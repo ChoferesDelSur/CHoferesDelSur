@@ -34,7 +34,7 @@ const botonesPersonalizados = [
     {
         extend: 'copyHtml5',
         text: '<i class="fa-solid fa-copy"></i> Copiar', // Texto del botón
-        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        className: 'bg-cyan-500 hover:bg-cyan-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
             columns: [0, 2] // Indica qué columnas deben ser copiadas (por ejemplo, aquí se copiarían las columnas 0 y 2)
         },
@@ -44,7 +44,7 @@ const botonesPersonalizados = [
         title: 'Directivos registrados',
         extend: 'excelHtml5',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
-        className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2',
+        className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
         exportOptions: {
             columns: [2, 3, 4, 5, 6]
         }
@@ -53,7 +53,7 @@ const botonesPersonalizados = [
         title: 'Directivos registrados',
         extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
-        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
             columns: [2,3,4,5,6]
         }
@@ -62,7 +62,7 @@ const botonesPersonalizados = [
         title: 'Directivos registrados',
         extend: 'print',
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
-        className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2', // Clase de estilo
+        className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
         columns: [2,3,4,5,6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
     }
@@ -101,14 +101,6 @@ const columnas = [
             return `<button class="editar-button" data-id="${row.idDirectivo}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
         }
     },
-    /*     {
-            data: 'idOperador',
-            render: function (data, type, row, meta) {
-                // Modificación para mostrar la descripción del ciclo
-                const chofer = props.operador.find(chofer => chofer.idOperador === data);
-                return chofer ? chofer.nombre : '';
-            }
-        }, */
 ]
 
 const mostrarModal = ref(false);
@@ -189,17 +181,6 @@ onMounted(() => {
         const dir = props.directivo.find(d => d.idDirectivo === directivoId);
         abrirE(dir);
     });
-
-    // Manejar clic en el botón de eliminar
-    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
-        const alumnoId = $(this).data('id');
-        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
-        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
-    }); */
-
-    /* // Borra los datos de la sesión después de mostrarlos
-  sessionStorage.removeItem('message');
-  sessionStorage.removeItem('color'); */
 });
 
 const eliminarDirectivos = () => {
@@ -255,8 +236,8 @@ const eliminarDirectivos = () => {
 
 <template>
     <PrincipalLayout title="Directivos">
-        <div class="mt-2 bg-white p-4 shadow rounded-lg h-5/6">
-            <h2 class="font-bold text-center text-xl pt-5">Directivos</h2>
+        <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
+            <h2 class="font-bold text-center text-xl pt-0">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
@@ -326,3 +307,10 @@ const eliminarDirectivos = () => {
             :directivo="directivoE"></FormularioSP>
     </PrincipalLayout>
 </template>
+
+<style>
+.jump-icon:hover i {
+    transition: transform 0.2s ease-in-out;
+    transform: translateY(-3px);
+}
+</style>
