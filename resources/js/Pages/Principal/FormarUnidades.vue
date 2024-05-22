@@ -450,9 +450,11 @@ const cerrarModalE = () => {
               info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
               infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
               infoFiltered: '(filtrado de un total de _MAX_ registros)',
-              lengthMenu: 'Mostrar _MENU_ registros',
-              paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
+              /* lengthMenu: 'Mostrar _MENU_ registros',
+              paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
             }, buttons: [botonesPersonalizados],
+            paging: false,// Esto es para quitar la paginacion
+        lengthMenu: [] // Este es donde se pone sin limite de filas
           }">
           <thead>
             <tr class="text-sm leading-normal border-b border-gray-300">
