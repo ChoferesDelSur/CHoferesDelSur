@@ -35,14 +35,12 @@ const emit = defineEmits(['close']);
 
 const form = useForm({
     idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
-    unidad: props.formacionUnidades.idUnidad,
+    unidad: [], // Inicializa como un array vacío   
     domingo: props.formacionUnidades.domingo,
-    unidadesSeleccionadas: {} // Inicializa el objeto de unidades seleccionadas
 });
 
 watch(() => props.formacionUnidades, async (newVal) => {
     form.idFormacionUnidades = newVal.idFormacionUnidades;
-    form.unidad = newVal.unidad;
     form.domingo = newVal.domingo;
 }, { deep: true }
 );
@@ -63,18 +61,18 @@ const validateSelect = (selectedValue) => {
 const unidadError = ref('');
 
 const save = async () => {
-    /*     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione al menos una unidad';
+        unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione al menos una unidad';
         if (
             unidadError.value
         ) {
             return;
-        } */
+        }
 
     form.post(route('principal.trabDomingo'), {
         data: form.data, // Envía los datos del formulario al controlador
         onSuccess: () => {
             close()
-            /*  unidadError.value = ''; */
+             unidadError.value = '';
         }
     })
 }
@@ -125,15 +123,33 @@ const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
+
+                <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Seleccione las unidades que trabajaron el :
+                    <strong>{{ DomingoAnterior }}</strong>.
+                </p>
+
+                <div class="sm:col-span-2 px-4">
+                    <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                    <div class="mt-2">
+                        <select name="unidad" id="unidad" v-model="form.unidad" multiple size="10"
+                            class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option disabled>Seleccione una o más unidades</option>
+                            <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
+                                {{ carro.numeroUnidad }}
+                            </option>
+                        </select>
+                    </div>
+                    <!-- <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div> -->
+                </div>
+
                 <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Seleccione las unidades que trabajarán el próximo:
                     <strong>{{ proximoDomingo }}</strong>.
                 </p>
 
                 <div class="sm:col-span-2 px-4">
-                    <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad<span
-                            class="text-red-500">*</span></label>
+                    <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                     <div class="mt-2">
-                        <select name="unidad" id="unidad" v-model="form.unidadesSeleccionadas" multiple size="10"
+                        <select name="unidad" id="unidad" v-model="form.unidad" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
                             <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
@@ -146,7 +162,7 @@ const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
                         class="text-sm font-semibold leading-6 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white py-2 px-4 rounded"
-                        data-bs.dismiss="modal" @click="close">Cancelar</button>
+                        data-bs.dismiss="modal" @click="close"><i class="fa-solid fa-ban"></i> Cancelar</button>
                     <button type="submit"
                         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
                         :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>

@@ -106,7 +106,7 @@ public function registrarHoraEntrada(Request $request)
     $unidad = unidad::find($unidadId);
     if (!$unidad->operador) {
         // La unidad no tiene un operador asignado, puedes manejar el error aquí
-        return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene operador asignado", "color" => "yellow", 'type' => 'info']);
+        return redirect()->route('principal.formarUni')->with(['message' => "La unidad {$unidad->numeroUnidad} no tiene operador asignado", "color" => "yellow", 'type' => 'info']);
     }
 
     // Buscar si ya existe un registro para esta unidad
@@ -152,12 +152,14 @@ public function registrarHoraEntrada(Request $request)
             $unidadId = $request->input('unidad');
             $unidad = unidad::find($unidadId);
 
+            $numeroUnidad = $unidad->numeroUnidad;
+
             // Buscar si ya existe un registro para esta unidad
             $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
 
             // Verificar si la unidad tiene registrada la hora de entrada
             if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with(['message' => "La unidad no tiene registrada la hora de entrada.", "color" => "yellow",'type'=>'info']);
+                return redirect()->route('principal.formarUni')->with(['message' => "La unidad {$numeroUnidad} no tiene registrada la hora de entrada.", "color" => "yellow",'type'=>'info']);
             }
 
             // Si ya existe un registro para esta unidad, actualizar la hora de corte, causa y hora de regreso
@@ -390,37 +392,41 @@ public function registrarHoraEntrada(Request $request)
         }
     }
 
-    public function registrarTrabajanDomingo(Request $request){
+    public function registrarTrabajanDomingo(Request $request)
+    {
         try {
-            // Obtener los datos del formulario
-            $datosFormulario = $request->validate([
-                'unidadesSeleccionadas' => 'required|array', // Array con las IDs de las unidades seleccionadas
-            ]);                                                                                                                                                                                                 
 
-            // Extraer los IDs de las unidades seleccionadas
-            $unidadesSeleccionadas = $datosFormulario['unidadesSeleccionadas'];
-
-            formacionunidades::whereIn('idUnidad', $unidadesSeleccionadas)
-            ->update(['trabajaDomingo' => 'NO']);
-
-            // Calcular el próximo domingo
-            Carbon::setLocale('es'); // Establecer el idioma a español
-            $proximoDomingo = Carbon::now()->next(Carbon::SUNDAY);
-            $diaSemana = ucfirst($proximoDomingo->translatedFormat('l')); // Nombre del día (Sunday)
-            $fecha = $proximoDomingo->format('d/m/Y'); // Fecha en formato día/mes/año
-            
-            foreach ($unidadesSeleccionadas as $unidad) {
-                $unidad->trabajaDomingo = 'NO';
-                $unidad->save();
+            $unidadesSeleccionadas = $request->input('unidad', []);
+            // Verificar si hay unidades seleccionadas
+            if (empty($unidadesSeleccionadas)) {
+                throw new \Exception("No se han seleccionado unidades.");
             }
 
-            // Redireccionar con un mensaje de éxito
-            return redirect()->route('principal.formarUni')->with(['message' => "Unidades registradas correctamente para trabajar el próximo " .$diaSemana ." " .$fecha, "color" => "green", 'type' => 'success']);
-        } catch (Exception $e){
+            // Obtener las formaciones de unidades correspondientes a las unidades seleccionadas
+            $formaciones = formacionunidades::whereIn('idUnidad', $unidadesSeleccionadas)->get();
+
+            // Verificar si se encontraron formaciones
+            if ($formaciones->isEmpty()) {
+                throw new \Exception("No se encontraron formaciones de unidades para las unidades seleccionadas.");
+            }
+
+            // Actualizar el campo 'trabajaDomingo' de las formaciones de unidades encontradas
+            foreach ($formaciones as $formacion) {
+                $formacion->update(['trabajaDomingo' => 'NO']);
+            }
+
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "Se han actualizado correctamente las unidades que no trabajan el domingo.",
+                'color' => 'green'
+            ]);
+        } catch (\Exception $e) {
             // Manejo de excepciones
-            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red"]);
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "Error: " . $e->getMessage(),
+                'color' => 'red'
+            ]);
         }
-    } 
+    }
      
     public function unidades(){
         $unidad = unidad::all();

@@ -138,7 +138,7 @@ const save = async () => {
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
                         class="text-sm font-semibold leading-6 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white py-2 px-4 rounded"
-                        data-bs.dismiss="modal" @click="close">Cancelar</button>
+                        data-bs.dismiss="modal" @click="close"><i class="fa-solid fa-ban"></i> Cancelar</button>
                     <button type="submit"
                         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
                         :disabled="form.processing"> <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar</button>

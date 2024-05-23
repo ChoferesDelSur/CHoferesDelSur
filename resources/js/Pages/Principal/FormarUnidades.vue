@@ -566,7 +566,7 @@ const cerrarModalE = () => {
       :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
     </FormularioRegresoUC>
     <FormularioDomingo :show="mostrarModalDomingo" :max-width="maxWidth" :closeable="closeable"
-      @close="cerrarModalDomingo" :title="'Registrar unidades que trabajaran domingo'" :op="'1'"
+      @close="cerrarModalDomingo" :title="'Registrar las unidades que trabajaran domingo'" :op="'1'"
       :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
     </FormularioDomingo>
 
