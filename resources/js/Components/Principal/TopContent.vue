@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect} from 'vue';
+import { ref, watchEffect } from 'vue';
 import { usePage } from '@inertiajs/inertia-vue3';
 
 const page = usePage();
@@ -31,21 +31,47 @@ watchEffect(async () => {
                 </button>
             </div>
             <div class="h-full">
-                <img :src="'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjjWteVbsRhdwMVVzQ_iC0LN3KGixAvG8_3J3ZdsWiCQ&s'" class="md:h-full h-14 md:mx-1 border-2 border-cyan-500 object-cover rounded-lg">
+                <img :src="'https://i.postimg.cc/dh2vL0LL/Logo-Choferes-Del-Sur-SF.png'"
+                    class="custom-img-size border-2 border-cyan-500 object-cover rounded-lg">
             </div>
+
+
+        </div>
+        <div class="flex items-center h-full">
             <div class="md:flex items-center justify-center text-center hidden">
                 <!-- Mostrado en todos los dispositivos -->
-                <h1 class="md:font-bold md:text-2xl font-semibold text-xl"> Choferes del sur </h1>
+                <h1 class="md:font-bold md:text-5xl font-semibold text-4x"> Choferes del Sur </h1>
             </div>
-            <div class="flex items-center justify-center text-center md:hidden"> <!-- Mostrado en todos los dispositivos -->
+            <div class="flex items-center justify-center text-center md:hidden">
+                <!-- Mostrado en todos los dispositivos -->
                 <h1 class="md:font-bold md:text-2xl font-semibold text-lg">Choferes del sur</h1>
             </div>
-            
         </div>
         <div class="flex items-center h-full">
             <div class="flex items-center text-center h-full justify-center mx-1">
-                
-            </div>        
+                <div class="h-full">
+                    <img :src="'https://i.postimg.cc/gwGpRPZ4/Logo-Tucdosa-SF.png'"
+                        class="md:h-full h-14 md:mx-1 border-2 border-cyan-500 object-cover rounded-lg">
+                </div>
+            </div>
         </div>
+
     </div>
 </template>
+
+<style>
+.custom-img-size {
+    width: 100px;
+    /* Ajusta a tu tamaño deseado */
+    height: auto;
+    /* Mantiene la proporción de la imagen */
+}
+
+@media (min-width: 768px) {
+    .custom-img-size {
+        width: 200px;
+        /* Ajusta a tu tamaño deseado para pantallas medianas y grandes */
+    }
+}
+
+</style>

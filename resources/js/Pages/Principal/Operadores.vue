@@ -256,11 +256,6 @@ const eliminarOperadores = () => {
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-plus mr-2"></i>Agregar Operador
                 </button>
-                <button id="editarABtn" disabled
-                    class="bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarAlumnos">
-                    <i class="fa fa-pencil" aria-hidden="true"></i> Editar Operador
-                </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
                     @click="eliminarOperadores">

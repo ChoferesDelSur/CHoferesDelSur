@@ -17,4 +17,5 @@ class ruta extends Model
     protected $fillable = [
         'nombreRuta'
     ];
+
 }

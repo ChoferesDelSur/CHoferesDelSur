@@ -464,11 +464,23 @@ public function registrarHoraEntrada(Request $request)
                 ->where('idRuta', $request->ruta)
                 ->where('idDirectivo', $request->directivo)
                 ->first();
+
+        // Obtener el nombre completo del directivo y el nombre de la ruta
+        $nombredirectivo = directivo::find($request->directivo)->nombre_completo;
+        $nombreruta = ruta::find($request->ruta)->nombreRuta;
     
             if($existingUnidad){
                 // Unidad ya existe, puedes devolver una respuesta indicando el error
-                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya está registrada: " .$request->numeroUnidad, "color" => "yellow", 'type' => 'info']);
+                return redirect()->route('principal.unidades')->with(['message' => "La unidad ya está registrada: " .$request->numeroUnidad ." - " .$nombreruta ." - " .$nombredirectivo, "color" => "yellow", 'type' => 'info']);
             }
+
+            $existingNumero = unidad::where('numeroUnidad', $request->numeroUnidad)
+            ->first();
+
+        if($existingNumero){
+            // Unidad ya existe con un número igual pero diferentes ruta y directivo
+            return redirect()->route('principal.unidades')->with(['message' => "Ya existe una unidad con el número proporcionado, pero con una ruta y directivo diferente: " .$request->numeroUnidad, "color" => "yellow", 'type' => 'info']);
+        }
         
             $unidad = new unidad();
             $unidad->numeroUnidad = $request->numeroUnidad;
@@ -597,7 +609,7 @@ public function registrarHoraEntrada(Request $request)
             $operador->nombre_completo = $nombreCompleto;
 
             $operador->save();
-            return redirect()->route('principal.operadores')->with(['message' => "Operador agregado correctamente: $request->nombreCompleto", "color" => "green", 'type' => 'success']);
+            return redirect()->route('principal.operadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
             return redirect()->route('principal.operadores')->with(['message' => "Error al agregar al operador", "color" => "red", 'type' => 'error']);
         }

@@ -21,14 +21,11 @@ const getIcon = (type) => {
   }
 };
 
-const emit = defineEmits(['limpiarMensaje']);
-
 const esVisible = ref(true);//Si se le pone true aparece el mensaje
+
 
 const ocultarMensaje = () => {
   esVisible.value = false;
-  emit('limpiarMensaje'); // Emitir el evento para borrar el mensaje en el componente padre
-  console.log(message);
 };
 
 </script>
@@ -61,10 +58,13 @@ const ocultarMensaje = () => {
   /* Ajusta este valor según sea necesario */
 }
 
-.message-scale-enter-active, .message-scale-leave-active {
+.message-scale-enter-active,
+.message-scale-leave-active {
   transition: transform 0.5s;
 }
-.message-scale-enter, .message-scale-leave-to {
+
+.message-scale-enter,
+.message-scale-leave-to {
   transform: scale(0);
 }
 </style>

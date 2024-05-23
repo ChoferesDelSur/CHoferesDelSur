@@ -23,7 +23,7 @@ class unidad extends Model
 
     public function operador()
 {
-    return $this->belongsTo(Operador::class, 'idOperador');
+    return $this->belongsTo(operador::class, 'idOperador');
 }
 
 }
