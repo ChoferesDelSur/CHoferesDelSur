@@ -394,7 +394,7 @@ public function registrarHoraEntrada(Request $request)
 
     public function registrarTrabajanDomingo(Request $request)
     {
-        try {
+        /* try {
 
             $unidadesSeleccionadas = $request->input('unidad', []);
             // Verificar si hay unidades seleccionadas
@@ -421,6 +421,34 @@ public function registrarHoraEntrada(Request $request)
             ]);
         } catch (\Exception $e) {
             // Manejo de excepciones
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "Error: " . $e->getMessage(),
+                'color' => 'red'
+            ]);
+        } */
+        try {
+            $unidadesSi = $request->input('unidadesSi', []);
+            $unidadesNo = $request->input('unidadesNo', []);
+    
+            if (empty($unidadesSi) && empty($unidadesNo)) {
+                throw new \Exception("No se han seleccionado unidades.");
+            }
+    
+            // Actualizar unidades que trabajarán el domingo (SI)
+            if (!empty($unidadesSi)) {
+                formacionunidades::whereIn('idUnidad', $unidadesSi)->update(['trabajaDomingo' => 'SI']);
+            }
+    
+            // Actualizar unidades que no trabajarán el domingo (NO)
+            if (!empty($unidadesNo)) {
+                formacionunidades::whereIn('idUnidad', $unidadesNo)->update(['trabajaDomingo' => 'NO']);
+            }
+    
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "Se han actualizado correctamente las unidades que trabajarán y no trabajarán el domingo.",
+                'color' => 'green'
+            ]);
+        } catch (\Exception $e) {
             return redirect()->route('principal.formarUni')->with([
                 'message' => "Error: " . $e->getMessage(),
                 'color' => 'red'

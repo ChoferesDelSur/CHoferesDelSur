@@ -37,6 +37,8 @@ const form = useForm({
     idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
     unidad: [], // Inicializa como un array vacío   
     domingo: props.formacionUnidades.domingo,
+    unidadesSi: [],  // Unidades que trabajarán (SI)
+    unidadesNo: [],  // Unidades que no trabajarán (NO)
 });
 
 watch(() => props.formacionUnidades, async (newVal) => {
@@ -51,70 +53,48 @@ const close = async () => {
     form.reset();
 }
 
-const validateSelect = (selectedValue) => {
-    if (!selectedValue || Object.values(selectedValue).every(value => value === false)) {
-        return false; // Si no se ha seleccionado ninguna opción
-    }
-    return true; // Si se ha seleccionado al menos una opción
+const validateSelect = (unidadesSi, unidadesNo) => {
+    return unidadesSi.length > 0 || unidadesNo.length > 0;
 };
 
 const unidadError = ref('');
 
 const save = async () => {
-        unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione al menos una unidad';
-        if (
-            unidadError.value
-        ) {
-            return;
-        }
+    unidadError.value = validateSelect(form.unidadesSi, form.unidadesNo) ? '' : 'Seleccione al menos una unidad en cualquiera de los select.';
+    
+    if (unidadError.value) {
+        return;
+    }
 
     form.post(route('principal.trabDomingo'), {
         data: form.data, // Envía los datos del formulario al controlador
         onSuccess: () => {
             close()
-             unidadError.value = '';
+            unidadError.value = '';
         }
     })
 }
 
 const obtenerDomingoAnterior = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const prevSunday = new Date(today);
-    prevSunday.setDate(today.getDate() - dayOfWeek);
-    return prevSunday;
+    const hoy = new Date();
+    const diaDeSemana = hoy.getDay();
+    const diasDesdeDomingo = diaDeSemana === 0 ? 7 : diaDeSemana; // Si hoy es domingo, mostrar el domingo pasado
+    const domingoAnterior = new Date(hoy);
+    domingoAnterior.setDate(hoy.getDate() - diasDesdeDomingo);
+    return domingoAnterior.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-// Formatear la fecha del domingo pasado
-const formatearDomingoAnterior = (date) => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('es-ES', options);
-};
-
-// Obtener la fecha del domingo pasado y formatearla
-const DomingoAnterior = formatearDomingoAnterior(obtenerDomingoAnterior());
-
-// Calcular la fecha del próximo domingo
 const obtenerProximoDomingo = () => {
     const hoy = new Date();
     const diaDeSemana = hoy.getDay();
-    // Calcula cuántos días faltan para llegar al próximo domingo (si hoy es domingo, será 7)
     const diasParaDomingo = 7 - diaDeSemana;
-    const proxDomingo = new Date(hoy);
-    // Suma los días restantes para llegar al próximo domingo
-    proxDomingo.setDate(hoy.getDate() + diasParaDomingo);
-    return proxDomingo;
+    const proximoDomingo = new Date(hoy);
+    proximoDomingo.setDate(hoy.getDate() + diasParaDomingo);
+    return proximoDomingo.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-// Formatear la fecha del próximo domingo
-const formatearProximoDomingo = (date) => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('es-ES', options);
-};
-
-// Obtener la fecha del próximo domingo y formatearla
-const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
-
+const DomingoAnterior = obtenerDomingoAnterior();
+const proximoDomingo = obtenerProximoDomingo();
 
 </script>
 
@@ -129,9 +109,9 @@ const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
                 </p>
 
                 <div class="sm:col-span-2 px-4">
-                    <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                    <label for="unidadesSi" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                     <div class="mt-2">
-                        <select name="unidad" id="unidad" v-model="form.unidad" multiple size="10"
+                        <select name="unidadesSi" id="unidadesSi" v-model="form.unidadesSi" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
                             <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
@@ -147,9 +127,9 @@ const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
                 </p>
 
                 <div class="sm:col-span-2 px-4">
-                    <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                    <label for="unidadesNo" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                     <div class="mt-2">
-                        <select name="unidad" id="unidad" v-model="form.unidad" multiple size="10"
+                        <select name="unidadesNo" id="unidadesNo" v-model="form.unidadesNo" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
                             <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
@@ -159,6 +139,9 @@ const proximoDomingo = formatearProximoDomingo(obtenerProximoDomingo());
                     </div>
                     <!-- <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div> -->
                 </div>
+                
+                <div v-if="unidadError" class="text-red-500 text-xs mt-1 mb-4">{{ unidadError }}</div>
+
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
                         class="text-sm font-semibold leading-6 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white py-2 px-4 rounded"
