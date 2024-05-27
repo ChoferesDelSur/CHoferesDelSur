@@ -394,38 +394,6 @@ public function registrarHoraEntrada(Request $request)
 
     public function registrarTrabajanDomingo(Request $request)
     {
-        /* try {
-
-            $unidadesSeleccionadas = $request->input('unidad', []);
-            // Verificar si hay unidades seleccionadas
-            if (empty($unidadesSeleccionadas)) {
-                throw new \Exception("No se han seleccionado unidades.");
-            }
-
-            // Obtener las formaciones de unidades correspondientes a las unidades seleccionadas
-            $formaciones = formacionunidades::whereIn('idUnidad', $unidadesSeleccionadas)->get();
-
-            // Verificar si se encontraron formaciones
-            if ($formaciones->isEmpty()) {
-                throw new \Exception("No se encontraron formaciones de unidades para las unidades seleccionadas.");
-            }
-
-            // Actualizar el campo 'trabajaDomingo' de las formaciones de unidades encontradas
-            foreach ($formaciones as $formacion) {
-                $formacion->update(['trabajaDomingo' => 'NO']);
-            }
-
-            return redirect()->route('principal.formarUni')->with([
-                'message' => "Se han actualizado correctamente las unidades que no trabajan el domingo.",
-                'color' => 'green'
-            ]);
-        } catch (\Exception $e) {
-            // Manejo de excepciones
-            return redirect()->route('principal.formarUni')->with([
-                'message' => "Error: " . $e->getMessage(),
-                'color' => 'red'
-            ]);
-        } */
         try {
             $unidadesSi = $request->input('unidadesSi', []);
             $unidadesNo = $request->input('unidadesNo', []);

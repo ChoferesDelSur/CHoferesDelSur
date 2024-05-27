@@ -71,32 +71,25 @@ const save = async () => {
 }
 
 const update = async () => {
-    console.log("Estoy en editar o update del formulario");
-    console.log(route('principal.actualizarRuta', { idRuta: props.ruta.idRuta }));
     nombreRutaError.value = validateStringNotEmpty(form.nombreRuta) ? '' : 'Ingrese el número de la ruta';
     if (
         nombreRutaError.value
     ) {
         return;
     }
-    try {
-/*         var idRuta = document.getElementById('idRuta2').value;
-        console.log("idRuta:" + idRuta); */
-        await form.put(route('principal.actualizarRuta', { idRuta: props.ruta.idRuta }), {
-            onSuccess: () => {
-                close()
-                nombreRutaError = '';
+    var idRuta = document.getElementById('idRuta2').value;
+    console.log("idRuta:" + idRuta);
+    form.put(route('principal.actualizarRuta', idRuta), {
+        onSuccess: () => {
+            close()
+            nombreRutaError = '';
 
-            },
+        },
         onError: (error) => {
-                console.error("Error al actualizar la ruta:", error);
-                // Manejar el error aquí, mostrar un mensaje al usuario, etc.
-            }
-        });
-    } catch (error) {
-        console.error("Error en la solicitud de actualización de la ruta:", error);
-        // Manejar el error aquí, mostrar un mensaje al usuario, etc.
-    }
+            console.error("Error al actualizar la ruta:", error);
+            // Manejar el error aquí, mostrar un mensaje al usuario, etc.
+        }
+    });
 }
 </script>
 

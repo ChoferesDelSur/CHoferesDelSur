@@ -148,7 +148,6 @@ onMounted(() => {
     $('#rutasTablaId').on('click', '.editar-button', function () {
         const rutaId = $(this).data('id');
         const rutt = props.ruta.find(r => r.idRuta === rutaId);
-        console.log("Estoy en onMounted: rutaId: " + rutaId);
         abrirE(rutt);
     });
 });
