@@ -38,7 +38,9 @@ const props = defineProps({
   operador: { type: Object },
   directivo: { type: Object },
   formacionUnidades: { type: Object },
+  rolServicio: { type: Object },
   castigo: { type: Object },
+  entrada: { type: Object},
 });
 
 // Dentro del bloque <script setup>
@@ -116,10 +118,24 @@ const columnas = [
     }
   },
   {
-    data: 'idFormacionUnidades',
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const tDom = props.formacionUnidades.find(tDom => tDom.idFormacionUnidades === data);
-      return tDom ? tDom.trabajaDomingo : '';
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Buscar el registro de rolServicio correspondiente
+        const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad);
+        if (rolServicio) {
+          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
+          return rolServicio.trabajaDomingo;
+        } else {
+          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
+          return '<span style="color: red;">Sin asignar</span>';
+        }
+      } else {
+        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
+        return 'Unidad no encontrada';
+      }
     }
   },
   {
@@ -142,28 +158,69 @@ const columnas = [
     }
   },
   {
-    data: null,
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const hEntrada = props.formacionUnidades.find(hEntrada => hEntrada === data);
-      if (hEntrada && hEntrada.horaEntrada) { // Verificar si hEntrada.horaEntrada no es nulo
-        return hEntrada.horaEntrada.substring(0, 5); // Obtener solo la hora y los minutos
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Buscar el registro de rolServicio correspondiente
+        const hEntrada = props.entrada.find(hE => hE.idUnidad === unidad.idUnidad);
+        /* const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad); */
+        if (hEntrada) {
+          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
+          return hEntrada.horaEntrada.substring(0,5);
+        } else {
+          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
+          return '';
+        }
       } else {
-        return ''; // Devolver una cadena vacía si el valor es nulo
+        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
+        return 'Unidad no encontrada';
       }
     }
   },
   {
-    data: 'idFormacionUnidades',
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const formacion = props.formacionUnidades.find(formacion => formacion.idFormacionUnidades === data);
-      return formacion ? formacion.tipoEntrada : '';
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Buscar el registro de rolServicio correspondiente
+        const tEntrada = props.entrada.find(tE=> tE.idUnidad === unidad.idUnidad);
+        /* const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad); */
+        if (tEntrada) {
+          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
+          return tEntrada.tipoEntrada;
+        } else {
+          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
+          return '';
+        }
+      } else {
+        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
+        return 'Unidad no encontrada';
+      }
     }
   },
   {
-    data: 'idFormacionUnidades',
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const tipoFormacion = props.formacionUnidades.find(tipoFormacion => tipoFormacion.idFormacionUnidades === data);
-      return tipoFormacion ? tipoFormacion.extremo : '';
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Buscar el registro de rolServicio correspondiente
+        const esExtremo = props.entrada.find(ex => ex.idUnidad === unidad.idUnidad);
+        /* const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad); */
+        if (esExtremo) {
+          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
+          return esExtremo.extremo;
+        } else {
+          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
+          return '';
+        }
+      } else {
+        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
+        return 'Unidad no encontrada';
+      }
     }
   },
   {
@@ -226,101 +283,101 @@ const columnas = [
   },
   {
     data: 'idUnidad',
-  render: function (data, type, row, meta) {
-    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-    if (castigosUnidad.length > 0) {
-      // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
-      const castigosRows = castigosUnidad.map(castigo => {
-        return {
-          horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
-          horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
-          castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
-          observaciones: castigo.observaciones || '', // Obtener observaciones si existen
-        };
-      });
-      // Devolver un array de filas con los datos de castigos
-      return castigosRows.map((castigoRow, index) => {
-        // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
-        const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid  #b2b2b2;' : '';
-        return `
+    render: function (data, type, row, meta) {
+      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+      if (castigosUnidad.length > 0) {
+        // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
+        const castigosRows = castigosUnidad.map(castigo => {
+          return {
+            horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
+            horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
+            castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
+            observaciones: castigo.observaciones || '', // Obtener observaciones si existen
+          };
+        });
+        // Devolver un array de filas con los datos de castigos
+        return castigosRows.map((castigoRow, index) => {
+          // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
+          const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid  #b2b2b2;' : '';
+          return `
           <div style="${borderStyle}">
             <div>${castigoRow.horaInicio}</div>
           </div>
         `;
-      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+        }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+      }
+      // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+      return '';
     }
-    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
-    return '';
-  }
   },
   {
     data: 'idUnidad',
-  render: function (data, type, row, meta) {
-    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-    if (castigosUnidad.length > 0) {
-      // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
-      const castigosRows = castigosUnidad.map(castigo => {
-        return {
-          horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
-          horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
-          castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
-          observaciones: castigo.observaciones || '', // Obtener observaciones si existen
-        };
-      });
-      // Devolver un array de filas con los datos de castigos
-      return castigosRows.map((castigoRow, index) => {
-        // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
-        const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-        return `
+    render: function (data, type, row, meta) {
+      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+      if (castigosUnidad.length > 0) {
+        // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
+        const castigosRows = castigosUnidad.map(castigo => {
+          return {
+            horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
+            horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
+            castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
+            observaciones: castigo.observaciones || '', // Obtener observaciones si existen
+          };
+        });
+        // Devolver un array de filas con los datos de castigos
+        return castigosRows.map((castigoRow, index) => {
+          // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
+          const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+          return `
           <div style="${borderStyle}">
             <div>${castigoRow.horaFin}</div>
           </div>
         `;
-      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+        }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+      }
+      // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+      return '';
     }
-    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
-    return '';
-  }
   },
   {
     data: 'idUnidad',
-  render: function (data, type, row, meta) {
-    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-    if (castigosUnidad.length > 0) {
-      // Crear un array de nombres de castigos
-      const nombresCastigos = castigosUnidad.map(castigo => {
-        return castigo.castigo || ''; // Obtener el nombre del castigo si existe
-      });
-      // Devolver un array de filas con los nombres de castigos
-      return nombresCastigos.map((nombreCastigo, index) => {
-        // Renderizar cada nombre de castigo en una fila diferente con un borde inferior si hay más de un nombre de castigo
-        const borderStyle = nombresCastigos.length > 1 && index !== nombresCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-        return `<div style="${borderStyle}">${nombreCastigo}</div>`;
-      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+    render: function (data, type, row, meta) {
+      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+      if (castigosUnidad.length > 0) {
+        // Crear un array de nombres de castigos
+        const nombresCastigos = castigosUnidad.map(castigo => {
+          return castigo.castigo || ''; // Obtener el nombre del castigo si existe
+        });
+        // Devolver un array de filas con los nombres de castigos
+        return nombresCastigos.map((nombreCastigo, index) => {
+          // Renderizar cada nombre de castigo en una fila diferente con un borde inferior si hay más de un nombre de castigo
+          const borderStyle = nombresCastigos.length > 1 && index !== nombresCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+          return `<div style="${borderStyle}">${nombreCastigo}</div>`;
+        }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+      }
+      // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+      return '';
     }
-    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
-    return '';
-  }
   },
   {
     data: 'idUnidad',
-  render: function (data, type, row, meta) {
-    const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-    if (castigosUnidad.length > 0) {
-      // Crear un array de observaciones de castigos
-      const observacionesCastigos = castigosUnidad.map(castigo => {
-        return castigo.observaciones || ''; // Obtener la observación del castigo si existe
-      });
-      // Devolver un array de filas con las observaciones de castigos
-      return observacionesCastigos.map((observacion, index) => {
-        // Renderizar cada observación en una fila diferente con un borde inferior si hay más de una observación de castigo
-        const borderStyle = observacionesCastigos.length > 1 && index !== observacionesCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-        return `<div style="${borderStyle}">${observacion}</div>`;
-      }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+    render: function (data, type, row, meta) {
+      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
+      if (castigosUnidad.length > 0) {
+        // Crear un array de observaciones de castigos
+        const observacionesCastigos = castigosUnidad.map(castigo => {
+          return castigo.observaciones || ''; // Obtener la observación del castigo si existe
+        });
+        // Devolver un array de filas con las observaciones de castigos
+        return observacionesCastigos.map((observacion, index) => {
+          // Renderizar cada observación en una fila diferente con un borde inferior si hay más de una observación de castigo
+          const borderStyle = observacionesCastigos.length > 1 && index !== observacionesCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+          return `<div style="${borderStyle}">${observacion}</div>`;
+        }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+      }
+      // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
+      return '';
     }
-    // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
-    return '';
-  }
   },
   {
     data: 'idUnidad',
@@ -399,7 +456,7 @@ const cerrarModalE = () => {
       <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
-      <Mensaje/>
+      <Mensaje />
 
       <div class="py-0 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
         <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -444,7 +501,7 @@ const cerrarModalE = () => {
       <div class="overflow-x-auto">
         <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-          id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="formacionUnidades" :options="{
+          id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
             responsive: false, autoWidth: false, dom: 'Bftrip', language: {
               search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
               info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -454,17 +511,17 @@ const cerrarModalE = () => {
               paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
             }, buttons: [botonesPersonalizados],
             paging: false,// Esto es para quitar la paginacion
-        lengthMenu: [] // Este es donde se pone sin limite de filas
+            lengthMenu: [] // Este es donde se pone sin limite de filas
           }">
           <thead>
             <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Celda vacía para la primera columna -->
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Unidad -->
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- Socio/Prestador -->
               <th
                 class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
@@ -475,23 +532,23 @@ const cerrarModalE = () => {
                 colspan="3">ÚLTIMA CORRIDA</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
               <!-- operador -->
             </tr>
             <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 ID
               </th>
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Ruta
               </th>
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Trab. DomINGO
               </th>
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Unidad
               </th>
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Socio / Prestador
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
@@ -533,7 +590,7 @@ const cerrarModalE = () => {
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Otras observaciones
               </th>
-              <th class="py-2 px-4 bg-grey-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Operador
               </th>
             </tr>
@@ -542,7 +599,7 @@ const cerrarModalE = () => {
       </div>
     </div>
     <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-      :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
+      :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :entrada="props.entrada"
       :unidad="props.unidad">
     </FormularioRegHoraEntrada>
     <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
@@ -567,7 +624,7 @@ const cerrarModalE = () => {
     </FormularioRegresoUC>
     <FormularioDomingo :show="mostrarModalDomingo" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalDomingo" :title="'Registrar las unidades que trabajaran domingo'" :op="'1'"
-      :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
+      :modal="'modalCreate'" :rolServicio="props.rolServicio" :unidad="props.unidad">
     </FormularioDomingo>
 
 
@@ -580,7 +637,7 @@ const cerrarModalE = () => {
 }
 
 .jump-icon:hover i {
-    transition: transform 0.2s ease-in-out;
-    transform: translateY(-3px);
+  transition: transform 0.2s ease-in-out;
+  transform: translateY(-3px);
 }
 </style>

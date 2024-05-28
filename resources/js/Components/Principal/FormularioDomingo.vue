@@ -18,7 +18,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    formacionUnidades: {
+    rolServicio: {
         type: Object,
         default: () => ({}),
     },
@@ -34,16 +34,16 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
+    idRolServicio: props.rolServicio.idRolServicio,
     unidad: [], // Inicializa como un array vacío   
-    domingo: props.formacionUnidades.domingo,
+    trabajaDomingo: props.rolServicio.trabajaDomingo,
     unidadesSi: [],  // Unidades que trabajarán (SI)
     unidadesNo: [],  // Unidades que no trabajarán (NO)
 });
 
-watch(() => props.formacionUnidades, async (newVal) => {
-    form.idFormacionUnidades = newVal.idFormacionUnidades;
-    form.domingo = newVal.domingo;
+watch(() => props.rolServicio, async (newVal) => {
+    form.idRolServicio = newVal.idRolServicio;
+    form.trabajaDomingo = newVal.trabajaDomingo;
 }, { deep: true }
 );
 

@@ -12,6 +12,10 @@ use App\Models\ruta;
 use App\Models\tipodirectivo;
 use App\Models\tipooperador;
 use App\Models\castigo;
+use App\Models\corte;
+use App\Models\entrada;
+use App\Models\rolServicio;
+use App\Models\ultimaCorrida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -49,6 +53,10 @@ class PrincipalController extends Controller
         $ruta = ruta::all();
         $formacionUnidades = formacionunidades::all();
         $castigo = castigo::all();
+        $corte = corte::all();
+        $entrada = entrada::all();
+        $rolServicio = rolServicio::all();
+        $ultimaCorrida = ultimaCorrida::all();
         return Inertia::render('Principal/FormarUnidades',[
             'directivo' => $directivo,
             'unidad' => $unidad,
@@ -56,6 +64,10 @@ class PrincipalController extends Controller
             'ruta' => $ruta,
             'castigo' => $castigo,
             'formacionUnidades' => $formacionUnidades,
+            'corte' => $corte,
+            'entrada' => $entrada,
+            'rolServicio' => $rolServicio,
+            'ultimaCorrida' => $ultimaCorrida,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
@@ -63,80 +75,80 @@ class PrincipalController extends Controller
     }
 
     
-public function registrarHoraEntrada(Request $request)
-{ 
-    try{
-    // Obtener el ID de la unidad y la hora de entrada del formulario
-    $unidadId = $request->input('unidad');
-    $horaEntrada = Carbon::parse($request->input('horaEntrada'))->format('H:i'); // Formatear la hora
-    $extremo = $request->input('extremo');
+    public function registrarHoraEntrada(Request $request)
+    {
+        try {
+            // Obtener el ID de la unidad y la hora de entrada del formulario
+            $unidadId = $request->input('unidad');
+            $horaEntrada = Carbon::parse($request->input('horaEntrada'))->format('H:i'); // Formatear la hora
+            $extremo = $request->input('extremo');
+    
+            // Verificar si la unidad existe
+            $unidad = Unidad::find($unidadId);
+            if (!$unidad) {
+                // La unidad no existe, puedes manejar el error aquí
+                return redirect()->back()->with(['message' => "La unidad no existe", "color" => "yellow", 'type' => 'info']);
+            }
+    
+            // Verificar si la unidad tiene un operador asignado
+            if (!$unidad->operador) {
+                // La unidad no tiene un operador asignado, puedes manejar el error aquí
+                return redirect()->back()->with(['message' => "La unidad {$unidad->numeroUnidad} no tiene operador asignado", "color" => "yellow", 'type' => 'info']);
+            }
+    
+            // Obtener el día de la semana
+            $fecha = Carbon::now();
+            $diaSemana = $fecha->dayOfWeek;
+    
+            // Definir los límites de tiempo según el día de la semana y el valor de extremo
+            if ($diaSemana === 6 && $extremo === 'si') { // Sábado y extremo es 'si'
+                $limiteNormal = Carbon::createFromTime(6, 45);
+                $limiteMulta = Carbon::createFromTime(7, 0);//Quizá se quite porque no se considera multa
+            } elseif ($diaSemana === 6) { // Sábado (sin considerar extremo)
+                $limiteNormal = Carbon::createFromTime(6, 30);
+                $limiteMulta = Carbon::createFromTime(7, 0);
+            } elseif ($diaSemana === 0) { // Domingo
+                $limiteNormal = Carbon::createFromTime(7, 30);
+                $limiteMulta = Carbon::createFromTime(7, 45);
+            } else { // Lunes a viernes
+                $limiteNormal = Carbon::createFromTime(6, 15);
+                $limiteMulta = Carbon::createFromTime(6, 30);
+            }
+    
+            // Convertir la hora de entrada a un objeto Carbon
+            $horaEntradaCarbon = Carbon::createFromFormat('H:i', $horaEntrada);
+    
+            // Determinar el tipo de entrada
+            if ($horaEntradaCarbon < $limiteNormal) {
+                $tipoEntrada = 'Normal';
+            } elseif ($horaEntradaCarbon >= $limiteNormal && $horaEntradaCarbon <= $limiteMulta) {
+                $tipoEntrada = 'Multa';
+            } else {
+                $tipoEntrada = '';
+            }
+    
+            // Verificar si ya existe una entrada para esta unidad en el día actual
+            $entradaExistente = Entrada::where('idUnidad', $unidadId)
+            ->whereDate('created_at', Carbon::today())
+            ->first();
 
-    // Obtener el día de la semana
-    $fecha = Carbon::now();
-    $diaSemana = $fecha->dayOfWeek;
+            if ($entradaExistente) {
+                return redirect()->back()->with(['message' => "Ya está registrado la hora de entrada para la unidad {$unidad->numeroUnidad} el día de hoy", "color" => "yellow", 'type' => 'info']);
+            }
 
-    // Definir los límites de tiempo según el día de la semana y el valor de extremo
-    if ($diaSemana === 6 && $extremo === 'si') { // Sábado y extremo es 'si'
-        $limiteNormal = Carbon::createFromTime(6, 45);
-        $limiteMulta = Carbon::createFromTime(7, 0);//Quizá se quite porque no se considera multa
-    } elseif ($diaSemana === 6) { // Sábado (sin considerar extremo)
-        $limiteNormal = Carbon::createFromTime(6, 30);
-        $limiteMulta = Carbon::createFromTime(7, 0);
-    } elseif ($diaSemana === 0) { // Domingo
-        $limiteNormal = Carbon::createFromTime(7, 30);
-        $limiteMulta = Carbon::createFromTime(7, 45);
-    } else { // Lunes a viernes
-        $limiteNormal = Carbon::createFromTime(6, 15);
-        $limiteMulta = Carbon::createFromTime(6, 30);
+            // Crear un nuevo registro en la tabla de entrada
+            Entrada::create([
+                'idUnidad' => $unidadId,
+                'horaEntrada' => $horaEntrada,
+                'tipoEntrada' => $tipoEntrada,
+                'extremo' => $extremo,
+            ]);
+    
+            return redirect()->back()->with(['message' => "Hora de entrada registrada correctamente", "color" => "green", 'type' => 'success']);
+        } catch (\Exception $e) {
+            return redirect()->back()->with(['message' => "Error al registrar la hora de entrada", "color" => "red", 'type' => 'error']);
+        }
     }
-
-    // Convertir la hora de entrada a un objeto Carbon
-    $horaEntradaCarbon = Carbon::createFromFormat('H:i', $horaEntrada);
-
-    // Determinar el tipo de entrada
-    if ($horaEntradaCarbon < $limiteNormal) {
-        $tipoEntrada = 'Normal';
-    } elseif ($horaEntradaCarbon >= $limiteNormal && $horaEntradaCarbon <= $limiteMulta) {
-        $tipoEntrada = 'Multa';
-    } else {
-        $tipoEntrada = '';
-    }
-
-    // Verificar si la unidad tiene un operador asignado.
-    $unidad = unidad::find($unidadId);
-    if (!$unidad->operador) {
-        // La unidad no tiene un operador asignado, puedes manejar el error aquí
-        return redirect()->route('principal.formarUni')->with(['message' => "La unidad {$unidad->numeroUnidad} no tiene operador asignado", "color" => "yellow", 'type' => 'info']);
-    }
-
-    // Buscar si ya existe un registro para esta unidad
-    $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
-
-    // Si ya existe un registro para esta unidad, actualizar la hora de entrada y el tipo de entrada
-    if ($formacionUnidad) {
-        $formacionUnidad->horaEntrada = $horaEntrada;
-        $formacionUnidad->tipoEntrada = $tipoEntrada;
-        $formacionUnidad->extremo = $extremo; // Actualizar el valor extremo
-        $formacionUnidad->save();
-    } else { // Si no existe un registro para esta unidad, crear uno nuevo
-        formacionunidades::create([
-            'idUnidad' => $unidadId,
-            'horaEntrada' => $horaEntrada,
-            'tipoEntrada' => $tipoEntrada,
-            'extremo' => $extremo // Guardar el valor extremo
-        ]);
-    }
-
-    // Obtener el número de unidad para mostrarlo en el mensaje de éxito
-    $numeroUnidad = $unidad->numeroUnidad;
-
-    // Devolver una respuesta de éxito
-    return redirect()->route('principal.formarUni')->with(['message' => "Hora de entrada " . $request->horaEntrada ." registrado correctamente para la unidad " .$numeroUnidad, "color" => "green", 'type' => 'success']);
-}catch(Exception $e){
-    return redirect()->route('principal.formarUni')->with(['message' => "Error al registrar la hora de entrada", "color" => "red", 'type' => 'error']);
-    dd($e);
-}
-}
 
     public function registrarCorte(Request $request)
     {
@@ -402,21 +414,37 @@ public function registrarHoraEntrada(Request $request)
                 throw new \Exception("No se han seleccionado unidades.");
             }
     
-            // Actualizar unidades que trabajarán el domingo (SI)
-            if (!empty($unidadesSi)) {
-                formacionunidades::whereIn('idUnidad', $unidadesSi)->update(['trabajaDomingo' => 'SI']);
-            }
-    
-            // Actualizar unidades que no trabajarán el domingo (NO)
-            if (!empty($unidadesNo)) {
-                formacionunidades::whereIn('idUnidad', $unidadesNo)->update(['trabajaDomingo' => 'NO']);
-            }
+            \DB::transaction(function () use ($unidadesSi, $unidadesNo) {
+                // Actualizar registros existentes en la tabla rolServicio para unidades que trabajan el domingo (SI)
+                foreach ($unidadesSi as $unidadId) {
+                    $rolServicio = rolServicio::where('idUnidad', $unidadId)->first();
+                    if ($rolServicio) {
+                        $rolServicio->update(['trabajaDomingo' => 'SI']);
+                    } else {
+                        rolServicio::create(['idUnidad' => $unidadId, 'trabajaDomingo' => 'SI']);
+                    }
+                }
+            
+                // Actualizar registros existentes en la tabla rolServicio para unidades que no trabajan el domingo (NO)
+                foreach ($unidadesNo as $unidadId) {
+                    $rolServicio = rolServicio::where('idUnidad', $unidadId)->first();
+                    if ($rolServicio) {
+                        $rolServicio->update(['trabajaDomingo' => 'NO']);
+                    } else {
+                        rolServicio::create(['idUnidad' => $unidadId, 'trabajaDomingo' => 'NO']);
+                    }
+                }
+            });
+
+            // Si no se lanzó ninguna excepción, la transacción se confirmará automáticamente
     
             return redirect()->route('principal.formarUni')->with([
                 'message' => "Se han actualizado correctamente las unidades que trabajarán y no trabajarán el domingo.",
                 'color' => 'green'
             ]);
         } catch (\Exception $e) {
+            // Cualquier excepción lanzada dentro de la transacción hará que se reviertan automáticamente los cambios
+    
             return redirect()->route('principal.formarUni')->with([
                 'message' => "Error: " . $e->getMessage(),
                 'color' => 'red'
@@ -497,9 +525,9 @@ public function registrarHoraEntrada(Request $request)
             $unidad->save();
     
             // Ahora, registra la misma unidad en la tabla "formacionUnidades"
-            $formacionUnidad = new formacionunidades();
+            /* $formacionUnidad = new formacionunidades();
             $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
-            $formacionUnidad->save();
+            $formacionUnidad->save(); */
             
             return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente: " . $request->numeroUnidad, "color" => "green", 'type' => 'success']);
         } catch(Exception $e){

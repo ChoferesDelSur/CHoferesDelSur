@@ -11,7 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('rolServicio', function (Blueprint $table) {
+            $table->id(column:'idRolServicio');
+            $table->string(column:'trabajaDomingo')->nullable(true);
+            $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
+            $table->softDeletes();
+            $table->timestamps();
+        });
     }
 
     /**

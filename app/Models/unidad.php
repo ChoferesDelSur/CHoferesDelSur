@@ -22,8 +22,17 @@ class unidad extends Model
     ];
 
     public function operador()
-{
-    return $this->belongsTo(operador::class, 'idOperador');
-}
+    {
+        return $this->belongsTo(operador::class, 'idOperador');
+    }
+    public function rolServicio()
+    {
+        return $this->hasOne(RolServicio::class, 'idUnidad');
+    }
+
+    public function entradas()
+    {
+        return $this->hasMany(Entrada::class, 'idUnidad');
+    }
 
 }

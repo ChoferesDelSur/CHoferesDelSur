@@ -19,7 +19,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    formacionUnidades: {
+    entrada: {
         type: Object,
         default: () => ({}),
     },
@@ -35,14 +35,14 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
-    unidad: props.formacionUnidades.idUnidad,
-    horaEntrada: props.formacionUnidades.horaEntrada,
-    extremo: props.formacionUnidades.extremo,
+    idEntrada: props.entrada.idEntrada,
+    unidad: props.entrada.idUnidad,
+    horaEntrada: props.entrada.horaEntrada,
+    extremo: props.entrada.extremo,
 });
 
-watch(() => props.formacionUnidades, async (newVal) => {
-    form.idFormacionUnidades = newVal.idFormacionUnidades;
+watch(() => props.entrada, async (newVal) => {
+    form.idEntrada = newVal.idEntrada;
     form.unidad = newVal.unidad;
     form.horaEntrada = newVal.horaEntrada;
     form.extremo = newVal.extremo;
@@ -98,10 +98,22 @@ const save = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene todos los campos para poder registrar la
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene todos los campos para poder registrar
+                        la
                         hora de Entrada de una unidad
                     </p>
                     <div class="flex flex-wrap -mx-4">
+                        <div class="md:col-span-2">
+                            <div class="sm:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
+                                <label for="idOperador"
+                                    class="block text-sm font-medium leading-6 text-gray-900">idEntrada</label>
+                                <div class="mt-1">
+                                    <input type="number" name="idEntrada" v-model="form.idEntrada"
+                                        placeholder="Ingrese id de hora de entrada" :id="'idEntrada' + op"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
                         <div class="sm:col-span-2 px-4">
                             <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                             <div class="mt-2">
