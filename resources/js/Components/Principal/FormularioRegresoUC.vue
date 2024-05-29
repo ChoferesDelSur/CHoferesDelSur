@@ -18,7 +18,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    formacionUnidades: {
+    ultimaCorrida: {
         type: Object,
         default: () => ({}),
     },
@@ -34,13 +34,13 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
-    unidad: props.formacionUnidades.idUnidad,
-    horaFinUC: props.formacionUnidades.horaFinUC,
+    idUltimaCorrida: props.ultimaCorrida.idUltimaCorrida,
+    unidad: props.ultimaCorrida.idUnidad,
+    horaFinUC: props.ultimaCorrida.horaFinUC,
 });
 
-watch(() => props.formacionUnidades, async (newVal) => {
-    form.idFormacionUnidades = newVal.idFormacionUnidades;
+watch(() => props.ultimaCorrida, async (newVal) => {
+    form.idUltimaCorrida = newVal.idUltimaCorrida;
     form.horaFinUC = newVal.horaFinUC;
 }, { deep: true }
 );

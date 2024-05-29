@@ -20,4 +20,9 @@ class corte extends Model
         'horaRegreso',
         'idUnidad',
     ];
+
+    public function unidad()
+    {
+        return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
 }

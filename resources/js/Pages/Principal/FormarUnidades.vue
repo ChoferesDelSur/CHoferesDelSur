@@ -6,7 +6,7 @@ import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
-import { ref, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -40,7 +40,9 @@ const props = defineProps({
   formacionUnidades: { type: Object },
   rolServicio: { type: Object },
   castigo: { type: Object },
-  entrada: { type: Object},
+  entrada: { type: Object },
+  corte: { type: Object },
+  ultimaCorrida: { type: Object },
 });
 
 // Dentro del bloque <script setup>
@@ -52,6 +54,15 @@ function obtenerDiaSemana(diaNumero) {
   return diasSemana[diaNumero];
 }
 
+const registrosFiltrados = computed(() => {
+  return props.entrada.filter(entrada => {
+    // Obtener la fecha del registro y convertirla al formato de fecha actual
+    const fechaRegistro = new Date(entrada.fechaRegistro).toLocaleDateString();
+    // Comparar la fecha del registro con la fecha actual
+    return fechaRegistro === fechaActual;
+  });
+});
+console.log(registrosFiltrados.value);
 const botonesPersonalizados = [
   {
     extend: 'copyHtml5',
@@ -93,12 +104,6 @@ const botonesPersonalizados = [
 ];
 
 const columnas = [
-  /* {
-    data: null,
-    render: function (data, type, row, meta) {
-      return `<input type="checkbox" class="formacion-checkboxes" data-id="${row.idFormacionUnidades}" ">`;
-    }
-  }, */
   {
     data: null,
     render: function (data, type, row, meta) {
@@ -163,20 +168,20 @@ const columnas = [
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
-        // Buscar el registro de rolServicio correspondiente
-        const hEntrada = props.entrada.find(hE => hE.idUnidad === unidad.idUnidad);
-        /* const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad); */
-        if (hEntrada) {
-          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
-          return hEntrada.horaEntrada.substring(0,5);
-        } else {
-          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
-          return '';
+        // Filtrar los registros de entrada correspondientes a la unidad y a la fecha actual
+        const entradasHoy = props.entrada.filter(entrada => {
+          return entrada.idUnidad === unidad.idUnidad &&
+                new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de entrada para la unidad y la fecha actual
+        if (entradasHoy.length > 0) {
+          // Construir una cadena con todas las horas de entrada para la unidad y la fecha actual
+          const horasEntrada = entradasHoy.map(entrada => entrada.horaEntrada.substring(0, 5)).join(', ');
+          return horasEntrada;
         }
-      } else {
-        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
-        return 'Unidad no encontrada';
       }
+      // Si no se encuentra la unidad o no hay registros de entrada para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
@@ -185,20 +190,20 @@ const columnas = [
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
-        // Buscar el registro de rolServicio correspondiente
-        const tEntrada = props.entrada.find(tE=> tE.idUnidad === unidad.idUnidad);
-        /* const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad); */
-        if (tEntrada) {
-          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
-          return tEntrada.tipoEntrada;
-        } else {
-          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
-          return '';
+        // Filtrar los registros de entrada correspondientes a la unidad y a la fecha actual
+        const entradasHoy = props.entrada.filter(entrada => {
+          return entrada.idUnidad === unidad.idUnidad &&
+                new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de entrada para la unidad y la fecha actual
+        if (entradasHoy.length > 0) {
+          // Construir una cadena con todos los tipos de entrada para la unidad y la fecha actual
+          const tiposEntrada = entradasHoy.map(entrada => entrada.tipoEntrada).join(', ');
+          return tiposEntrada;
         }
-      } else {
-        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
-        return 'Unidad no encontrada';
       }
+      // Si no se encuentra la unidad o no hay registros de entrada para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
@@ -207,78 +212,154 @@ const columnas = [
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
-        // Buscar el registro de rolServicio correspondiente
-        const esExtremo = props.entrada.find(ex => ex.idUnidad === unidad.idUnidad);
-        /* const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad); */
-        if (esExtremo) {
-          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
-          return esExtremo.extremo;
-        } else {
-          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
-          return '';
+        // Filtrar los registros de entrada correspondientes a la unidad y a la fecha actual
+        const entradasHoy = props.entrada.filter(entrada => {
+          return entrada.idUnidad === unidad.idUnidad &&
+                new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de entrada para la unidad y la fecha actual
+        if (entradasHoy.length > 0) {
+          // Construir una cadena con todos los valores de esExtremo para la unidad y la fecha actual
+          const extremos = entradasHoy.map(entrada => entrada.extremo).join(', ');
+          return extremos;
         }
-      } else {
-        // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
-        return 'Unidad no encontrada';
       }
+      // Si no se encuentra la unidad o no hay registros de entrada para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
-    data: null,
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const hCorte = props.formacionUnidades.find(hCorte => hCorte === data);
-      if (hCorte && hCorte.horaCorte) { // Verificar si hCorte no es nulo
-        return hCorte.horaCorte.substring(0, 5); // Obtener solo la hora y los minutos
-      } else {
-        return ''; // Devolver una cadena vacía si el valor es nulo
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Filtrar los registros de corte correspondientes a la unidad y a la fecha actual
+        const cortesHoy = props.corte.filter(corte => {
+          return corte.idUnidad === unidad.idUnidad &&
+                new Date(corte.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de corte para la unidad y la fecha actual
+        if (cortesHoy.length > 0) {
+          // Construir una cadena con todas las horas de corte para la unidad y la fecha actual
+          const horasCorte = cortesHoy.map(corte => corte.horaCorte.substring(0, 5)).join(', ');
+          return horasCorte;
+        }
       }
+      // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
-    data: 'idFormacionUnidades',
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const caus = props.formacionUnidades.find(caus => caus.idFormacionUnidades === data);
-      return caus ? caus.causa : '';
-    }
-  },
-  {
-    data: null,
-    render: function (data, type, row, meta) {
-      const hRegreso = props.formacionUnidades.find(hRegreso => hRegreso === data);
-      if (hRegreso && hRegreso.horaRegreso) { // Verificar si hCorte no es nulo
-        return hRegreso.horaRegreso.substring(0, 5); // Obtener solo la hora y los minutos
-      } else {
-        return ''; // Devolver una cadena vacía si el valor es nulo
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Filtrar los registros de corte correspondientes a la unidad y a la fecha actual
+        const cortesHoy = props.corte.filter(corte => {
+          return corte.idUnidad === unidad.idUnidad &&
+                new Date(corte.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de corte para la unidad y la fecha actual
+        if (cortesHoy.length > 0) {
+          // Devolver la causa de corte del primer registro encontrado
+          return cortesHoy[0].causa;
+        }
       }
+      // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
-    data: 'idFormacionUnidades',
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
-      return ultimaC ? ultimaC.ultimaCorrida : '';
-    }
-  },
-  {
-    data: 'idFormacionUnidades',
-    render: function (data, type, row, meta) {
-      const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
-      if (ultimaC && ultimaC.horaInicioUC) { // Verificar si hCorte no es nulo
-        return ultimaC.horaInicioUC.substring(0, 5); // Obtener solo la hora y los minutos
-      } else {
-        return ''; // Devolver una cadena vacía si el valor es nulo
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Filtrar los registros de corte correspondientes a la unidad y a la fecha actual
+        const cortesHoy = props.corte.filter(corte => {
+          return corte.idUnidad === unidad.idUnidad &&
+                new Date(corte.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de corte para la unidad y la fecha actual
+        if (cortesHoy.length > 0) {
+          // Devolver la hora de regreso del primer registro encontrado, si no es null
+          const horaRegreso = cortesHoy[0].horaRegreso;
+          return horaRegreso ? horaRegreso.substring(0, 5) : '';
+        }
       }
+      // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
-    data: 'idFormacionUnidades',
+    data: "idUnidad",
     render: function (data, type, row, meta) {
-      const ultimaC = props.formacionUnidades.find(ultimaC => ultimaC.idFormacionUnidades === data);
-      if (ultimaC && ultimaC.horaFinUC) {
-        return ultimaC.horaFinUC.substring(0, 5); // Obtener solo la hora y los minutos
-      } else {
-        return ''; // Devolver una cadena vacía si el valor es nulo
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Filtrar los registros de última corrida correspondientes a la unidad y a la fecha actual
+        const ultimasCorridasHoy = props.ultimaCorrida.filter(corrida => {
+          return corrida.idUnidad === unidad.idUnidad &&
+                new Date(corrida.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de última corrida para la unidad y la fecha actual
+        if (ultimasCorridasHoy.length > 0) {
+          // Devolver el valor de la última corrida del primer registro encontrado
+          return ultimasCorridasHoy[0].ultimaCorrida;
+        }
       }
+      // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
+      return '';
+    }
+  },
+  {
+    data: "idUnidad",
+    render: function (data, type, row, meta) {
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Filtrar los registros de última corrida correspondientes a la unidad y a la fecha actual
+        const ultimasCorridasHoy = props.ultimaCorrida.filter(corrida => {
+          return corrida.idUnidad === unidad.idUnidad &&
+                new Date(corrida.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de última corrida para la unidad y la fecha actual
+        if (ultimasCorridasHoy.length > 0) {
+          // Devolver la hora de inicio de la última corrida del primer registro encontrado, si no es null
+          const horaInicioUC = ultimasCorridasHoy[0].horaInicioUC;
+          return horaInicioUC ? horaInicioUC.substring(0, 5) : '';
+        }
+      }
+      // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
+      return '';
+    }
+  },
+  {
+    data: "idUnidad",
+    render: function (data, type, row, meta) {
+      // Buscar la unidad correspondiente en props.unidad
+      const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
+      if (unidad) {
+        // Filtrar los registros de última corrida correspondientes a la unidad y a la fecha actual
+        const ultimasCorridasHoy = props.ultimaCorrida.filter(corrida => {
+          return corrida.idUnidad === unidad.idUnidad &&
+                new Date(corrida.created_at).toLocaleDateString() === fechaActual;
+        });
+        // Verificar si hay registros de última corrida para la unidad y la fecha actual
+        if (ultimasCorridasHoy.length > 0) {
+          // Obtener la hora de fin de la última corrida, si existe
+          const horaFinUC = ultimasCorridasHoy[0].horaFinUC;
+          // Verificar si horaFinUC no es null
+          if (horaFinUC) {
+            // Devolver la hora de fin de la última corrida truncada a los primeros 5 caracteres
+            return horaFinUC.substring(0, 5);
+          }
+        }
+      }
+      // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
+      return '';
     }
   },
   {
@@ -603,8 +684,7 @@ const cerrarModalE = () => {
       :unidad="props.unidad">
     </FormularioRegHoraEntrada>
     <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
-      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
-      :unidad="props.unidad">
+      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad">
     </FormularioRegCorte>
     <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
@@ -615,12 +695,12 @@ const cerrarModalE = () => {
       :formacionUnidades="props.formacionUnidades" :unidad="props.unidad" :castigo="props.castigo">
     </FormularioCastigo>
     <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
-      :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades"
+      :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida"
       :unidad="props.unidad">
     </FormularioRegUC>
     <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegresoUC" :title="'Registrar hora de regreso de última corrida'" :op="'1'"
-      :modal="'modalCreate'" :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
+      :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida" :unidad="props.unidad">
     </FormularioRegresoUC>
     <FormularioDomingo :show="mostrarModalDomingo" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalDomingo" :title="'Registrar las unidades que trabajaran domingo'" :op="'1'"

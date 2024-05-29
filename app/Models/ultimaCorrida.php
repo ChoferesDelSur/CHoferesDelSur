@@ -20,4 +20,9 @@ class ultimaCorrida extends Model
         'horaFinUC',
         'idUnidad',
     ];
+
+    public function unidad()
+    {
+        return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
 }

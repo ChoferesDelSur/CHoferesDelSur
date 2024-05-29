@@ -35,4 +35,8 @@ class unidad extends Model
         return $this->hasMany(Entrada::class, 'idUnidad');
     }
 
+    public function cortes()
+    {
+        return $this->hasMany(Corte::class, 'idUnidad');
+    }
 }

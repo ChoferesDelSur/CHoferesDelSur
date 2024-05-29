@@ -19,7 +19,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    formacionUnidades: {
+    corte: {
         type: Object,
         default: () => ({}),
     },
@@ -35,19 +35,19 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    idFormacionUnidades: props.formacionUnidades.idFormacionUnidades,
-    unidad: props.formacionUnidades.idUnidad,
-    horaCorte: props.formacionUnidades.horaCorte,
-    causa: props.formacionUnidades.corte,
-    horaRegreso: props.formacionUnidades.horaRegreso,
+    idCorte: props.corte.idCorte,
+    unidad: props.corte.idUnidad,
+    horaCorte: props.corte.horaCorte,
+    causa: props.corte.corte,
+    horaRegreso: props.corte.horaRegreso,
 });
 
-watch(() => props.formacionUnidades, async (newVal) => {
-    form.idFormacionUnidades = newVal.idFormacionUnidades;
+watch(() => props.corte, async (newVal) => {
+    form.idCorte = newVal.idCorte;
     form.unidad = newVal.unidad;
     form.horaCorte = newVal.horaCorte;
-    form.causa = props.formacionUnidades.causa;
-    form.horaRegreso = props.formacionUnidades.horaRegreso;
+    form.causa = newVal.causa;
+    form.horaRegreso = newVal.horaRegreso;
 }, { deep: true }
 );
 
