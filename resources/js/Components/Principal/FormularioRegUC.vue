@@ -22,6 +22,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    tipoUltimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
     unidad: {
         type: Object,
         default: () => ({}),
@@ -36,14 +40,14 @@ const emit = defineEmits(['close']);
 const form = useForm({
     idUltimaCorrida: props.ultimaCorrida.idUltimaCorrida,
     unidad: props.ultimaCorrida.idUnidad,
-    UltimaCorrida: props.ultimaCorrida.UltimaCorrida,
+    tipoUltimaCorrida: props.ultimaCorrida.idTipoUltimaCorrida,
     horaInicioUC: props.ultimaCorrida.horaInicioUC,
     horaFinUC: props.ultimaCorrida.horaFinUC,
 });
 
 watch(() => props.ultimaCorrida, async (newVal) => {
     form.idUltimaCorrida = newVal.idUltimaCorrida;
-    form.UltimaCorrida = newVal.UltimaCorrida;
+    form.tipoUltimaCorrida = newVal.tipoUltimaCorrida;
     form.horaInicioUC = newVal.horaInicioUC;
     form.horaFinUC = newVal.horaFinUC;
 }, { deep: true }
@@ -57,9 +61,13 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
+const validateSelectTipoCorrida = (selectedValue) => {
+    return selectedValue != null;
+};
+
 const unidadError = ref('');
 const horaInicioError = ref('');
-const horaFinError = ref('');
+const tipoUltimaCorridaError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -70,10 +78,11 @@ const close = async () => {
 const save = async () => {
     horaInicioError.value = validateSelect(form.horaInicioUC) ? '' : 'Seleccione la hora de inicio de la última corrida';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
+    tipoUltimaCorridaError.value = validateSelectTipoCorrida(form.tipoUltimaCorrida) ? '' : 'Seleccione al un tipo de corrida'
 
 
     if (
-        horaInicioError.value || unidadError.value
+        horaInicioError.value || unidadError.value || tipoUltimaCorridaError.value
     ) {
         return;
     }
@@ -82,6 +91,7 @@ const save = async () => {
             close()
             horaInicioError.value = '';
             unidadError.value = '';
+            tipoUltimaCorridaError.value = '';
         }
     })
 }
@@ -113,6 +123,22 @@ const save = async () => {
                                 </select>
                             </div>
                             <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="tipoCorrida" class="block text-sm font-medium leading-6 text-gray-900">Tipo de corrida <span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="tipoCorrida" :id="'tipoCorrida' + op" v-model="form.tipoUltimaCorrida"
+                                    placeholder="Seleccione el tipo de la ultima corrida"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione el tipo de corrida</option>
+                                    <option v-for="tipoCorrida in tipoUltimaCorrida" :key="tipoCorrida.idTipoUltimaCorrida" :value="tipoCorrida.idTipoUltimaCorrida">
+                                        {{ tipoCorrida.tipoUltimaCorrida }}
+
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="tipoUltimaCorridaError != ''" class="text-red-500 text-xs mt-1">{{ tipoUltimaCorridaError }}
                             </div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->

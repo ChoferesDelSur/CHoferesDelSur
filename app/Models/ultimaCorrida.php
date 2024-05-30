@@ -15,14 +15,19 @@ class ultimaCorrida extends Model
     protected $primaryKey = "idUltimaCorrida";
 
     protected $fillable = [
-        'ultimaCorrida',
         'horaInicioUC',
         'horaFinUC',
         'idUnidad',
+        'idTipoUltimaCorrida'
     ];
 
     public function unidad()
     {
         return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
+
+    public function tipoUltimaCorrida()
+    {
+        return $this->belongsTo(TipoUltimaCorrida::class, 'idTipoUltimaCorrida');
     }
 }

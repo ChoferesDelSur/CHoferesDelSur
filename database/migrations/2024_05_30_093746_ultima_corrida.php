@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('ultimaCorrida', function (Blueprint $table) {
             $table->id(column:'idUltimaCorrida');
-            $table->string(column:'ultimaCorrida')->nullable(true);
             $table->time('horaInicioUC')->nullable(true);
             $table->time('horaFinUC')->nullable(true);
             $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
+            $table->foreignId(column:'idTipoUltimaCorrida')->nullable(true)->references('idTipoUltimaCorrida')->on('tipoUltimaCorrida');
             $table->softDeletes();
             $table->timestamps();
         });

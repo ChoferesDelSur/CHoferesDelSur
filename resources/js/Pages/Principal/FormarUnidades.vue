@@ -43,6 +43,7 @@ const props = defineProps({
   entrada: { type: Object },
   corte: { type: Object },
   ultimaCorrida: { type: Object },
+  tipoUltimaCorrida: { type: Object },
 });
 
 // Dentro del bloque <script setup>
@@ -171,7 +172,7 @@ const columnas = [
         // Filtrar los registros de entrada correspondientes a la unidad y a la fecha actual
         const entradasHoy = props.entrada.filter(entrada => {
           return entrada.idUnidad === unidad.idUnidad &&
-                new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+            new Date(entrada.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de entrada para la unidad y la fecha actual
         if (entradasHoy.length > 0) {
@@ -193,7 +194,7 @@ const columnas = [
         // Filtrar los registros de entrada correspondientes a la unidad y a la fecha actual
         const entradasHoy = props.entrada.filter(entrada => {
           return entrada.idUnidad === unidad.idUnidad &&
-                new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+            new Date(entrada.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de entrada para la unidad y la fecha actual
         if (entradasHoy.length > 0) {
@@ -215,7 +216,7 @@ const columnas = [
         // Filtrar los registros de entrada correspondientes a la unidad y a la fecha actual
         const entradasHoy = props.entrada.filter(entrada => {
           return entrada.idUnidad === unidad.idUnidad &&
-                new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+            new Date(entrada.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de entrada para la unidad y la fecha actual
         if (entradasHoy.length > 0) {
@@ -237,7 +238,7 @@ const columnas = [
         // Filtrar los registros de corte correspondientes a la unidad y a la fecha actual
         const cortesHoy = props.corte.filter(corte => {
           return corte.idUnidad === unidad.idUnidad &&
-                new Date(corte.created_at).toLocaleDateString() === fechaActual;
+            new Date(corte.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de corte para la unidad y la fecha actual
         if (cortesHoy.length > 0) {
@@ -259,7 +260,7 @@ const columnas = [
         // Filtrar los registros de corte correspondientes a la unidad y a la fecha actual
         const cortesHoy = props.corte.filter(corte => {
           return corte.idUnidad === unidad.idUnidad &&
-                new Date(corte.created_at).toLocaleDateString() === fechaActual;
+            new Date(corte.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de corte para la unidad y la fecha actual
         if (cortesHoy.length > 0) {
@@ -280,7 +281,7 @@ const columnas = [
         // Filtrar los registros de corte correspondientes a la unidad y a la fecha actual
         const cortesHoy = props.corte.filter(corte => {
           return corte.idUnidad === unidad.idUnidad &&
-                new Date(corte.created_at).toLocaleDateString() === fechaActual;
+            new Date(corte.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de corte para la unidad y la fecha actual
         if (cortesHoy.length > 0) {
@@ -302,12 +303,16 @@ const columnas = [
         // Filtrar los registros de última corrida correspondientes a la unidad y a la fecha actual
         const ultimasCorridasHoy = props.ultimaCorrida.filter(corrida => {
           return corrida.idUnidad === unidad.idUnidad &&
-                new Date(corrida.created_at).toLocaleDateString() === fechaActual;
+            new Date(corrida.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de última corrida para la unidad y la fecha actual
         if (ultimasCorridasHoy.length > 0) {
-          // Devolver el valor de la última corrida del primer registro encontrado
-          return ultimasCorridasHoy[0].ultimaCorrida;
+          // Obtener el objeto de tipoUltimaCorrida asociado al idTipoUltimaCorrida
+          const tipoUltimaCorrida = props.tipoUltimaCorrida.find(tipo => tipo.idTipoUltimaCorrida === ultimasCorridasHoy[0].idTipoUltimaCorrida);
+          // Devolver el dato correspondiente a tipoUltimaCorrida
+          if (tipoUltimaCorrida) {
+            return tipoUltimaCorrida.tipoUltimaCorrida;
+          }
         }
       }
       // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
@@ -323,7 +328,7 @@ const columnas = [
         // Filtrar los registros de última corrida correspondientes a la unidad y a la fecha actual
         const ultimasCorridasHoy = props.ultimaCorrida.filter(corrida => {
           return corrida.idUnidad === unidad.idUnidad &&
-                new Date(corrida.created_at).toLocaleDateString() === fechaActual;
+            new Date(corrida.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de última corrida para la unidad y la fecha actual
         if (ultimasCorridasHoy.length > 0) {
@@ -345,7 +350,7 @@ const columnas = [
         // Filtrar los registros de última corrida correspondientes a la unidad y a la fecha actual
         const ultimasCorridasHoy = props.ultimaCorrida.filter(corrida => {
           return corrida.idUnidad === unidad.idUnidad &&
-                new Date(corrida.created_at).toLocaleDateString() === fechaActual;
+            new Date(corrida.created_at).toLocaleDateString() === fechaActual;
         });
         // Verificar si hay registros de última corrida para la unidad y la fecha actual
         if (ultimasCorridasHoy.length > 0) {
@@ -610,7 +615,7 @@ const cerrarModalE = () => {
               <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="3">ÚLTIMA CORRIDA</th> <!-- Columna combinada con título "Corte" -->
+                colspan="3">ÚLTIMAS CORRIDAS</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
                 colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
@@ -651,7 +656,7 @@ const cerrarModalE = () => {
                 Hr. regreso
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Ultima Corrida
+                Tipo de Corrida
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hr. inicio
@@ -696,7 +701,7 @@ const cerrarModalE = () => {
     </FormularioCastigo>
     <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
       :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida"
-      :unidad="props.unidad">
+      :tipoUltimaCorrida="props.tipoUltimaCorrida" :unidad="props.unidad">
     </FormularioRegUC>
     <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegresoUC" :title="'Registrar hora de regreso de última corrida'" :op="'1'"

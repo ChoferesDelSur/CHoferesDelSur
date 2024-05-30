@@ -16,6 +16,7 @@ use App\Models\corte;
 use App\Models\entrada;
 use App\Models\rolServicio;
 use App\Models\ultimaCorrida;
+use App\Models\tipoUltimaCorrida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -57,6 +58,7 @@ class PrincipalController extends Controller
         $entrada = entrada::all();
         $rolServicio = rolServicio::all();
         $ultimaCorrida = ultimaCorrida::all();
+        $tipoUltimaCorrida = tipoUltimaCorrida::all();
         return Inertia::render('Principal/FormarUnidades',[
             'directivo' => $directivo,
             'unidad' => $unidad,
@@ -68,6 +70,7 @@ class PrincipalController extends Controller
             'entrada' => $entrada,
             'rolServicio' => $rolServicio,
             'ultimaCorrida' => $ultimaCorrida,
+            'tipoUltimaCorrida' => $tipoUltimaCorrida,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
@@ -152,19 +155,19 @@ class PrincipalController extends Controller
 
     public function registrarCorte(Request $request)
     {
-        // Validar los datos recibidos del formulario
-        $request->validate([
-            'unidad' => 'required',
-            'horaCorte' => 'required',
-            'causa' => 'required',
-        ]);
+            // Validar los datos recibidos del formulario
+    $request->validate([
+        'unidad' => 'required',
+        'horaCorte' => 'required',
+        'causa' => 'required',
+    ]);
 
-        try {
-            // Obtener el ID de la unidad seleccionada del formulario
-            $unidadId = $request->input('unidad');
-            $unidad = unidad::find($unidadId);
+    try {
+        // Obtener el ID de la unidad seleccionada del formulario
+        $unidadId = $request->input('unidad');
+        $unidad = Unidad::find($unidadId);
 
-            $numeroUnidad = $unidad->numeroUnidad;
+        $numeroUnidad = $unidad->numeroUnidad;
 
         // Verificar si la unidad tiene registrada la hora de entrada
         $entrada = $unidad->entradas()->latest()->first();
@@ -176,6 +179,21 @@ class PrincipalController extends Controller
             ]);
         }
 
+        // Validar que la horaRegreso no sea menor que la horaCorte, si se proporciona
+        $horaCorte = \Carbon\Carbon::parse($request->input('horaCorte'));
+        if ($request->has('horaRegreso')) {
+            $horaRegreso = \Carbon\Carbon::parse($request->input('horaRegreso'));
+            if ($horaRegreso->lessThan($horaCorte)) {
+                $horaCorteFormateada = $horaCorte->format('H:i');
+                $horaRegresoFormateada = $horaRegreso->format('H:i');
+                return redirect()->route('principal.formarUni')->with([
+                    'message' => "La hora de regreso {$horaRegresoFormateada} no puede ser menor que la hora de corte {$horaCorteFormateada}.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+        }
+
         // Crear un nuevo registro de corte
         Corte::create([
             'idUnidad' => $unidadId,
@@ -185,15 +203,20 @@ class PrincipalController extends Controller
             // Otros campos necesarios...
         ]);
 
-            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
-            $numeroUnidad = $unidad->numeroUnidad;
-
-            // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
-            return redirect()->route('principal.formarUni')->with(['message' => "Hora de corte " .$request->horaCorte ." registrado correctamente para la unidad " .$numeroUnidad ." por " .$request->causa, "color" => "green",'type'=>'success']);
-        } catch (Exception $e) {
-            // Manejar cualquier error que pueda ocurrir durante la operación
-            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red",'type' => 'error']);
-        }
+        // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
+        return redirect()->route('principal.formarUni')->with([
+            'message' => "Hora de corte " . $request->horaCorte . " registrada correctamente para la unidad " . $numeroUnidad . " por " . $request->causa,
+            "color" => "green",
+            'type' => 'success'
+        ]);
+    } catch (Exception $e) {
+        // Manejar cualquier error que pueda ocurrir durante la operación
+        return redirect()->route('principal.formarUni')->with([
+            'message' => "Error: " . $e->getMessage(),
+            "color" => "red",
+            'type' => 'error'
+        ]);
+    }
     }
 
     public function registrarCastigo(Request $request){
@@ -299,6 +322,7 @@ class PrincipalController extends Controller
         $request->validate([
             'unidad' => 'required',
             'horaInicioUC' => 'required',
+            'tipoUltimaCorrida' => 'required',
         ]);
     
         try {
@@ -317,17 +341,32 @@ class PrincipalController extends Controller
                 ]);
             }
     
+            // Validar que la horaFinUC no sea menor que la horaInicioUC, si se proporciona
+            $horaInicioUC = \Carbon\Carbon::parse($request->input('horaInicioUC'));
+            if ($request->has('horaFinUC')) {
+                $horaFinUC = \Carbon\Carbon::parse($request->input('horaFinUC'));
+                if ($horaFinUC->lessThan($horaInicioUC)) {
+                    $horaInicioUCFormateada = $horaInicioUC->format('H:i');
+                    $horaFinUCFormateada = $horaFinUC->format('H:i');
+                    return redirect()->route('principal.formarUni')->with([
+                        'message' => "La hora de regreso $horaFinUCFormateada no puede ser menor que la hora de inicio de la corrida $horaInicioUCFormateada",
+                        'color' => 'red',
+                        'type' => 'error'
+                    ]);
+                }
+            }
+    
             // Crear un nuevo registro en ultimaCorrida
             UltimaCorrida::create([
                 'idUnidad' => $unidadId,
                 'horaInicioUC' => $request->input('horaInicioUC'),
                 'horaFinUC' => $request->input('horaFinUC'),
-                'ultimaCorrida' => 'SI',
+                'idTipoUltimaCorrida' => $request->input('tipoUltimaCorrida'),
                 // Otros campos necesarios...
             ]);
     
             return redirect()->route('principal.formarUni')->with([
-                'message' => "Última corrida de la unidad " .$numeroUnidad ." registrado correctamente",
+                'message' => "Última corrida de la unidad " .$numeroUnidad ." registrada correctamente",
                 'color' => 'green',
                 'type' => 'success'
             ]);
@@ -339,6 +378,7 @@ class PrincipalController extends Controller
                 'type' => 'error'
             ]);
         }
+    
     }
 
     public function RegistrarHoraRegresoUC(Request $request){
@@ -366,41 +406,40 @@ class PrincipalController extends Controller
         // Buscar el último registro para esta unidad en ultimaCorrida
         $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)->orderBy('created_at', 'desc')->first();
 
-        // Verificar si la unidad tiene horaInicioUC registrada en el último registro
-        if (!$ultimaCorrida || !$ultimaCorrida->horaInicioUC) {
-            return redirect()->route('principal.formarUni')->with([
-                'message' => "La unidad " . $numeroUnidad . " no tiene registrada la hora de inicio de la UC",
-                'color' => 'yellow',
-                'type' => 'info'
+        if ($ultimaCorrida) {
+            // Verificar que la hora de regreso sea mayor o igual a la hora de inicio de la UC
+            $horaInicioUC = \Carbon\Carbon::parse($ultimaCorrida->horaInicioUC);
+            $horaFinUC = \Carbon\Carbon::parse($request->input('horaFinUC'));
+
+            if ($horaFinUC->lessThan($horaInicioUC)) {
+                $horaInicioUCFormateada = $horaInicioUC->format('H:i');
+                $horaFinUCFormateada = $horaFinUC->format('H:i');
+        
+                return redirect()->route('principal.formarUni')->with([
+                    'message' => "La hora de regreso $horaFinUCFormateada no puede ser menor que la hora de inicio de la corrida $horaInicioUCFormateada",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+
+            // Si ya hay un registro y la horaFinUC es válida, actualizar la horaFinUC
+            $ultimaCorrida->update([
+                'horaFinUC' => $request->input('horaFinUC'),
             ]);
-        }
-
-        // Verificar que la hora de regreso sea mayor o igual a la hora de inicio de la UC
-        $horaInicioUC = \Carbon\Carbon::parse($ultimaCorrida->horaInicioUC);
-        $horaFinUC = \Carbon\Carbon::parse($request->input('horaFinUC'));
-
-        if ($horaFinUC->lessThan($horaInicioUC)) {
-            $horaInicioUCFormateada = $horaInicioUC->format('H:i');
-            $horaFinUCFormateada = $horaFinUC->format('H:i');
 
             return redirect()->route('principal.formarUni')->with([
-                'message' => "La hora de regreso " . $horaFinUCFormateada . " no puede ser menor a la hora de inicio de la UC " . $horaInicioUCFormateada,
+                'message' => "Hora de regreso de UC de la unidad " . $numeroUnidad . " actualizada correctamente",
+                'color' => 'green',
+                'type' => 'success'
+            ]);
+        } else {
+            // No se encontró un registro existente para actualizar
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad " . $numeroUnidad ." no tiene registrado hora de inicio de BN, UB o UC",
                 'color' => 'red',
                 'type' => 'error'
             ]);
         }
-
-        // Crear un nuevo registro de ultimaCorrida
-        UltimaCorrida::create([
-            'idUnidad' => $unidadId,
-            'horaFinUC' => $request->input('horaFinUC'),
-        ]);
-
-        return redirect()->route('principal.formarUni')->with([
-            'message' => "Hora de regreso de UC de la unidad " . $numeroUnidad . " registrada correctamente",
-            'color' => 'green',
-            'type' => 'success'
-        ]);
     } catch (Exception $e) {
         return redirect()->route('principal.formarUni')->with([
             'message' => "Error al registrar la hora de regreso de la UC",
