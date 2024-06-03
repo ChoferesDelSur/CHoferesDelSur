@@ -2,6 +2,11 @@
 import Mensaje from '../../Components/Mensaje.vue';
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import Swal from 'sweetalert2';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+// Cargar fuentes personalizadas
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const props = defineProps({
     message: { String, default: '' },
@@ -17,6 +22,7 @@ const generarArchivo = (tipo) => {
         confirmButtonText: 'OK'
     });
 };
+
 
 </script>
 

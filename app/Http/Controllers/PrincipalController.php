@@ -220,61 +220,84 @@ class PrincipalController extends Controller
     }
 
     public function registrarCastigo(Request $request){
-        // Validar los datos recibidos del formulario
-        
-        $request->validate([
-            'unidad' => 'required',
-            'castigo' => 'required',
-            'horaInicio' => 'required',
-            'horaFin' => 'required',
-            /* 'observaciones' => 'required', */
-        ]);
-        try{
-            // Obtener el ID de la unidad seleccionada del formulario
-            $unidadId = $request->input('unidad');
-            $unidad = unidad::find($unidadId);
-            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
-            $numeroUnidad = $unidad->numeroUnidad;
-            
-            // Buscar si ya existe un registro para esta unidad
-            $formacionUnidad = formacionunidades::where('idUnidad', $unidadId)->first();
+         // Validar los datos recibidos del formulario
+    $validatedData = $request->validate([
+        'unidad' => 'required|exists:unidad,idUnidad', // Asegúrate de que la unidad existe
+        'castigo' => 'required|string|max:255',
+        'horaInicio' => 'required',
+        'horaFin' => 'required', // Asegúrate de que la horaFin sea posterior a la horaInicio
+        'observaciones' => 'nullable|string|max:1000', // Observaciones opcionales
+    ]);
 
-            // Verificar si la unidad tiene registrada la hora de entrada
-            if (!$formacionUnidad || !$formacionUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with(['message' => "No se puede registrar el castigo para la unidad " .$numeroUnidad ." porque no ha formado.", "color" => "yellow", 'type' => 'info']);
-            }
+    try {
+        // Obtener el ID de la unidad seleccionada del formulario
+        $unidadId = $validatedData['unidad'];
+        $unidad = Unidad::findOrFail($unidadId);
+        $numeroUnidad = $unidad->numeroUnidad;
 
-             // Obtener la hora de inicio y la hora de fin del request
-             $horaInicio = \Carbon\Carbon::parse($request->input('horaInicio'));
-             $horaFin = \Carbon\Carbon::parse($request->input('horaFin'));
- 
-             // Formatear las horas para mostrar solo horas y minutos
-             $horaInicioFormateada = $horaInicio->format('H:i');
-             $horaFinFormateada = $horaFin->format('H:i');
- 
-             // Verificar que la hora de fin sea posterior a la hora de inicio
-             if ($horaFin->lessThan($horaInicio)) {
-                 return redirect()->route('principal.formarUni')->with(['message' => "La hora de fin del castigo " .$horaFinFormateada ." no puede ser menor que la hora de inicio del castigo " .$horaInicioFormateada, "color" => "red", 'type' => 'error']);
-             }
+        // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
+        $fechaActual = Carbon::now()->toDateString();
 
-            // Crear una nueva instancia del modelo castigo
-            $nuevoCastigo = new castigo();
-            
-            // Asignar los valores a los atributos del modelo
-            $nuevoCastigo->idUnidad = $unidadId;
-            $nuevoCastigo->castigo = $request->input('castigo');
-            $nuevoCastigo->horaInicio = $request->input('horaInicio');
-            $nuevoCastigo->horaFin = $request->input('horaFin');
-            $nuevoCastigo->observaciones = $request->input('observaciones');
-            
-            // Guardar el nuevo castigo en la base de datos
-            $nuevoCastigo->save();
+        // Usar created_at para verificar la fecha actual
+        $entrada = Entrada::where('idUnidad', $unidadId)
+                          ->whereDate('created_at', $fechaActual)
+                          ->first();
 
-            return redirect()->route('principal.formarUni')->with(['message' => "Castigo registrado correctamente para la unidad " .$numeroUnidad, "color" => "green", 'type' => 'success']);
-        }catch(Exception $e){
-            dd("Error: " + $e);
-            return redirect()->route('principal.formarUni')->with(['message' => "Error: " . $e->getMessage(), "color" => "red", 'type' => 'error']);
+        if (!$entrada) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad " . $numeroUnidad . " no tiene registrada la hora de entrada el día de hoy.",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
         }
+
+        // Depuración: Verificar el valor de horaEntrada
+        if (!$entrada->horaEntrada) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad " . $numeroUnidad . " no tiene hora de entrada registrada.",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
+        }
+
+        // Obtener la hora de inicio y la hora de fin del request
+        $horaInicio = \Carbon\Carbon::parse($validatedData['horaInicio']);
+        $horaFin = \Carbon\Carbon::parse($validatedData['horaFin']);
+
+        // Formatear las horas para mostrar solo horas y minutos
+        $horaInicioFormateada = $horaInicio->format('H:i');
+        $horaFinFormateada = $horaFin->format('H:i');
+        if ($horaFin->lessThanOrEqualTo($horaInicio)) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La hora  de finalización del castigo " . $horaFinFormateada . " no puede ser igual o menor que la hora de inicio del castigo " .$horaInicioFormateada,
+                'color' => 'red',
+                'type' => 'error'
+            ]);
+        }
+
+        // Crear una nueva instancia del modelo castigo
+        $nuevoCastigo = new Castigo();
+        $nuevoCastigo->idUnidad = $unidadId;
+        $nuevoCastigo->castigo = $validatedData['castigo'];
+        $nuevoCastigo->horaInicio = $validatedData['horaInicio'];
+        $nuevoCastigo->horaFin = $validatedData['horaFin'];
+        $nuevoCastigo->observaciones = $validatedData['observaciones'];
+
+        // Guardar el nuevo castigo en la base de datos
+        $nuevoCastigo->save();
+
+        return redirect()->route('principal.formarUni')->with([
+            'message' => "Castigo registrado correctamente para la unidad " . $numeroUnidad,
+            'color' => 'green',
+            'type' => 'success'
+        ]);
+    } catch (Exception $e) {
+        return redirect()->route('principal.formarUni')->with([
+            'message' => "Error: " . $e->getMessage(),
+            'color' => 'red',
+            'type' => 'error'
+        ]);
+    }
     }
 
     public function RegistrarHoraRegreso(Request $request){

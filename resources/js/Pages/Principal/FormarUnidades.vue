@@ -63,7 +63,7 @@ const registrosFiltrados = computed(() => {
     return fechaRegistro === fechaActual;
   });
 });
-console.log(registrosFiltrados.value);
+
 const botonesPersonalizados = [
   {
     extend: 'copyHtml5',
@@ -376,9 +376,6 @@ const columnas = [
         const castigosRows = castigosUnidad.map(castigo => {
           return {
             horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
-            horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
-            castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
-            observaciones: castigo.observaciones || '', // Obtener observaciones si existen
           };
         });
         // Devolver un array de filas con los datos de castigos
@@ -404,10 +401,7 @@ const columnas = [
         // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
         const castigosRows = castigosUnidad.map(castigo => {
           return {
-            horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
             horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
-            castigo: castigo.castigo || '', // Obtener el nombre del castigo si existe
-            observaciones: castigo.observaciones || '', // Obtener observaciones si existen
           };
         });
         // Devolver un array de filas con los datos de castigos
