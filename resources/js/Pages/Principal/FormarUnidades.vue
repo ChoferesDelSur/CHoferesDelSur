@@ -129,13 +129,15 @@ const columnas = [
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
-        // Buscar el registro de rolServicio correspondiente
-        const rolServicio = props.rolServicio.find(rol => rol.idUnidad === unidad.idUnidad);
-        if (rolServicio) {
-          // Si se encuentra el registro de rolServicio, devolver el valor de trabajaDomingo
-          return rolServicio.trabajaDomingo;
+        // Filtrar los registros de rolServicio para esta idUnidad
+        const registrosUnidad = props.rolServicio.filter(rol => rol.idUnidad === unidad.idUnidad);
+        if (registrosUnidad.length > 0) {
+          // Ordenar los registros por fecha de created_at (más reciente primero)
+          registrosUnidad.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          // Devolver el valor de trabajaDomingo del registro más reciente
+          return registrosUnidad[0].trabajaDomingo;
         } else {
-          // Si no se encuentra el registro de rolServicio, devolver un valor por defecto
+          // Si no hay registros para esta idUnidad, devolver un valor por defecto
           return '<span style="color: red;">Sin asignar</span>';
         }
       } else {
@@ -370,18 +372,23 @@ const columnas = [
   {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
-      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-      if (castigosUnidad.length > 0) {
+      // Filtrar los castigos de la unidad correspondiente para la fecha actual
+      const castigosUnidadHoy = props.castigo.filter(castigo =>
+        castigo.idUnidad === data && new Date(castigo.created_at).toLocaleDateString() === fechaActual
+      );
+
+      if (castigosUnidadHoy.length > 0) {
         // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
-        const castigosRows = castigosUnidad.map(castigo => {
+        const castigosRows = castigosUnidadHoy.map(castigo => {
           return {
             horaInicio: castigo.horaInicio ? castigo.horaInicio.substring(0, 5) : '', // Obtener hora de inicio si existe
           };
         });
+
         // Devolver un array de filas con los datos de castigos
         return castigosRows.map((castigoRow, index) => {
           // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
-          const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid  #b2b2b2;' : '';
+          const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
           return `
           <div style="${borderStyle}">
             <div>${castigoRow.horaInicio}</div>
@@ -389,6 +396,7 @@ const columnas = [
         `;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
+
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
     }
@@ -396,14 +404,19 @@ const columnas = [
   {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
-      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-      if (castigosUnidad.length > 0) {
+      // Filtrar los castigos de la unidad correspondiente para la fecha actual
+      const castigosUnidadHoy = props.castigo.filter(castigo =>
+        castigo.idUnidad === data && new Date(castigo.created_at).toLocaleDateString() === fechaActual
+      );
+
+      if (castigosUnidadHoy.length > 0) {
         // Crear un array de objetos con la estructura necesaria para renderizar en filas separadas
-        const castigosRows = castigosUnidad.map(castigo => {
+        const castigosRows = castigosUnidadHoy.map(castigo => {
           return {
             horaFin: castigo.horaFin ? castigo.horaFin.substring(0, 5) : '', // Obtener hora de fin si existe
           };
         });
+
         // Devolver un array de filas con los datos de castigos
         return castigosRows.map((castigoRow, index) => {
           // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
@@ -415,6 +428,7 @@ const columnas = [
         `;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
+
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
     }
@@ -422,12 +436,17 @@ const columnas = [
   {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
-      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-      if (castigosUnidad.length > 0) {
+      // Filtrar los castigos de la unidad correspondiente para la fecha actual
+      const castigosUnidadHoy = props.castigo.filter(castigo =>
+        castigo.idUnidad === data && new Date(castigo.created_at).toLocaleDateString() === fechaActual
+      );
+
+      if (castigosUnidadHoy.length > 0) {
         // Crear un array de nombres de castigos
-        const nombresCastigos = castigosUnidad.map(castigo => {
+        const nombresCastigos = castigosUnidadHoy.map(castigo => {
           return castigo.castigo || ''; // Obtener el nombre del castigo si existe
         });
+
         // Devolver un array de filas con los nombres de castigos
         return nombresCastigos.map((nombreCastigo, index) => {
           // Renderizar cada nombre de castigo en una fila diferente con un borde inferior si hay más de un nombre de castigo
@@ -435,6 +454,7 @@ const columnas = [
           return `<div style="${borderStyle}">${nombreCastigo}</div>`;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
+
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
     }
@@ -442,12 +462,17 @@ const columnas = [
   {
     data: 'idUnidad',
     render: function (data, type, row, meta) {
-      const castigosUnidad = props.castigo.filter(castigo => castigo.idUnidad === data);
-      if (castigosUnidad.length > 0) {
+      // Filtrar los castigos de la unidad correspondiente para la fecha actual
+      const castigosUnidadHoy = props.castigo.filter(castigo =>
+        castigo.idUnidad === data && new Date(castigo.created_at).toLocaleDateString() === fechaActual
+      );
+
+      if (castigosUnidadHoy.length > 0) {
         // Crear un array de observaciones de castigos
-        const observacionesCastigos = castigosUnidad.map(castigo => {
+        const observacionesCastigos = castigosUnidadHoy.map(castigo => {
           return castigo.observaciones || ''; // Obtener la observación del castigo si existe
         });
+
         // Devolver un array de filas con las observaciones de castigos
         return observacionesCastigos.map((observacion, index) => {
           // Renderizar cada observación en una fila diferente con un borde inferior si hay más de una observación de castigo
@@ -455,6 +480,7 @@ const columnas = [
           return `<div style="${borderStyle}">${observacion}</div>`;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
+
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
     }

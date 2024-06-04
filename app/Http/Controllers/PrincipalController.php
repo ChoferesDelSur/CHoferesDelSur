@@ -147,7 +147,7 @@ class PrincipalController extends Controller
                 'extremo' => $extremo,
             ]);
     
-            return redirect()->back()->with(['message' => "Hora de entrada registrada correctamente", "color" => "green", 'type' => 'success']);
+            return redirect()->back()->with(['message' => "Hora de entrada {$horaEntrada} registrada correctamente para la unidad {$unidad->numeroUnidad}", "color" => "green", 'type' => 'success']);
         } catch (\Exception $e) {
             return redirect()->back()->with(['message' => "Error al registrar la hora de entrada", "color" => "red", 'type' => 'error']);
         }
@@ -169,12 +169,27 @@ class PrincipalController extends Controller
 
         $numeroUnidad = $unidad->numeroUnidad;
 
-        // Verificar si la unidad tiene registrada la hora de entrada
-        $entrada = $unidad->entradas()->latest()->first();
-        if (!$entrada || !$entrada->horaEntrada) {
+        // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
+        $fechaActual = Carbon::now()->toDateString();
+
+        // Usar created_at para verificar la fecha actual
+        $entrada = entrada::where('idUnidad', $unidadId)
+                          ->whereDate('created_at', $fechaActual)
+                          ->first();
+
+        if (!$entrada) {
             return redirect()->route('principal.formarUni')->with([
-                'message' => "La unidad {$unidad->numeroUnidad} no tiene registrada la hora de entrada.",
-                "color" => "yellow",
+                'message' => "La unidad " . $numeroUnidad . " no tiene registrada la hora de entrada el día de hoy.",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
+        }
+
+        // Depuración: Verificar el valor de horaEntrada
+        if (!$entrada->horaEntrada) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad " . $numeroUnidad . " no tiene hora de entrada registrada.",
+                'color' => 'yellow',
                 'type' => 'info'
             ]);
         }
@@ -313,7 +328,21 @@ class PrincipalController extends Controller
             $numeroUnidad = $unidad->numeroUnidad;
     
             // Verificar si la unidad tiene una entrada de corte
-            $corte = Corte::where('idUnidad', $unidadId)->latest()->first();
+            /* $corte = Corte::where('idUnidad', $unidadId)->latest()->first(); */
+
+            // Verificar si la unidad tiene una entrada de corte para hoy
+            $corte = Corte::where('idUnidad', $unidadId)
+            ->whereDate('created_at', Carbon::today())
+            ->latest()
+            ->first();
+
+            if (!$corte) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad {$numeroUnidad} no tiene registrada hora de corte para hoy.",
+                'color' => 'red',
+                'type' => 'error'
+            ]);
+            }
     
             if ($corte) {
                 // Verificar que la hora de regreso sea mayor o igual a la hora de corte
@@ -354,15 +383,30 @@ class PrincipalController extends Controller
     
             $numeroUnidad = $unidad->numeroUnidad;
     
-            // Verificar si la unidad tiene registrada la hora de entrada en la tabla entrada
-            $entradaUnidad = Entrada::where('idUnidad', $unidadId)->first();
-            if (!$entradaUnidad || !$entradaUnidad->horaEntrada) {
-                return redirect()->route('principal.formarUni')->with([
-                    'message' => "No se puede registrar la hora de inicio de UC porque la unidad " .$numeroUnidad ." no formó.",
-                    'color' => 'red',
-                    'type' => 'error'
-                ]);
-            }
+            // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
+        $fechaActual = Carbon::now()->toDateString();
+
+        // Usar created_at para verificar la fecha actual
+        $entrada = entrada::where('idUnidad', $unidadId)
+                          ->whereDate('created_at', $fechaActual)
+                          ->first();
+
+        if (!$entrada) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad " . $numeroUnidad . " no tiene registrada la hora de entrada el día de hoy.",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
+        }
+
+        // Depuración: Verificar el valor de horaEntrada
+        if (!$entrada->horaEntrada) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "La unidad " . $numeroUnidad . " no tiene hora de entrada registrada.",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
+        }
     
             // Validar que la horaFinUC no sea menor que la horaInicioUC, si se proporciona
             $horaInicioUC = \Carbon\Carbon::parse($request->input('horaInicioUC'));
@@ -426,8 +470,22 @@ class PrincipalController extends Controller
         // Obtener el número de unidad para mostrarlo en el mensaje de éxito
         $numeroUnidad = $unidad->numeroUnidad;
 
-        // Buscar el último registro para esta unidad en ultimaCorrida
-        $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)->orderBy('created_at', 'desc')->first();
+        /* // Buscar el último registro para esta unidad en ultimaCorrida
+        $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)->orderBy('created_at', 'desc')->first(); */
+
+        // Buscar el último registro de inicio de la UC para esta unidad hoy
+        $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)
+        ->whereDate('created_at', Carbon::today())
+        ->orderBy('created_at', 'desc')
+        ->first();
+
+        if (!$ultimaCorrida) {
+        return redirect()->route('principal.formarUni')->with([
+            'message' => "La unidad {$numeroUnidad} no tiene registrado hora de inicio de BN, UB o UC para hoy.",
+            'color' => 'red',
+            'type' => 'error'
+        ]);
+        }
 
         if ($ultimaCorrida) {
             // Verificar que la hora de regreso sea mayor o igual a la hora de inicio de la UC

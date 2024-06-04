@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:reset-daily-data')->dailyAt('00:00'); // Ejecutar diariamente a primera hora del dia 00:00
+        $schedule->command('app:cambiar_trabaja_domingo')->weeklyOn(0, '0:00');
     }
 
     /**
