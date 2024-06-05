@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrincipalController;
+use App\Http\Controllers\ReporteController;
 
 //Route::get('/', [PrincipalController::class, 'inicio'])->name('inicio');
 //Route::get('/', [PrincipalController::class, 'formarUnidades'])->name('formarUnidades');
@@ -41,4 +42,10 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::post('/principal/formarUnidades/trabajaDomingo', 'registrarTrabajanDomingo')->name('principal.trabDomingo');
 
     Route::get('/principal/reportes', 'reportes')->name('principal.reportes');
+});
+
+Route::controller(ReporteController::class)->group(function(){
+    Route::get('/reporte/entradas/{idUnidad}','obtenerEntradasUnidad')->name('reportes.entradasUnidad');
+    Route::get('/reporte/entradas-semana/{idUnidad}','obtenerEntradasUnidadPorSemana')->name('reportes.entradasSemana');
+    Route::get('/reporte/entradas-mes/{idUnidad}','obtenerEntradasUnidadPorMes')->name('reportes.entradasMes');
 });

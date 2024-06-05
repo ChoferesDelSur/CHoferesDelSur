@@ -31,6 +31,14 @@ const props = defineProps({
                   src="https://cdn-icons-png.flaticon.com/512/9069/9069049.png" />
               </div>
             </div>
+            <div class="flex-col justify-start items-center inline-flex">
+              <div class="text-center text-white text-base font-semibold font-['DM Sans'] px-2">{{
+                "Ernesto Alonso Martínez Martínez" }}
+              </div>
+              <div class="text-center text-white text-sm font-normal font-['DM Sans']">{{
+                "Servicio 1" }}
+              </div>
+            </div>
           </div>
           <!-- Señalador de ubicación -->
           <div class="bg-gradient-to-r from-white to-white h-px mt-2"></div> <!-- Esto es una linea -->
@@ -68,7 +76,8 @@ const props = defineProps({
 }
 
 .logout-button:hover {
-  background-color: #e60000; /* Color rojo */
+  background-color: #e60000;
+  /* Color rojo */
   transform: scale(1.05);
   border-color: #e60000;
 }
@@ -84,7 +93,8 @@ const props = defineProps({
 /* Estilos CSS para el contenido principal */
 main {
   /* Establece una altura máxima para el contenido principal */
-  max-height: calc(100vh - 64px); /* Ajusta el valor según el tamaño de la barra de navegación superior */
+  max-height: calc(100vh - 64px);
+  /* Ajusta el valor según el tamaño de la barra de navegación superior */
 }
 
 /* Opcional: Estilos para el scroll si el contenido excede la altura del contenido principal */

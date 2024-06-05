@@ -39,4 +39,13 @@ class unidad extends Model
     {
         return $this->hasMany(Corte::class, 'idUnidad');
     }
+    public function ruta()
+    {
+        return $this->belongsTo(Ruta::class, 'idRuta');
+    }
+
+    public function directivo()
+    {
+        return $this->belongsTo(Directivo::class, 'idDirectivo');
+    }
 }
