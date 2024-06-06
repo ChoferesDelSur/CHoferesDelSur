@@ -28,9 +28,9 @@ class ReporteController extends Controller
     {
         $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
         ->where('idUnidad', $idUnidad)
-        ->get();
+        ->get(); // Incluir created_at
 
-        return response()->json($entradas);
+    return response()->json($entradas);
     }
 
     public function obtenerEntradasUnidadPorSemana($idUnidad)
@@ -41,7 +41,7 @@ class ReporteController extends Controller
         $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
             ->where('idUnidad', $idUnidad)
             ->whereBetween('horaEntrada', [$startDate, $endDate])
-            ->get();
+            ->get(); // Incluir created_at
 
         return response()->json($entradas);
     }
@@ -54,7 +54,7 @@ class ReporteController extends Controller
         $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
             ->where('idUnidad', $idUnidad)
             ->whereBetween('horaEntrada', [$startDate, $endDate])
-            ->get();
+            ->get(); // Incluir created_at
 
         return response()->json($entradas);
     }
