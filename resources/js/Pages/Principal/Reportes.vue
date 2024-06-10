@@ -26,12 +26,14 @@ const form = reactive({
 });
 
 const fetchEntradas = async (idUnidad, periodo) => {
+    console.log("Periodo:", periodo);
     let url = '';
-    if (periodo === 'semana') {
-        url = route('reportes.entradasSemana', { idUnidad: idUnidad });
-    } else if (periodo === 'mes' || typeof periodo === 'number') {
-        url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo });
-        console.log("Ruta generada", url);
+    if (periodo.tipo === 'semana') {
+        url = route('reportes.entradasSemana', { idUnidad: idUnidad, semana: periodo.valor });
+        console.log("Url semana:", url);
+    } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
+        url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo.valor });
+        console.log("Url mes:", url);
     } else {
         url = route('reportes.entradasUnidad', { idUnidad: idUnidad });
     }
@@ -51,19 +53,27 @@ const fetchEntradas = async (idUnidad, periodo) => {
 };
 
 const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) => {
+    let periodo = { tipo: reporte.periodoSeleccionado, valor: '' };
+    if (reporte.periodoSeleccionado === 'semana') {
+        periodo.valor = semanaSeleccionada;
+    } else if (reporte.periodoSeleccionado === 'mes') {
+        periodo.valor = mesSeleccionado;
+    } else if (reporte.periodoSeleccionado === 'anio') {
+        periodo.valor = anioSeleccionado;
+    }
+
     try {
-        await fetchEntradas(idUnidad, periodoSeleccionado);
-        console.log("periodoSeleccionado en generarArchivo:", periodoSeleccionado);
+        await fetchEntradas(idUnidad, periodo);
+        console.log("periodoSeleccionado en generarArchivo:", periodo);
         if (reporte.titulo === 'Entradas') {
             if (formato === 'pdf') {
-                generarPDF(reporte.titulo, periodoSeleccionado);
+                generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
-                generarExcel(reporte.titulo, periodoSeleccionado);
+                generarExcel(reporte.titulo, periodo.valor);
             } else if (formato === 'imprimir') {
-                imprimirReporte(reporte.titulo, periodoSeleccionado);
+                imprimirReporte(reporte.titulo, periodo.valor);
             }
         } else {
-            // Aquí puedes manejar lógica para otros tipos de reporte si es necesario
             Swal.fire({
                 title: `Generar el reporte "${reporte.titulo}" en ${formato}`,
                 text: 'Lógica para generar este tipo de reporte aquí',
@@ -83,12 +93,19 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 };
 
 
+
 const generarPDF = (tipo, periodoSeleccionado) => {
-    let periodoTexto = periodoSeleccionado;
-    if (typeof periodoSeleccionado === 'number' && periodoSeleccionado >= 1 && periodoSeleccionado <= 12) {
-        periodoTexto = months[periodoSeleccionado - 1];
-    } else if (periodoSeleccionado === 'año') {
-        periodoTexto = selectedYear;
+    let periodoTexto;
+
+    // Ajustar el texto del periodo según el tipo
+    if (periodoSeleccionado.tipo === 'semana') {
+        periodoTexto = `Semana ${periodoSeleccionado.valor}`;
+    } else if (periodoSeleccionado.tipo === 'mes') {
+        periodoTexto = months[periodoSeleccionado.valor - 1];
+    } else if (periodoSeleccionado.tipo === 'anio') {
+        periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
+    } else {
+        periodoTexto = periodoSeleccionado.valor; // Default case
     }
 
     const bodyContent = entradas.value.map(entry => {
@@ -133,17 +150,10 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         },
         pageOrientation: 'landscape'
     };
+
     pdfMake.createPdf(docDefinition).download(`${tipo}.pdf`);
 };
 
-const generarExcel = (tipo) => {
-    Swal.fire({
-        title: `Generar el reporte "${tipo}" en Excel`,
-        text: 'Lógica para generar Excel aquí',
-        icon: 'info',
-        confirmButtonText: 'OK'
-    });
-};
 
 const imprimirReporte = (tipo) => {
     Swal.fire({
@@ -180,9 +190,9 @@ const currentYear = new Date().getFullYear();
 const startYear = 2024; // Año inicial deseado
 const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
 
-let selectedWeek = 1; // Por defecto, la primera semana
-let selectedMonth = 1; // Por defecto, enero
-let selectedYear = currentYear; // Por defecto, el año actual
+let semanaSeleccionada = 1; // Por defecto, la primera semana
+let mesSeleccionado = 1; // Por defecto, enero
+let anioSeleccionado = currentYear; // Por defecto, el año actual
 
 </script>
 
@@ -216,23 +226,23 @@ let selectedYear = currentYear; // Por defecto, el año actual
                         <option value="dia">Hoy</option>
                         <option value="semana">Semanal</option>
                         <option value="mes">Mensual</option>
-                        <option value="año">Anual</option>
+                        <option value="anio">Anual</option>
                     </select>
                     <template v-if="reporte.periodoSeleccionado === 'semana'">
-                        <select v-model="selectedWeek"
+                        <select v-model="semanaSeleccionada"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option v-for="(week, index) in weeks" :key="index" :value="week">Semana {{ week }}</option>
                         </select>
                     </template>
                     <template v-else-if="reporte.periodoSeleccionado === 'mes'">
-                        <select v-model="selectedMonth"
+                        <select v-model="mesSeleccionado"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option v-for="(month, index) in months" :key="index" :value="index + 1">{{ month }}
                             </option>
                         </select>
                     </template>
                     <template v-else-if="reporte.periodoSeleccionado === 'año'">
-                        <select v-model="selectedYear"
+                        <select v-model="anioSeleccionado"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
                         </select>
@@ -240,7 +250,7 @@ let selectedYear = currentYear; // Por defecto, el año actual
                 </div>
                 <div class="flex flex-wrap space-x-3">
                     <button v-for="formato in formatos" :key="formato.tipo" :class="formato.clase"
-                        @click="generarArchivo(reporte, formato.tipo, form.unidad, reporte.periodoSeleccionado === 'semana' ? selectedWeek : reporte.periodoSeleccionado === 'mes' ? selectedMonth : reporte.periodoSeleccionado === 'año' ? selectedYear : '')">
+                        @click="generarArchivo(reporte, formato.tipo, form.unidad, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado : '' })">
                         <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
                     </button>
                 </div>

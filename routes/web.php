@@ -46,6 +46,6 @@ Route::controller(PrincipalController::class)->group(function () {
 
 Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/entradas/{idUnidad}','obtenerEntradasUnidad')->name('reportes.entradasUnidad');
-    Route::get('/reporte/entradas-semana/{idUnidad}','obtenerEntradasUnidadPorSemana')->name('reportes.entradasSemana');
-    Route::get('/reporte/entradas-mes/{idUnidad}/mes/{mes}','obtenerEntradasUnidadPorMes')->name('reportes.entradasMes');
+    Route::get('/reporte/entradas-semana/unidad/{idUnidad}/semana/{semana}','obtenerEntradasUnidadPorSemana')->name('reportes.entradasSemana');
+    Route::get('/reporte/entradas-mes/unidad/{idUnidad}/mes/{mes}','obtenerEntradasUnidadPorMes')->name('reportes.entradasMes');
 });
