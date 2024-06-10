@@ -296,7 +296,7 @@ class PrincipalController extends Controller
         $nuevoCastigo->castigo = $validatedData['castigo'];
         $nuevoCastigo->horaInicio = $validatedData['horaInicio'];
         $nuevoCastigo->horaFin = $validatedData['horaFin'];
-        $nuevoCastigo->observaciones = $validatedData['observaciones'];
+        $nuevoCastigo->observaciones = $validatedData['observaciones'] ?? '';
 
         // Guardar el nuevo castigo en la base de datos
         $nuevoCastigo->save();

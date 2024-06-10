@@ -29,8 +29,9 @@ const fetchEntradas = async (idUnidad, periodo) => {
     let url = '';
     if (periodo === 'semana') {
         url = route('reportes.entradasSemana', { idUnidad: idUnidad });
-    } else if (periodo === 'mes') {
-        url = route('reportes.entradasMes', { idUnidad: idUnidad });
+    } else if (periodo === 'mes' || typeof periodo === 'number') {
+        url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo });
+        console.log("Ruta generada", url);
     } else {
         url = route('reportes.entradasUnidad', { idUnidad: idUnidad });
     }
@@ -39,7 +40,7 @@ const fetchEntradas = async (idUnidad, periodo) => {
         const response = await axios.get(url);
         entradas.value = response.data;
     } catch (error) {
-        console.error(error);
+        /* console.error(error); */
         Swal.fire({
             title: 'Error',
             text: 'No se pudieron obtener los datos',
@@ -52,7 +53,7 @@ const fetchEntradas = async (idUnidad, periodo) => {
 const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) => {
     try {
         await fetchEntradas(idUnidad, periodoSeleccionado);
-
+        console.log("periodoSeleccionado en generarArchivo:", periodoSeleccionado);
         if (reporte.titulo === 'Entradas') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodoSeleccionado);
@@ -92,14 +93,15 @@ const generarPDF = (tipo, periodoSeleccionado) => {
 
     const bodyContent = entradas.value.map(entry => {
         const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
+        const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
         const horaEntrada = entry.horaEntrada || 'N/A';
         const tipoEntrada = entry.tipoEntrada;
         const extremo = entry.extremo || 'N/A';
         const operador = entry.unidad?.operador ? `${entry.unidad.operador.nombre_completo}` : 'N/A';
-        
-        return [ruta,numeroUnidad,directivo, horaEntrada, tipoEntrada, extremo, operador];
+
+        return [ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador];
     });
 
     const docDefinition = {
@@ -108,16 +110,25 @@ const generarPDF = (tipo, periodoSeleccionado) => {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['*', 'auto', 'auto', 'auto', '*', 'auto', 'auto'], // Ajustar según el número de columnas
+                    widths: ['*', 'auto', 'auto', 'auto', '*', 'auto', 'auto', 'auto'], // Ajustar según el número de columnas
                     body: [
-                        ['Ruta','Numero Unidad','Socio/Prestador','Hora Entrada', 'Tipo Entrada', 'Extremo', 'Operador'],
+                        [
+                            { text: 'Ruta', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Fecha', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Numero Unidad', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Socio/Prestador', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Hora Entrada', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Tipo Entrada', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Extremo', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Operador', style: 'tableHeader', alignment: 'center' }
+                        ],
                         ...bodyContent
                     ]
                 }
             }
         ],
         styles: {
-            header: { fontSize: 18, bold: true },
+            header: { fontSize: 16, bold: true },
             tableHeader: { bold: true }
         },
         pageOrientation: 'landscape'
@@ -173,17 +184,17 @@ let selectedWeek = 1; // Por defecto, la primera semana
 let selectedMonth = 1; // Por defecto, enero
 let selectedYear = currentYear; // Por defecto, el año actual
 
-
 </script>
 
 <template>
     <PrincipalLayout title="Reportes">
         <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6">
-            <h2 class="font-bold text-center text-xl pt-0">Reportes</h2>
-            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1"></div>
+            <h2 class="font-bold text-center text-xl pt-0 mb-2">Reportes</h2>
+            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px"></div>
             <Mensaje />
 
             <div class="sm:col-span-2 px-4 mb-4">
+                <h3 class="font-bold text-l pt-0">Buscar por: </h3>
                 <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                 <div class="mt-2">
                     <select name="unidad" id="unidad" v-model="form.unidad"
@@ -229,9 +240,9 @@ let selectedYear = currentYear; // Por defecto, el año actual
                 </div>
                 <div class="flex flex-wrap space-x-3">
                     <button v-for="formato in formatos" :key="formato.tipo" :class="formato.clase"
-    @click="generarArchivo(reporte, formato.tipo, form.unidad, reporte.periodoSeleccionado === 'semana' ? selectedWeek : reporte.periodoSeleccionado === 'mes' ? selectedMonth : reporte.periodoSeleccionado === 'año' ? selectedYear : '')">
-    <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
-</button>
+                        @click="generarArchivo(reporte, formato.tipo, form.unidad, reporte.periodoSeleccionado === 'semana' ? selectedWeek : reporte.periodoSeleccionado === 'mes' ? selectedMonth : reporte.periodoSeleccionado === 'año' ? selectedYear : '')">
+                        <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
+                    </button>
                 </div>
             </div>
         </div>
