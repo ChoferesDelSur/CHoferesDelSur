@@ -49,14 +49,22 @@ class ReporteController extends Controller
 
     public function obtenerEntradasUnidadPorMes($idUnidad, $mes)
     {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-
-        $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
-            ->where('idUnidad', $idUnidad)
-            ->whereBetween('horaEntrada', [$startDate, $endDate])
-            ->get();
-
-        return response()->json($entradas);
+        try {
+            // Crear las fechas de inicio y fin del mes seleccionado
+            $startDate = Carbon::create(null, $mes)->startOfMonth();
+            $endDate = Carbon::create(null, $mes)->endOfMonth();
+    
+            // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
+            $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
+                ->where('idUnidad', $idUnidad)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
+    
+            // Devolver las entradas filtradas como respuesta JSON
+            return response()->json($entradas);
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener entradas por mes'], 500);
+        }
     }
 }
