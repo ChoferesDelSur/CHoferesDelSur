@@ -22,6 +22,7 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::put('/principal/unidades/{idUnidad}/edit', 'actualizarUnidad')->name('principal.actualizarUnidad');
     Route::delete('/principal/unidades/{unidadesIds}', 'eliminarUnidad')->name('principal.eliminarUnidad');
     Route::post('/principal/unidades/asignarOper', 'asignarOperador')->name('principal.asignarOperador');
+    Route::post('/principal/unidades/quitarOper', 'quitarOperador')->name('principal.quitarOperador');
     
     Route::post('/principal/sociosPrestadores', 'addDirectivo')->name('principal.addDirectivo');
     Route::put('/principal/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('principal.actualizarDirectivo');

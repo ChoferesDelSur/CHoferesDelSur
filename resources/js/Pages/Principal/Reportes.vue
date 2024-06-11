@@ -19,10 +19,15 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    operador: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const form = reactive({
-    unidad: null // Puedes inicializarlo con algún valor predeterminado si lo deseas
+    unidad: null, // Puedes inicializarlo con algún valor predeterminado si lo deseas
+    operador: null
 });
 
 const fetchEntradas = async (idUnidad, periodo) => {
@@ -115,7 +120,7 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
         const tipoEntrada = entry.tipoEntrada;
         const extremo = entry.extremo || 'N/A';
-        const operador = entry.unidad?.operador ? `${entry.unidad.operador.nombre_completo}` : 'N/A';
+        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
 
         return [ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador];
     });
@@ -155,7 +160,6 @@ const generarPDF = (tipo, periodoSeleccionado) => {
 
     pdfMake.createPdf(docDefinition).download(nombreArchivo);
 };
-
 
 const imprimirReporte = (tipo) => {
     Swal.fire({
@@ -207,16 +211,34 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
 
             <div class="sm:col-span-2 px-4 mb-4">
                 <h3 class="font-bold text-l pt-0">Buscar por: </h3>
-                <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
-                <div class="mt-2">
-                    <select name="unidad" id="unidad" v-model="form.unidad"
-                        class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="" disabled selected>Seleccione la unidad</option>
-                        <option value="todas">Todas las unidades</option>
-                        <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
-                            {{ carro.numeroUnidad }}
-                        </option>
-                    </select>
+                <div class="flex flex-wrap gap-4">
+                    <div>
+                        <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                        <div class="mt-2">
+                            <select name="unidad" id="unidad" v-model="form.unidad"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option value="" disabled selected>Seleccione la unidad</option>
+                                <option value="todas">Todas las unidades</option>
+                                <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
+                                    {{ carro.numeroUnidad }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="operador" class="block text-sm font-medium leading-6 text-gray-900">Operador</label>
+                        <div class="mt-2">
+                            <select name="operador" id="operador" v-model="form.operador"
+                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <option value="" disabled selected>Seleccione el operador</option>
+                                <option value="todas">Todos los operadores</option>
+                                <option v-for="chofer in operador" :key="chofer.idOperador"
+                                    :value="chofer.idOperador">
+                                    {{ chofer.nombre_completo }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 

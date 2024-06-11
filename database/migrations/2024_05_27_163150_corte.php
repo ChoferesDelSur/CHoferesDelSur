@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string(column:'causa')->nullable(true);
             $table->time('horaRegreso')->nullable(true);
             $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
+            $table->foreignId(column:'idOperador')->references('idOperador')->on('operador');
             $table->softDeletes();
             $table->timestamps();
         });

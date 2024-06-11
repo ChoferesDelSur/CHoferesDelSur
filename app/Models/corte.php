@@ -19,10 +19,16 @@ class corte extends Model
         'causa',
         'horaRegreso',
         'idUnidad',
+        'idOperador'
     ];
 
     public function unidad()
     {
         return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
+    
+    public function operador()
+    {
+        return $this->belongsTo(Operador::class, 'idOperador');
     }
 }

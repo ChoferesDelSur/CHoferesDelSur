@@ -15,6 +15,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
 import FormularioAsignarOperador from '../../Components/Principal/FormularioAsignarOperador.vue';
 import Mensaje from '../../Components/Mensaje.vue';
+import FormularioQuitarOperador from '../../Components/Principal/FormularioQuitarOperador.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -35,6 +36,7 @@ const props = defineProps({
     directivo: { type: Object },
     operadoresDisp: { type: Object },
     unidadesDisp: { type: Object },
+    unidadesConOperador: { type: Object },
 });
 
 const botonesPersonalizados = [
@@ -132,6 +134,7 @@ const columnas = [
 
 const mostrarModal = ref(false);
 const mostrarModalAsigOper = ref(false);
+const mostrarModalQuitarOper = ref(false);
 const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
@@ -151,6 +154,10 @@ const cerrarModal = () => {
 
 const cerrarModalAsigOper = () => {
     mostrarModalAsigOper.value = false;
+};
+
+const cerrarModalQuitargOper = () => {
+    mostrarModalQuitarOper.value = false;
 };
 
 const cerrarModalE = () => {
@@ -176,20 +183,6 @@ const toggleUnidadSelection = (unidad) => {
 };
 
 onMounted(() => {
-    /* // Verifica si hay un mensaje en la sesión flash
-    console.log("Estoy en onMounted");
-    console.log("Window.flas:",window.flash);
-    if (window.flash) {
-        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
-        Swal.fire({
-            title: window.flash.message,
-            icon: 'success'
-        });
-        console.log("Window.flash:", window.flash);
-        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
-        window.flash = null;
-    } */
-
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('unidadesTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
@@ -212,17 +205,6 @@ onMounted(() => {
         const uni = props.unidad.find(u => u.idUnidad === unidadId);
         abrirE(uni);
     });
-
-    // Manejar clic en el botón de eliminar
-    /* $('#alumnosTablaId').on('click', '.eliminar-button', function () {
-        const alumnoId = $(this).data('id');
-        const alumno = props.alumnos.find(a => a.idAlumno === alumnoId);
-        eliminarAlumno(alumnoId, alumno.apellidoP + " " + alumno.apellidoM + " " + alumno.nombre);
-    }); */
-
-    /* // Borra los datos de la sesión después de mostrarlos
-  sessionStorage.removeItem('message');
-  sessionStorage.removeItem('color'); */
 });
 
 const eliminarUnidades = () => {
@@ -299,6 +281,10 @@ const eliminarUnidades = () => {
                     @click="mostrarModalAsigOper = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-male" aria-hidden="true"></i> Asignar Operador
                 </button>
+                <button class="bg-orange-500 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded"
+                    @click="mostrarModalQuitarOper = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-male" aria-hidden="true"></i> Quitar Operador
+                </button>
             </div>
 
             <div>
@@ -356,6 +342,10 @@ const eliminarUnidades = () => {
             @close="cerrarModalAsigOper" :title="'Asignar operador'" :op="'1'" :modal="'modalCreate'"
             :unidad="props.unidad" :unidadesDisp="props.unidadesDisp" :operadoresDisp="props.operadoresDisp">
         </FormularioAsignarOperador>
+        <FormularioQuitarOperador :show="mostrarModalQuitarOper" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalQuitargOper" :title="'Quitar operador'" :op="'1'" :modal="'modalCreate'"
+            :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :operadoresDisp="props.operadoresDisp">
+        </FormularioQuitarOperador>
     </PrincipalLayout>
 </template>
 

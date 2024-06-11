@@ -17,5 +17,16 @@ class castigo extends Model
         'horaInicio',
         'horaFin',
         'idUnidad',
+        'idOperador'
     ];
+
+    public function unidad()
+    {
+        return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
+    
+    public function operador()
+    {
+        return $this->belongsTo(Operador::class, 'idOperador');
+    }
 }

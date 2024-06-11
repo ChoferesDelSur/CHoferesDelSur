@@ -17,6 +17,7 @@ return new class extends Migration
             $table->time('horaFinUC')->nullable(true);
             $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
             $table->foreignId(column:'idTipoUltimaCorrida')->nullable(true)->references('idTipoUltimaCorrida')->on('tipoUltimaCorrida');
+            $table->foreignId(column:'idOperador')->references('idOperador')->on('operador');
             $table->softDeletes();
             $table->timestamps();
         });

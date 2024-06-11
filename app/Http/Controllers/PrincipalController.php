@@ -86,8 +86,10 @@ class PrincipalController extends Controller
             $horaEntrada = Carbon::parse($request->input('horaEntrada'))->format('H:i'); // Formatear la hora
             $extremo = $request->input('extremo');
     
-            // Verificar si la unidad existe
-            $unidad = Unidad::find($unidadId);
+            /* // Verificar si la unidad existe
+            $unidad = Unidad::find($unidadId); */
+            // Verificar si la unidad existe y tiene un operador asignado
+            $unidad = Unidad::with('operador')->findOrFail($unidadId);
             if (!$unidad) {
                 // La unidad no existe, puedes manejar el error aquí
                 return redirect()->back()->with(['message' => "La unidad no existe", "color" => "yellow", 'type' => 'info']);
@@ -145,6 +147,7 @@ class PrincipalController extends Controller
                 'horaEntrada' => $horaEntrada,
                 'tipoEntrada' => $tipoEntrada,
                 'extremo' => $extremo,
+                'idOperador' => $unidad->operador->idOperador, // Registrar el ID del operador asociado
             ]);
     
             return redirect()->back()->with(['message' => "Hora de entrada {$horaEntrada} registrada correctamente para la unidad {$unidad->numeroUnidad}", "color" => "green", 'type' => 'success']);
@@ -168,6 +171,9 @@ class PrincipalController extends Controller
         $unidad = Unidad::find($unidadId);
 
         $numeroUnidad = $unidad->numeroUnidad;
+
+        // Obtener el operador asociado con la unidad seleccionada
+        $idOperador = $unidad->operador->idOperador;
 
         // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
         $fechaActual = Carbon::now()->toDateString();
@@ -215,7 +221,7 @@ class PrincipalController extends Controller
             'horaCorte' => $request->input('horaCorte'),
             'causa' => $request->input('causa'),
             'horaRegreso' => $request->input('horaRegreso'),
-            // Otros campos necesarios...
+            'idOperador' => $idOperador, // Asociar el ID del operador
         ]);
 
         // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
@@ -249,6 +255,9 @@ class PrincipalController extends Controller
         $unidadId = $validatedData['unidad'];
         $unidad = Unidad::findOrFail($unidadId);
         $numeroUnidad = $unidad->numeroUnidad;
+
+        // Obtener el operador asociado con la unidad seleccionada
+        $idOperador = $unidad->operador->idOperador;
 
         // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
         $fechaActual = Carbon::now()->toDateString();
@@ -297,6 +306,7 @@ class PrincipalController extends Controller
         $nuevoCastigo->horaInicio = $validatedData['horaInicio'];
         $nuevoCastigo->horaFin = $validatedData['horaFin'];
         $nuevoCastigo->observaciones = $validatedData['observaciones'] ?? '';
+        $nuevoCastigo->idOperador = $idOperador; // Asociar el ID del operador
 
         // Guardar el nuevo castigo en la base de datos
         $nuevoCastigo->save();
@@ -382,6 +392,9 @@ class PrincipalController extends Controller
             $unidad = Unidad::find($unidadId);
     
             $numeroUnidad = $unidad->numeroUnidad;
+
+            // Obtener el operador asociado con la unidad seleccionada
+        $idOperador = $unidad->operador->idOperador;
     
             // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
         $fechaActual = Carbon::now()->toDateString();
@@ -429,7 +442,7 @@ class PrincipalController extends Controller
                 'horaInicioUC' => $request->input('horaInicioUC'),
                 'horaFinUC' => $request->input('horaFinUC'),
                 'idTipoUltimaCorrida' => $request->input('tipoUltimaCorrida'),
-                // Otros campos necesarios...
+                'idOperador' => $idOperador, // Asociar el ID del operador
             ]);
     
             return redirect()->route('principal.formarUni')->with([
@@ -590,6 +603,9 @@ class PrincipalController extends Controller
         
         // Obtener las unidades disponibles (sin operador asignado)
         $unidadesDisp = unidad::whereNull('idOperador')->get();
+
+        // Obtener las unidades que están relacionadas con algún operador
+        $unidadesConOperador = unidad::whereNotNull('idOperador')->get();
         
         $ruta = ruta::all();
         
@@ -598,6 +614,7 @@ class PrincipalController extends Controller
             'operador' => $operador,
             'operadoresDisp' => $operadoresDisp,
             'unidadesDisp' => $unidadesDisp, // Pasar las unidades disponibles a la vista
+            'unidadesConOperador' => $unidadesConOperador, // Pasar las unidades con operador a la vista
             'ruta' => $ruta,
             'directivo' => $directivo,
             'message' => session('message'),
@@ -713,7 +730,23 @@ class PrincipalController extends Controller
         $unidad->save();
 
         // Puedes retornar algún mensaje de éxito si lo deseas
-        return redirect()->route('principal.unidades')->with(['message' => 'Operador asignado correctamente a la unidad.']);
+        return redirect()->route('principal.unidades')->with(['message' => 'Operador asignado correctamente a la unidad.', "color" => "green", 'type' => 'success']);
+    }
+
+    public function quitarOperador(Request $request)
+    {
+        // Obtener el ID de la unidad del request
+        $unidadId = $request->input('unidad');
+
+        // Buscar la unidad en la base de datos
+        $unidad = Unidad::findOrFail($unidadId);
+
+        // Disociar el operador de la unidad
+        $unidad->operador()->dissociate();
+        $unidad->save();
+
+        // Puedes retornar algún mensaje de éxito si lo deseas
+        return redirect()->route('principal.unidades')->with(['message' => 'Operador eliminado correctamente de la unidad.', "color" => "green", 'type' => 'success']);
     }
 
     public function operadores(){

@@ -18,12 +18,18 @@ class ultimaCorrida extends Model
         'horaInicioUC',
         'horaFinUC',
         'idUnidad',
-        'idTipoUltimaCorrida'
+        'idTipoUltimaCorrida',
+        'idOperador'
     ];
 
     public function unidad()
     {
         return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
+    
+    public function operador()
+    {
+        return $this->belongsTo(Operador::class, 'idOperador');
     }
 
     public function tipoUltimaCorrida()
