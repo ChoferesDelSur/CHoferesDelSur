@@ -34,8 +34,9 @@ const fetchEntradas = async (idUnidad, periodo) => {
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
         url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo.valor });
         console.log("Url mes:", url);
-    } else {
-        url = route('reportes.entradasUnidad', { idUnidad: idUnidad });
+    } else if (periodo.tipo === 'anio') {
+        url = route('reportes.entradasAnio', { idUnidad: idUnidad, anio: periodo.valor });
+        console.log("Url año:", url);
     }
 
     try {
@@ -92,8 +93,6 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
     }
 };
 
-
-
 const generarPDF = (tipo, periodoSeleccionado) => {
     let periodoTexto;
 
@@ -113,13 +112,16 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada || 'N/A';
+        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
         const tipoEntrada = entry.tipoEntrada;
         const extremo = entry.extremo || 'N/A';
         const operador = entry.unidad?.operador ? `${entry.unidad.operador.nombre_completo}` : 'N/A';
 
         return [ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador];
     });
+
+    // Construye el nombre del archivo con el tipo de reporte y el período
+    const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
 
     const docDefinition = {
         content: [
@@ -151,7 +153,7 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         pageOrientation: 'landscape'
     };
 
-    pdfMake.createPdf(docDefinition).download(`${tipo}.pdf`);
+    pdfMake.createPdf(docDefinition).download(nombreArchivo);
 };
 
 
@@ -165,10 +167,10 @@ const imprimirReporte = (tipo) => {
 };
 
 const reportes = [
-    { titulo: 'Entradas', periodo: 'dia', periodoSeleccionado: 'dia' },
-    { titulo: 'Cortes con regreso', periodo: 'dia', periodoSeleccionado: 'dia' },
-    { titulo: 'Cortes sin regreso', periodo: 'dia', periodoSeleccionado: 'dia' }, // Ejemplo: Podrías establecerlo en 'dia' por defecto
-    { titulo: 'Retardos', periodo: 'dia', periodoSeleccionado: 'dia' } // Ejemplo: Podrías establecerlo en 'dia' por defecto
+    { titulo: 'Entradas', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Cortes con regreso', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Cortes sin regreso', periodo: 'semana', periodoSeleccionado: 'semana' }, // Ejemplo: Podrías establecerlo en 'dia' por defecto
+    { titulo: 'Retardos', periodo: 'semana', periodoSeleccionado: 'semana' } // Ejemplo: Podrías establecerlo en 'dia' por defecto
 ];
 
 const formatos = [
@@ -223,7 +225,6 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                 <div class="flex flex-wrap space-x-3 mb-2">
                     <select v-model="reporte.periodoSeleccionado"
                         class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="dia">Hoy</option>
                         <option value="semana">Semanal</option>
                         <option value="mes">Mensual</option>
                         <option value="anio">Anual</option>
@@ -241,7 +242,7 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                             </option>
                         </select>
                     </template>
-                    <template v-else-if="reporte.periodoSeleccionado === 'año'">
+                    <template v-else-if="reporte.periodoSeleccionado === 'anio'">
                         <select v-model="anioSeleccionado"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option v-for="year in years" :key="year" :value="year">{{ year }}</option>

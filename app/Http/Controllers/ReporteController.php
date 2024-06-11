@@ -24,16 +24,6 @@ use Illuminate\Http\Request;
 
 class ReporteController extends Controller
 {
-    public function obtenerEntradasUnidad($idUnidad)
-    {
-        /* dd("idUnidad en obtenerEntradaUnidad",$idUnidad); */
-        $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
-        ->where('idUnidad', $idUnidad)
-        ->get(); // Incluir created_at
-
-    return response()->json($entradas);
-    }
-
     public function obtenerEntradasUnidadPorSemana($idUnidad, $semana)
     {
         try {
@@ -57,13 +47,13 @@ class ReporteController extends Controller
     {
         try {
             // Crear las fechas de inicio y fin del mes seleccionado
-            $startDate = Carbon::create(null, $mes)->startOfMonth();
-            $endDate = Carbon::create(null, $mes)->endOfMonth();
+            $inicioAnio = Carbon::create(null, $mes)->startOfMonth();
+            $finAnio = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
             $entradas = Entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
                 ->where('idUnidad', $idUnidad)
-                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereBetween('created_at', [$inicioAnio, $finAnio])
                 ->get();
     
             // Devolver las entradas filtradas como respuesta JSON
@@ -71,6 +61,27 @@ class ReporteController extends Controller
         } catch (\Exception $e) {
             // Manejar excepciones y devolver un mensaje de error
             return response()->json(['error' => 'Error al obtener entradas por mes'], 500);
+        }
+    }
+
+    public function obtenerEntradasUnidadPorAnio($idUnidad, $anio)
+    {
+        try {
+            // Crear las fechas de inicio y fin del año seleccionado
+            $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
+            $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
+
+            // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
+            $entradas = entrada::with(['unidad.operador', 'unidad.ruta', 'unidad.directivo'])
+                ->where('idUnidad', $idUnidad)
+                ->whereBetween('created_at', [$inicioAnio, $finAnio])
+                ->get();
+
+            // Devolver las entradas filtradas como respuesta JSON
+            return response()->json($entradas);
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener entradas por año', 'details' => $e->getMessage()], 500);
         }
     }
 }
