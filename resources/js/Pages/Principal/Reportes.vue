@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ref, reactive } from 'vue';
+import * as XLSX from 'xlsx';
 import axios from 'axios';
 
 // Cargar fuentes personalizadas
@@ -31,17 +32,13 @@ const form = reactive({
 });
 
 const fetchEntradas = async (idUnidad, periodo) => {
-    console.log("Periodo:", periodo);
     let url = '';
     if (periodo.tipo === 'semana') {
         url = route('reportes.entradasSemana', { idUnidad: idUnidad, semana: periodo.valor });
-        console.log("Url semana:", url);
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
         url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo.valor });
-        console.log("Url mes:", url);
     } else if (periodo.tipo === 'anio') {
         url = route('reportes.entradasAnio', { idUnidad: idUnidad, anio: periodo.valor });
-        console.log("Url año:", url);
     }
 
     try {
@@ -70,14 +67,13 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
     try {
         await fetchEntradas(idUnidad, periodo);
-        console.log("periodoSeleccionado en generarArchivo:", periodo);
         if (reporte.titulo === 'Entradas') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
-                generarExcel(reporte.titulo, periodo.valor);
+                generarExcel(reporte.titulo, periodo);
             } else if (formato === 'imprimir') {
-                imprimirReporte(reporte.titulo, periodo.valor);
+                imprimirReporte(reporte.titulo, periodo);
             }
         } else {
             Swal.fire({
@@ -100,7 +96,6 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
 const generarPDF = (tipo, periodoSeleccionado) => {
     let periodoTexto;
-
     // Ajustar el texto del periodo según el tipo
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;
@@ -161,13 +156,42 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     pdfMake.createPdf(docDefinition).download(nombreArchivo);
 };
 
-const imprimirReporte = (tipo) => {
-    Swal.fire({
-        title: `Imprimir el reporte "${tipo}"`,
-        text: 'Lógica para imprimir aquí',
-        icon: 'info',
-        confirmButtonText: 'OK'
+const generarExcel = (tipo, periodoSeleccionado) => {
+    let periodoTexto;
+
+    // Ajustar el texto del periodo según el tipo
+    if (periodoSeleccionado.tipo === 'semana') {
+        periodoTexto = `Semana ${periodoSeleccionado.valor}`;
+    } else if (periodoSeleccionado.tipo === 'mes') {
+        periodoTexto = months[periodoSeleccionado.valor - 1];
+    } else if (periodoSeleccionado.tipo === 'anio') {
+        periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
+    } else {
+        periodoTexto = periodoSeleccionado.valor; // Default case
+    }
+
+    const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
+    // Crear datos para el archivo Excel
+    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Entrada', 'Tipo Entrada', 'Extremo', 'Operador']];
+    entradas.value.forEach(entry => {
+        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
+        const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
+        const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
+        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
+        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
+        const tipoEntrada = entry.tipoEntrada;
+        const extremo = entry.extremo || 'N/A';
+        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
+        data.push([ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador]);
     });
+
+    // Crear libro de Excel
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+    // Guardar el archivo Excel
+    XLSX.writeFile(workbook, nombreArchivo);
 };
 
 const reportes = [
@@ -180,7 +204,6 @@ const reportes = [
 const formatos = [
     { tipo: 'pdf', texto: 'Generar PDF', clase: 'bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded', icono: 'fa-solid fa-file-pdf' },
     { tipo: 'excel', texto: 'Generar Excel', clase: 'bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded', icono: 'fa-solid fa-file-excel' },
-    { tipo: 'imprimir', texto: 'Imprimir', clase: 'bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded', icono: 'fa-solid fa-print' }
 ];
 
 // Definir semanas
@@ -232,8 +255,7 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                                 class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="" disabled selected>Seleccione el operador</option>
                                 <option value="todas">Todos los operadores</option>
-                                <option v-for="chofer in operador" :key="chofer.idOperador"
-                                    :value="chofer.idOperador">
+                                <option v-for="chofer in operador" :key="chofer.idOperador" :value="chofer.idOperador">
                                     {{ chofer.nombre_completo }}
                                 </option>
                             </select>

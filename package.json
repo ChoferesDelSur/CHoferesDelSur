@@ -41,6 +41,7 @@
         "vue-router": "^4.3.0",
         "vue-select": "^4.0.0-beta.6",
         "vuetify": "^3.4.0-beta.1",
+        "xlsx": "^0.18.5",
         "ziggy": "^1.2.0"
     }
 }
