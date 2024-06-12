@@ -27,18 +27,19 @@ class ReporteController extends Controller
     public function obtenerEntradasUnidadPorSemana($idUnidad, $semana)
     {
         try {
-            // Calcular el inicio de la semana dada
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
-    
-            // Filtrar las entradas por el rango de fechas de la semana seleccionada
+
             $entradas = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
-                ->where('idUnidad', $idUnidad)
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
                 ->whereBetween('created_at', [$inicioSemana, $finSemana])
                 ->get();
-    
+
             return response()->json($entradas);
         } catch (\Exception $e) {
+            Log::error('Error al obtener entradas por semana', ['details' => $e->getMessage()]);
             return response()->json(['error' => 'Error al obtener entradas por semana', 'details' => $e->getMessage()], 500);
         }
     }
@@ -47,13 +48,15 @@ class ReporteController extends Controller
     {
         try {
             // Crear las fechas de inicio y fin del mes seleccionado
-            $inicioAnio = Carbon::create(null, $mes)->startOfMonth();
-            $finAnio = Carbon::create(null, $mes)->endOfMonth();
+            $inicioMes = Carbon::create(null, $mes)->startOfMonth();
+            $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
             $entradas = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
-                ->where('idUnidad', $idUnidad)
-                ->whereBetween('created_at', [$inicioAnio, $finAnio])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioMes, $finMes])
                 ->get();
     
             // Devolver las entradas filtradas como respuesta JSON
@@ -72,8 +75,10 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
-            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo','operador'])
-                ->where('idUnidad', $idUnidad)
+            $entradas = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
                 ->whereBetween('created_at', [$inicioAnio, $finAnio])
                 ->get();
 
