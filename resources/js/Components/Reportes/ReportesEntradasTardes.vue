@@ -33,11 +33,11 @@ const form = reactive({
 const fetchEntradas = async (idUnidad, periodo) => {
     let url = '';
     if (periodo.tipo === 'semana') {
-        url = route('reportes.entradasSemana', { idUnidad: idUnidad, semana: periodo.valor });
+        url = route('reportes.entradasTardesSemana', { idUnidad: idUnidad, semana: periodo.valor });
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
-        url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo.valor });
+        url = route('reportes.entradasTardesMes', { idUnidad: idUnidad, mes: periodo.valor });
     } else if (periodo.tipo === 'anio') {
-        url = route('reportes.entradasAnio', { idUnidad: idUnidad, anio: periodo.valor });
+        url = route('reportes.entradasTardesAnio', { idUnidad: idUnidad, anio: periodo.valor });
     }
 
     try {
@@ -66,13 +66,11 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
     try {
         await fetchEntradas(idUnidad, periodo);
-        if (reporte.titulo === 'Entradas') {
+        if (reporte.titulo === 'Entradas Tardes') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
                 generarExcel(reporte.titulo, periodo);
-            } else if (formato === 'imprimir') {
-                imprimirReporte(reporte.titulo, periodo);
             }
         } else {
             Swal.fire({
@@ -188,13 +186,13 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Entradas');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Entradas_Tardes');
     // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
 const reportes = [
-    { titulo: 'Entradas', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Entradas Tardes', periodo: 'semana', periodoSeleccionado: 'semana' },
 ];
 
 const formatos = [

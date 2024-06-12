@@ -188,13 +188,13 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Entradas');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Cortes');
     // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
 const reportes = [
-    { titulo: 'Entradas', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Cortes sin regreso', periodo: 'semana', periodoSeleccionado: 'semana' },
 ];
 
 const formatos = [

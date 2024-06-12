@@ -49,4 +49,8 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/entradas/unidad/{idUnidad}/anio/{anio}','obtenerEntradasUnidadPorAnio')->name('reportes.entradasAnio');
     Route::get('/reporte/entradas-semana/unidad/{idUnidad}/semana/{semana}','obtenerEntradasUnidadPorSemana')->name('reportes.entradasSemana');
     Route::get('/reporte/entradas-mes/unidad/{idUnidad}/mes/{mes}','obtenerEntradasUnidadPorMes')->name('reportes.entradasMes');
+
+    Route::get('/reporte/entradasT/unidad/{idUnidad}/anio/{anio}','obtenerEntradasTardesPorAnio')->name('reportes.entradasTardesAnio');
+    Route::get('/reporte/entradasT-semana/unidad/{idUnidad}/semana/{semana}','obtenerEntradasTardesPorSemana')->name('reportes.entradasTardesSemana');
+    Route::get('/reporte/entradasT-mes/unidad/{idUnidad}/mes/{mes}','obtenerEntradasTardesPorMes')->name('reportes.entradasTardesMes');
 });

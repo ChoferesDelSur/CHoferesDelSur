@@ -6,6 +6,10 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ref, reactive } from 'vue';
 import ReportesEntrada from '../../Components/Reportes/ReportesEntrada.vue';
+import ReportesCortes from '../../Components/Reportes/ReportesCortes.vue';
+import ReportesCortesConRegreso from '../../Components/Reportes/ReportesCortesConRegreso.vue';
+import ReportesCortesSinRegreso from '../../Components/Reportes/ReportesCortesSinRegreso.vue';
+import ReportesEntradasTardes from '../../Components/Reportes/ReportesEntradasTardes.vue';
 
 // Cargar fuentes personalizadas
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -32,6 +36,14 @@ const props = defineProps({
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
 
             <ReportesEntrada :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesEntradasTardes :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesCortes :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesCortesConRegreso :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador"/>
             
         </div>
     </PrincipalLayout>

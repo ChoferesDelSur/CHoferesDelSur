@@ -89,4 +89,68 @@ class ReporteController extends Controller
             return response()->json(['error' => 'Error al obtener entradas por año', 'details' => $e->getMessage()], 500);
         }
     }
+
+    public function obtenerEntradasTardesPorSemana($idUnidad, $semana)
+    {
+        try {
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+
+            $entradasTardes = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->where('horaEntrada', '>=', '07:01:00') // Hora mayor o igual a 7:01 AM
+                ->where('created_at', '>', $inicioSemana)
+                ->where('created_at', '<', $finSemana)
+                ->get();
+
+            return response()->json($entradasTardes);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener entradas tardías por semana', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener entradas tardías por semana', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerEntradasTardesPorMes($idUnidad, $mes)
+    {
+        try {
+            $inicioMes = Carbon::create(null, $mes)->startOfMonth();
+            $finMes = Carbon::create(null, $mes)->endOfMonth();
+
+            $entradasTardes = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->where('horaEntrada', '>=', '07:01:00') // Hora mayor o igual a 7:01 AM
+                ->where('created_at', '>=', $inicioMes)
+                ->where('created_at', '<=', $finMes)
+                ->get();
+
+            return response()->json($entradasTardes);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener entradas tardías por mes'], 500);
+        }
+    }
+
+    public function obtenerEntradasTardesPorAnio($idUnidad, $anio)
+    {
+        try {
+            $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
+            $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
+
+            $entradasTardes = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->where('horaEntrada', '>=', '07:01:00') // Hora mayor o igual a 7:01 AM
+                ->where('created_at', '>', $inicioAnio)
+                ->where('created_at', '<', $finAnio)
+                ->get();
+
+            return response()->json($entradasTardes);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener entradas tardías por año', 'details' => $e->getMessage()], 500);
+        }
+    }
 }
