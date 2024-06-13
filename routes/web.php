@@ -46,11 +46,23 @@ Route::controller(PrincipalController::class)->group(function () {
 });
 
 Route::controller(ReporteController::class)->group(function(){
-    Route::get('/reporte/entradas/unidad/{idUnidad}/anio/{anio}','obtenerEntradasUnidadPorAnio')->name('reportes.entradasAnio');
     Route::get('/reporte/entradas-semana/unidad/{idUnidad}/semana/{semana}','obtenerEntradasUnidadPorSemana')->name('reportes.entradasSemana');
     Route::get('/reporte/entradas-mes/unidad/{idUnidad}/mes/{mes}','obtenerEntradasUnidadPorMes')->name('reportes.entradasMes');
+    Route::get('/reporte/entradas/unidad/{idUnidad}/anio/{anio}','obtenerEntradasUnidadPorAnio')->name('reportes.entradasAnio');
 
-    Route::get('/reporte/entradasT/unidad/{idUnidad}/anio/{anio}','obtenerEntradasTardesPorAnio')->name('reportes.entradasTardesAnio');
     Route::get('/reporte/entradasT-semana/unidad/{idUnidad}/semana/{semana}','obtenerEntradasTardesPorSemana')->name('reportes.entradasTardesSemana');
     Route::get('/reporte/entradasT-mes/unidad/{idUnidad}/mes/{mes}','obtenerEntradasTardesPorMes')->name('reportes.entradasTardesMes');
+    Route::get('/reporte/entradasT/unidad/{idUnidad}/anio/{anio}','obtenerEntradasTardesPorAnio')->name('reportes.entradasTardesAnio');
+
+    Route::get('/reporte/cortes-semana/unidad/{idUnidad}/semana/{semana}','obtenerCortesPorSemana')->name('reportes.cortesSemana');
+    Route::get('/reporte/cortes-mes/unidad/{idUnidad}/mes/{mes}','obtenerCortesPorMes')->name('reportes.cortesMes');
+    Route::get('/reporte/cortes/unidad/{idUnidad}/anio/{anio}','obtenerCortesPorAnio')->name('reportes.cortesAnio');
+
+    Route::get('/reporte/cortesCR-semana/unidad/{idUnidad}/semana/{semana}','obtenerCortesCRPorSemana')->name('reportes.cortesCRSemana');
+    Route::get('/reporte/cortesCR-mes/unidad/{idUnidad}/mes/{mes}','obtenerCortesCRPorMes')->name('reportes.cortesCRMes');
+    Route::get('/reporte/cortesCR/unidad/{idUnidad}/anio/{anio}','obtenerCortesCRPorAnio')->name('reportes.cortesCRAnio');
+
+    Route::get('/reporte/cortesSR-semana/unidad/{idUnidad}/semana/{semana}','obtenerCortesSRPorSemana')->name('reportes.cortesSRSemana');
+    Route::get('/reporte/cortesSR-mes/unidad/{idUnidad}/mes/{mes}','obtenerCortesSRPorMes')->name('reportes.cortesSRMes');
+    Route::get('/reporte/cortesSR/unidad/{idUnidad}/anio/{anio}','obtenerCortesSRPorAnio')->name('reportes.cortesSRAnio');
 });

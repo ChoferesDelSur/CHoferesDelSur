@@ -33,11 +33,11 @@ const form = reactive({
 const fetchEntradas = async (idUnidad, periodo) => {
     let url = '';
     if (periodo.tipo === 'semana') {
-        url = route('reportes.entradasSemana', { idUnidad: idUnidad, semana: periodo.valor });
+        url = route('reportes.cortesSRSemana', { idUnidad: idUnidad, semana: periodo.valor });
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
-        url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo.valor });
+        url = route('reportes.cortesSRMes', { idUnidad: idUnidad, mes: periodo.valor });
     } else if (periodo.tipo === 'anio') {
-        url = route('reportes.entradasAnio', { idUnidad: idUnidad, anio: periodo.valor });
+        url = route('reportes.cortesSRAnio', { idUnidad: idUnidad, anio: periodo.valor });
     }
 
     try {
@@ -66,7 +66,7 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
     try {
         await fetchEntradas(idUnidad, periodo);
-        if (reporte.titulo === 'Entradas') {
+        if (reporte.titulo === 'Cortes Sin Regreso') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
@@ -111,12 +111,12 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
-        const tipoEntrada = entry.tipoEntrada;
-        const extremo = entry.extremo || 'N/A';
+        const horaCorte = entry.horaCorte ? entry.horaCorte.substring(0, 5) : 'N/A';
+        const causa = entry.causa || 'N/A';
+        const horaRegreso = entry.horaRegreso ? entry.horaRegreso.substring(0, 5) : 'Sin Regreso';
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
 
-        return [ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador];
+        return [ruta, fecha, numeroUnidad, directivo, horaCorte, causa, horaRegreso, operador];
     });
 
     // Construye el nombre del archivo con el tipo de reporte y el período
@@ -128,16 +128,16 @@ const generarPDF = (tipo, periodoSeleccionado) => {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['*', 'auto', 'auto', 'auto', '*', 'auto', 'auto', 'auto'], // Ajustar según el número de columnas
+                    widths: ['*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'], // Ajustar según el número de columnas
                     body: [
                         [
                             { text: 'Ruta', style: 'tableHeader', alignment: 'center' },
                             { text: 'Fecha', style: 'tableHeader', alignment: 'center' },
                             { text: 'Numero Unidad', style: 'tableHeader', alignment: 'center' },
                             { text: 'Socio/Prestador', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Hora Entrada', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Tipo Entrada', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Extremo', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Hora Corte', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Causa', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Hora Regreso', style: 'tableHeader', alignment: 'center' },
                             { text: 'Operador', style: 'tableHeader', alignment: 'center' }
                         ],
                         ...bodyContent
@@ -171,30 +171,30 @@ const generarExcel = (tipo, periodoSeleccionado) => {
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
     // Crear datos para el archivo Excel
-    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Entrada', 'Tipo Entrada', 'Extremo', 'Operador']];
+    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Corte', 'Causa', 'Hora Regreso', 'Operador']];
     entradas.value.forEach(entry => {
         const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
-        const tipoEntrada = entry.tipoEntrada;
-        const extremo = entry.extremo || 'N/A';
+        const horaCorte = entry.horaCorte ? entry.horaCorte.substring(0, 5) : 'N/A';
+        const causa = entry.causa || 'N/A';
+        const horaRegreso = entry.horaRegreso ? entry.horaRegreso.substring(0, 5) : 'Sin Regreso';
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-        data.push([ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador]);
+        data.push([ruta, fecha, numeroUnidad, directivo, horaCorte, causa, horaRegreso, operador]);
     });
 
     // Crear libro de Excel
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Cortes');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Cortes_SR');
     // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
 const reportes = [
-    { titulo: 'Cortes sin regreso', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Cortes Sin Regreso', periodo: 'semana', periodoSeleccionado: 'semana' },
 ];
 
 const formatos = [
