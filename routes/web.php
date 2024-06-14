@@ -69,4 +69,12 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/DiasTrabajados-semana/operador/{idOperador}/semana/{semana}','obtenerDiasTrabajadosPorSemana')->name('reportes.diasTrabajadosSemana');
     Route::get('/reporte/DiasTrabajados-mes/operador/{idOperador}/mes/{mes}','obtenerDiasTrabajadosPorMes')->name('reportes.diasTrabajadosMes');
     Route::get('/reporte/DiasTrabajados/operador/{idOperador}/anio/{anio}','obtenerDiasTrabajadosPorAnio')->name('reportes.diasTrabajadosAnio');
+
+    Route::get('/reporte/castigos-semana/unidad/{idUnidad}/semana/{semana}','obtenerCastigosPorSemana')->name('reportes.castigosSemana');
+    Route::get('/reporte/castigos-mes/unidad/{idUnidad}/mes/{mes}','obtenerCastigosPorMes')->name('reportes.castigosMes');
+    Route::get('/reporte/castigos/unidad/{idUnidad}/anio/{anio}','obtenerCastigosPorAnio')->name('reportes.castigosAnio');
+
+    Route::get('/reporte/UC-semana/unidad/{idUnidad}/semana/{semana}','obtenerUCPorSemana')->name('reportes.UCSemana');
+    Route::get('/reporte/UC-mes/unidad/{idUnidad}/mes/{mes}','obtenerUCPorMes')->name('reportes.UCMes');
+    Route::get('/reporte/UC/unidad/{idUnidad}/anio/{anio}','obtenerUCPorAnio')->name('reportes.UCAnio');
 });

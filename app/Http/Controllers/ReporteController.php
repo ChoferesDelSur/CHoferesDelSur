@@ -448,4 +448,136 @@ class ReporteController extends Controller
         }
     }
 
+    public function obtenerCastigosPorSemana($idUnidad, $semana)
+    {
+        try {
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+
+            $castigos = castigo::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->get();
+
+            return response()->json($castigos);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener los castigos por semana', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener castigos por semana', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerCastigosPorMes($idUnidad, $mes)
+    {
+        try {
+            // Crear las fechas de inicio y fin del mes seleccionado
+            $inicioMes = Carbon::create(null, $mes)->startOfMonth();
+            $finMes = Carbon::create(null, $mes)->endOfMonth();
+    
+            // Obtener los castigos filtradas por idUnidad y por el rango de fechas en created_at
+            $castigos = castigo::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioMes, $finMes])
+                ->get();
+    
+            // Devolver las entradas filtradas como respuesta JSON
+            return response()->json($castigos);
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener castigos por mes'], 500);
+        }
+    }
+
+    public function obtenerCastigosPorAnio($idUnidad, $anio)
+    {
+        try {
+            // Crear las fechas de inicio y fin del año seleccionado
+            $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
+            $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
+
+            // Obtener los castigos filtradas por idUnidad y por el rango de fechas en created_at
+            $castigos = castigo::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioAnio, $finAnio])
+                ->get();
+
+            // Devolver los castigos filtradas como respuesta JSON
+            return response()->json($castigos);
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener castigos por año', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerUCPorSemana($idUnidad, $semana)
+    {
+        try {
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+
+            $ultimasCorridas = ultimaCorrida::with(['unidad.ruta', 'unidad.directivo', 'operador', 'tipoUltimaCorrida'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->get();
+
+            return response()->json($ultimasCorridas);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener las ultimas corridas por semana', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener las ultimas corridas por semana', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerUCPorMes($idUnidad, $mes)
+    {
+        try {
+            // Crear las fechas de inicio y fin del mes seleccionado
+            $inicioMes = Carbon::create(null, $mes)->startOfMonth();
+            $finMes = Carbon::create(null, $mes)->endOfMonth();
+    
+            // Obtener las ultimas corridas filtradas por idUnidad y por el rango de fechas en created_at
+            $ultimasCorridas = ultimaCorrida::with(['unidad.ruta', 'unidad.directivo', 'operador', 'tipoUltimaCorrida'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioMes, $finMes])
+                ->get();
+    
+            // Devolver las ultimas corridas filtradas como respuesta JSON
+            return response()->json($ultimasCorridas);
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener las ultimas corridas por mes'], 500);
+        }
+    }
+
+    public function obtenerUCPorAnio($idUnidad, $anio)
+    {
+        try {
+            // Crear las fechas de inicio y fin del año seleccionado
+            $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
+            $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
+
+            // Obtener las ultimas corridas filtradas por idUnidad y por el rango de fechas en created_at
+            $ultimasCorridas = ultimaCorrida::with(['unidad.ruta', 'unidad.directivo', 'operador', 'tipoUltimaCorrida'])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->whereBetween('created_at', [$inicioAnio, $finAnio])
+                ->get();
+
+            // Devolver las ultimas corridas filtradas como respuesta JSON
+            return response()->json($ultimasCorridas);
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener las ultimas corridas por año', 'details' => $e->getMessage()], 500);
+        }
+    }
+
 }

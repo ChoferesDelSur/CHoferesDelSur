@@ -55,6 +55,17 @@ const fetchEntradas = async (idUnidad, periodo) => {
 };
 
 const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) => {
+    // Validar que se haya seleccionado la unidad y el periodo
+    if (!idUnidad || !periodoSeleccionado.tipo || !periodoSeleccionado.valor) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor seleccione los parámetros para poder generar el archivo.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
     let periodo = { tipo: reporte.periodoSeleccionado, valor: '' };
     if (reporte.periodoSeleccionado === 'semana') {
         periodo.valor = semanaSeleccionada;
@@ -122,6 +133,13 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     // Construye el nombre del archivo con el tipo de reporte y el período
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
 
+    // Obtener la fecha actual
+    const fechaCreacion = new Date().toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
     const docDefinition = {
         content: [
             { text: `Reporte de ${tipo} - Período: ${periodoTexto}`, style: 'header' },
@@ -145,9 +163,18 @@ const generarPDF = (tipo, periodoSeleccionado) => {
                 }
             }
         ],
+        footer: function (currentPage, pageCount) {
+            return {
+                text: `Fecha de creación: ${fechaCreacion}`,
+                style: 'footer',
+                alignment: 'right',
+                margin: [0, 20, 30, 0] // Margen: [left, top, right, bottom]
+            };
+        },
         styles: {
             header: { fontSize: 16, bold: true },
-            tableHeader: { bold: true }
+            tableHeader: { bold: true },
+            footer: { fontSize: 10, italic: true }
         },
         pageOrientation: 'landscape'
     };

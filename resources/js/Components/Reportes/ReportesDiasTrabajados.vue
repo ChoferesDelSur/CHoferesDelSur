@@ -54,6 +54,16 @@ const fetchEntradas = async (idOperador, periodo) => {
 };
 
 const generarArchivo = async (reporte, formato, idOperador, periodoSeleccionado) => {
+    // Validar que se haya seleccionado la unidad y el periodo
+    if (!idOperador || !periodoSeleccionado.tipo || !periodoSeleccionado.valor) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor seleccione los parámetros para poder generar el archivo.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
     let periodo = { tipo: reporte.periodoSeleccionado, valor: '' };
     if (reporte.periodoSeleccionado === 'semana') {
         periodo.valor = semanaSeleccionada;
@@ -92,6 +102,23 @@ const generarArchivo = async (reporte, formato, idOperador, periodoSeleccionado)
     }
 };
 
+// Función para obtener el total de días según el periodo seleccionado
+const obtenerTotalDias = (tipo, valor) => {
+    switch (tipo) {
+        case 'semana':
+            return 7; // Una semana tiene 7 días
+        case 'mes':
+            const month = parseInt(valor, 10); // Convertir a número
+            const year = new Date().getFullYear(); // Obtener el año actual
+            return new Date(year, month, 0).getDate(); // Número de días del mes y año específicos
+        case 'anio':
+            return 365; // Suponiendo que todos los años tienen 365 días
+        default:
+            return 0;
+    }
+};
+
+
 const generarPDF = (tipo, periodoSeleccionado) => {
     let periodoTexto;
 
@@ -105,10 +132,21 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         periodoTexto = periodoSeleccionado.valor;
     }
 
+    // Calcular el total de días del periodo seleccionado
+    const totalDiasPeriodo = obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor);
+
+    // Obtener la fecha actual
+    const fechaCreacion = new Date().toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
     const bodyContent = entradas.value.map(entry => {
         const nombreCompleto = entry.nombre_completo || 'N/A';
         const diasTrabajados = entry.diasTrabajados || 'N/A';
-        return [nombreCompleto, diasTrabajados];
+        const diasNoTrabajados = totalDiasPeriodo - (entry.diasTrabajados || 0);
+        return [nombreCompleto, diasTrabajados, diasNoTrabajados];
     });
 
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
@@ -119,20 +157,36 @@ const generarPDF = (tipo, periodoSeleccionado) => {
             {
                 table: {
                     headerRows: 1,
-                    widths: ['*', 'auto'],
+                    widths: ['*', 'auto', 'auto', 'auto'],
                     body: [
                         [
-                            { text: 'Operador', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Días Trabajados', style: 'tableHeader', alignment: 'center' }
+                            { text: 'Nombre del operador', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Días trabajados', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Días no trabajados', style: 'tableHeader', alignment: 'center' },
+                            { text: 'Total de días', style: 'tableHeader', alignment: 'center' }
                         ],
-                        ...bodyContent
+                        ...bodyContent.map(entry => [
+                            entry[0], // Nombre del operador
+                            entry[1], // Días trabajados
+                            entry[2], // Días no trabajados
+                            obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor) // Total de días del periodo
+                        ])
                     ]
                 }
             }
         ],
+        footer: function (currentPage, pageCount) {
+            return {
+                text: `Fecha de creación: ${fechaCreacion}`,
+                style: 'footer',
+                alignment: 'right',
+                margin: [0, 20, 30, 0] // Margen: [left, top, right, bottom]
+            };
+        },
         styles: {
             header: { fontSize: 16, bold: true },
-            tableHeader: { bold: true }
+            tableHeader: { bold: true },
+            footer: { fontSize: 10, italic: true }
         },
         pageOrientation: 'portrait'
     };
@@ -155,11 +209,16 @@ const generarExcel = (tipo, periodoSeleccionado) => {
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
 
-    const data = [['Operador', 'Días Trabajados']];
+    // Calcular el total de días del periodo seleccionado
+    const totalDiasPeriodo = obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor);
+
+    const data = [['Nombre del Operador', 'Días Trabajados', 'Días no Trabajados', 'Total de Días']];
     entradas.value.forEach(entry => {
         const nombreCompleto = entry.nombre_completo || 'N/A';
         const diasTrabajados = entry.diasTrabajados || 'N/A';
-        data.push([nombreCompleto, diasTrabajados]);
+        const diasNoTrabajados = totalDiasPeriodo - (entry.diasTrabajados || 0);
+        const totalDias = obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor)
+        data.push([nombreCompleto, diasTrabajados, diasNoTrabajados, totalDias]);
     });
 
     const workbook = XLSX.utils.book_new();

@@ -11,6 +11,8 @@ import ReportesCortesConRegreso from '../../Components/Reportes/ReportesCortesCo
 import ReportesCortesSinRegreso from '../../Components/Reportes/ReportesCortesSinRegreso.vue';
 import ReportesEntradasTardes from '../../Components/Reportes/ReportesEntradasTardes.vue';
 import ReportesDiasTrabajados from '../../Components/Reportes/ReportesDiasTrabajados.vue';
+import ReportesCastigos from '../../Components/Reportes/ReportesCastigos.vue';
+import ReportesUltimasCorridas from '../../Components/Reportes/ReportesUltimasCorridas.vue';
 
 // Cargar fuentes personalizadas
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -45,6 +47,10 @@ const props = defineProps({
             <ReportesCortesConRegreso :unidad="props.unidad" :operador="props.operador"/>
 
             <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesCastigos :unidad="props.unidad" :operador="props.operador"/>
 
             <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador"/>
             
