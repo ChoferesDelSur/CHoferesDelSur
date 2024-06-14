@@ -357,4 +357,95 @@ class ReporteController extends Controller
             return response()->json(['error' => 'Error al obtener cortes por año', 'details' => $e->getMessage()], 500);
         }
     }
+
+    public function obtenerDiasTrabajadosPorSemana($idOperador, $semana)
+    {
+        try {
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+
+            $diasTrabajadosQuery = Entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
+                ->distinct();
+
+            if ($idOperador !== 'todas') {
+                $diasTrabajadosQuery->where('idOperador', $idOperador);
+            }
+
+            $diasTrabajados = $diasTrabajadosQuery->get()
+                ->groupBy('idOperador')
+                ->map(function ($dias, $idOperador) {
+                    return [
+                        'nombre_completo' => Operador::find($idOperador)->nombre_completo,
+                        'diasTrabajados' => $dias->count()
+                    ];
+                })->values();
+
+            return response()->json($diasTrabajados);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener días trabajados por semana', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener días trabajados por semana', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerDiasTrabajadosPorMes($idOperador, $mes)
+    {
+        try {
+            $inicioMes = Carbon::create(null, $mes)->startOfMonth();
+            $finMes = Carbon::create(null, $mes)->endOfMonth();
+
+            $diasTrabajadosQuery = Entrada::whereBetween('created_at', [$inicioMes, $finMes])
+                ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
+                ->distinct();
+
+            if ($idOperador !== 'todas') {
+                $diasTrabajadosQuery->where('idOperador', $idOperador);
+            }
+
+            $diasTrabajados = $diasTrabajadosQuery->get()
+                ->groupBy('idOperador')
+                ->map(function ($dias, $idOperador) {
+                    return [
+                        'nombre_completo' => Operador::find($idOperador)->nombre_completo,
+                        'diasTrabajados' => $dias->count()
+                    ];
+                })->values();
+
+            return response()->json($diasTrabajados);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener días trabajados por mes', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener días trabajados por mes', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerDiasTrabajadosPorAnio($idOperador, $anio)
+    {
+        try {
+            $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
+            $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
+
+            $diasTrabajadosQuery = Entrada::whereBetween('created_at', [$inicioAnio, $finAnio])
+                ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
+                ->distinct();
+
+            if ($idOperador !== 'todas') {
+                $diasTrabajadosQuery->where('idOperador', $idOperador);
+            }
+
+            $diasTrabajados = $diasTrabajadosQuery->get()
+                ->groupBy('idOperador')
+                ->map(function ($dias, $idOperador) {
+                    return [
+                        'nombre_completo' => Operador::find($idOperador)->nombre_completo,
+                        'diasTrabajados' => $dias->count()
+                    ];
+                })->values();
+
+            return response()->json($diasTrabajados);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener días trabajados por año', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener días trabajados por año', 'details' => $e->getMessage()], 500);
+        }
+    }
+
 }

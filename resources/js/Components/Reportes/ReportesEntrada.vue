@@ -225,7 +225,7 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
     <div v-for="reporte in reportes" :key="reporte.titulo" class="mb-4 bg-zinc-100 rounded-lg p-4">
 
         <h3 class="text-lg font-bold ">{{ reporte.titulo }}</h3>
-        <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
+        <div class="bg-gradient-to-r from-cyan-500 to-cyan-500 h-px mb-2"></div>
         <div class="flex flex-wrap gap-4 mb-3">
             <h2 class="font-semibold text-l pt-0">Buscar por: </h2>
             <div>

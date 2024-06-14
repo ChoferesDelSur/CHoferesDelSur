@@ -65,4 +65,8 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/cortesSR-semana/unidad/{idUnidad}/semana/{semana}','obtenerCortesSRPorSemana')->name('reportes.cortesSRSemana');
     Route::get('/reporte/cortesSR-mes/unidad/{idUnidad}/mes/{mes}','obtenerCortesSRPorMes')->name('reportes.cortesSRMes');
     Route::get('/reporte/cortesSR/unidad/{idUnidad}/anio/{anio}','obtenerCortesSRPorAnio')->name('reportes.cortesSRAnio');
+
+    Route::get('/reporte/DiasTrabajados-semana/operador/{idOperador}/semana/{semana}','obtenerDiasTrabajadosPorSemana')->name('reportes.diasTrabajadosSemana');
+    Route::get('/reporte/DiasTrabajados-mes/operador/{idOperador}/mes/{mes}','obtenerDiasTrabajadosPorMes')->name('reportes.diasTrabajadosMes');
+    Route::get('/reporte/DiasTrabajados/operador/{idOperador}/anio/{anio}','obtenerDiasTrabajadosPorAnio')->name('reportes.diasTrabajadosAnio');
 });
