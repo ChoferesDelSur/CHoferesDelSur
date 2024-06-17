@@ -6,7 +6,7 @@ import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import jsZip from 'jszip';
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -232,7 +232,7 @@ const columnas = [
     }
   },
   {
-    data: "idUnidad",
+    data: 'idUnidad',
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -245,8 +245,17 @@ const columnas = [
         // Verificar si hay registros de corte para la unidad y la fecha actual
         if (cortesHoy.length > 0) {
           // Construir una cadena con todas las horas de corte para la unidad y la fecha actual
-          const horasCorte = cortesHoy.map(corte => corte.horaCorte.substring(0, 5)).join(', ');
-          return horasCorte;
+          const horasCorteRows = cortesHoy.map((corte, index) => {
+            // Renderizar cada hora de corte en una fila diferente con un borde inferior si hay más de una hora de corte
+            const borderStyle = cortesHoy.length > 1 && index !== cortesHoy.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+            return `
+            <div style="${borderStyle}">
+              <div>${corte.horaCorte.substring(0, 5)}</div>
+            </div>
+          `;
+          }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+
+          return horasCorteRows;
         }
       }
       // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
@@ -254,7 +263,7 @@ const columnas = [
     }
   },
   {
-    data: "idUnidad",
+    data: 'idUnidad',
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -266,8 +275,18 @@ const columnas = [
         });
         // Verificar si hay registros de corte para la unidad y la fecha actual
         if (cortesHoy.length > 0) {
-          // Devolver la causa de corte del primer registro encontrado
-          return cortesHoy[0].causa;
+          // Crear un array de causas de corte
+          const causasCorteRows = cortesHoy.map((corte, index) => {
+            // Renderizar cada causa de corte en una fila diferente con un borde inferior si hay más de una causa de corte
+            const borderStyle = cortesHoy.length > 1 && index !== cortesHoy.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+            return `
+            <div style="${borderStyle}">
+              <div>${corte.causa}</div>
+            </div>
+          `;
+          }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+
+          return causasCorteRows;
         }
       }
       // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
@@ -275,7 +294,7 @@ const columnas = [
     }
   },
   {
-    data: "idUnidad",
+    data: 'idUnidad',
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -287,9 +306,21 @@ const columnas = [
         });
         // Verificar si hay registros de corte para la unidad y la fecha actual
         if (cortesHoy.length > 0) {
-          // Devolver la hora de regreso del primer registro encontrado, si no es null
-          const horaRegreso = cortesHoy[0].horaRegreso;
-          return horaRegreso ? horaRegreso.substring(0, 5) : '';
+          // Crear un array de horas de regreso
+          const horasRegresoRows = cortesHoy.map((corte, index) => {
+            // Obtener la hora de regreso del corte actual
+            const horaRegreso = corte.horaRegreso ? corte.horaRegreso.substring(0, 5) : '';
+
+            // Renderizar cada hora de regreso en una fila diferente con un borde inferior si hay más de una hora de regreso
+            const borderStyle = cortesHoy.length > 1 && index !== cortesHoy.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
+            return `
+            <div style="${borderStyle}">
+              <div>${horaRegreso}</div>
+            </div>
+          `;
+          }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
+
+          return horasRegresoRows;
         }
       }
       // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
@@ -605,103 +636,108 @@ const cerrarModalE = () => {
       </div>
 
       <div class="overflow-x-auto">
-        <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
-        <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-          id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
-            responsive: false, autoWidth: false, dom: 'Bftrip', language: {
-              search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
-              info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-              infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-              infoFiltered: '(filtrado de un total de _MAX_ registros)',
-              /* lengthMenu: 'Mostrar _MENU_ registros',
-              paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
-            }, buttons: [botonesPersonalizados],
-            paging: false,// Esto es para quitar la paginacion
-            lengthMenu: [] // Este es donde se pone sin limite de filas
-          }">
-          <thead>
-            <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
-              <!-- Celda vacía para la primera columna -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
-              <!-- Unidad -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
-              <!-- Socio/Prestador -->
-              <th
-                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                colspan="3">ENTRADA</th>
-              <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="3">ÚLTIMAS CORRIDAS</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"></th>
-              <!-- operador -->
-            </tr>
-            <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                ID
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Ruta
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Trab. DomINGO
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Unidad
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Socio / Prestador
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. entrada
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo entrada
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Extremo
-              </th>
-              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. Corte
-              </th>
-              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Causa
-              </th>
-              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. regreso
-              </th>
-              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo de Corrida
-              </th>
-              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. inicio
-              </th>
-              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. regreso
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. inicio
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. finaliza
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Motivo
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Otras observaciones
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Operador
-              </th>
-            </tr>
-          </thead>
-        </DataTable>
+          <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
+          <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
+            id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
+              responsive: false, autoWidth: false, dom: 'Bftrip', language: {
+                search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
+                info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+                infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+                infoFiltered: '(filtrado de un total de _MAX_ registros)',
+                /* lengthMenu: 'Mostrar _MENU_ registros',
+                paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
+              }, buttons: [botonesPersonalizados],
+              
+              paging: false,// Esto es para quitar la paginacion
+              lengthMenu: [] // Este es donde se pone sin limite de filas
+            }">
+            <thead>
+              <tr class="text-sm leading-normal border-b border-gray-300">
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                </th>
+                <!-- Celda vacía para la primera columna -->
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                  colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                </th>
+                <!-- Unidad -->
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                </th>
+                <!-- Socio/Prestador -->
+                <th
+                  class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                  colspan="3">ENTRADA</th>
+                <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                  colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
+                <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                  colspan="3">ÚLTIMAS CORRIDAS</th> <!-- Columna combinada con título "Corte" -->
+                <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                  colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                </th>
+                <!-- operador -->
+              </tr>
+              <tr class="text-sm leading-normal border-b border-gray-300">
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  ID
+                </th>
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Ruta
+                </th>
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Trab. DomINGO
+                </th>
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Unidad
+                </th>
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Socio / Prestador
+                </th>
+                <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. entrada
+                </th>
+                <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Tipo entrada
+                </th>
+                <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Extremo
+                </th>
+                <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. Corte
+                </th>
+                <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Causa
+                </th>
+                <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. regreso
+                </th>
+                <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Tipo de Corrida
+                </th>
+                <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. inicio
+                </th>
+                <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. regreso
+                </th>
+                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. inicio
+                </th>
+                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Hr. finaliza
+                </th>
+                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Motivo
+                </th>
+                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Otras observaciones
+                </th>
+                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                  Operador
+                </th>
+              </tr>
+            </thead>
+          </DataTable>
       </div>
     </div>
     <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"

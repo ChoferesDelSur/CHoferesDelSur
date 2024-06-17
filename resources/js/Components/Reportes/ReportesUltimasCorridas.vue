@@ -23,6 +23,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    tipoUltimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const form = reactive({
@@ -115,13 +119,12 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     } else {
         periodoTexto = periodoSeleccionado.valor; // Default case
     }
-
     const bodyContent = ultimasCorridas.value.map(entry => {
         const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const tipoUltimaCorrida = entry.tipoUltimaCorrida ? `${entry.tipoUltimaCorrida.tipoUltimaCorrida}` : 'N/A';
+        const tipoUltimaCorrida = entry.tipo_ultima_corrida ? entry.tipo_ultima_corrida.tipoUltimaCorrida : 'N/A';
         const horaInicioUC = entry.horaInicioUC ? entry.horaInicioUC.substring(0, 5) : 'N/A';
         const horaFinUC = entry.horaFinUC ? entry.horaFinUC.substring(0, 5) : 'N/A';
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
@@ -197,17 +200,17 @@ const generarExcel = (tipo, periodoSeleccionado) => {
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
     // Crear datos para el archivo Excel
-    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Corte', 'Causa', 'Hora Regreso', 'Operador']];
+    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Tipo Última Corrida', 'Hora Inicio', 'Hora Fin', 'Operador']];
     ultimasCorridas.value.forEach(entry => {
         const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaCorte = entry.horaCorte ? entry.horaCorte.substring(0, 5) : 'N/A';
-        const causa = entry.causa || 'N/A';
-        const horaRegreso = entry.horaRegreso ? entry.horaRegreso.substring(0, 5) : 'Sin Regreso';
+        const tipoUltimaCorrida = entry.tipo_ultima_corrida ? entry.tipo_ultima_corrida.tipoUltimaCorrida : 'N/A';
+        const horaInicioUC = entry.horaInicioUC ? entry.horaInicioUC.substring(0, 5) : 'N/A';
+        const horaFinUC = entry.horaFinUC ? entry.horaFinUC.substring(0, 5) : 'N/A';
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-        data.push([ruta, fecha, numeroUnidad, directivo, horaCorte, causa, horaRegreso, operador]);
+        data.push([ruta, fecha, numeroUnidad, directivo, tipoUltimaCorrida, horaInicioUC, horaFinUC, operador]);
     });
 
     // Crear libro de Excel

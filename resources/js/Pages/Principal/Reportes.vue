@@ -28,6 +28,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    tipoUltimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 </script>
@@ -48,7 +52,7 @@ const props = defineProps({
 
             <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador"/>
 
-            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador" :tipoUltimaCorrida="props.tipoUltimaCorrida"/>
 
             <ReportesCastigos :unidad="props.unidad" :operador="props.operador"/>
 

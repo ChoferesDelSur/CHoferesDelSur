@@ -1010,12 +1010,14 @@ class PrincipalController extends Controller
         $estado = estado::all();
         $unidad = unidad::all();
         $ruta = ruta::all();
+        $tipoUltimaCorrida = tipoUltimaCorrida::all();
         return Inertia::render('Principal/Reportes',[
             'unidad' => $unidad,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
             'ruta' => $ruta,
+            'tipoUltimaCorrida' => $tipoUltimaCorrida,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
