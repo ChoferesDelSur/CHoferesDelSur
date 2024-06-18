@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoDirectivoSeeder::class);
         $this->call(TipoOperadorSeeder::class);
         $this->call(TipoUltimaCorridaSeeder::class);
+        $this->call(TipoUsuarioSeeder::class);
         /*User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',

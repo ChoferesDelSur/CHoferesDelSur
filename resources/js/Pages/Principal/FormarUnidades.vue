@@ -636,108 +636,108 @@ const cerrarModalE = () => {
       </div>
 
       <div class="overflow-x-auto">
-          <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
-          <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-            id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
-              responsive: false, autoWidth: false, dom: 'Bftrip', language: {
-                search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
-                info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-                infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-                infoFiltered: '(filtrado de un total de _MAX_ registros)',
-                /* lengthMenu: 'Mostrar _MENU_ registros',
-                paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
-              }, buttons: [botonesPersonalizados],
-              
-              paging: false,// Esto es para quitar la paginacion
-              lengthMenu: [] // Este es donde se pone sin limite de filas
-            }">
-            <thead>
-              <tr class="text-sm leading-normal border-b border-gray-300">
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                </th>
-                <!-- Celda vacía para la primera columna -->
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                  colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                </th>
-                <!-- Unidad -->
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                </th>
-                <!-- Socio/Prestador -->
-                <th
-                  class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                  colspan="3">ENTRADA</th>
-                <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                  colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
-                <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                  colspan="3">ÚLTIMAS CORRIDAS</th> <!-- Columna combinada con título "Corte" -->
-                <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                  colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                </th>
-                <!-- operador -->
-              </tr>
-              <tr class="text-sm leading-normal border-b border-gray-300">
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  ID
-                </th>
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Ruta
-                </th>
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Trab. DomINGO
-                </th>
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Unidad
-                </th>
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Socio / Prestador
-                </th>
-                <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. entrada
-                </th>
-                <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Tipo entrada
-                </th>
-                <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Extremo
-                </th>
-                <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. Corte
-                </th>
-                <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Causa
-                </th>
-                <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. regreso
-                </th>
-                <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Tipo de Corrida
-                </th>
-                <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. inicio
-                </th>
-                <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. regreso
-                </th>
-                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. inicio
-                </th>
-                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Hr. finaliza
-                </th>
-                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Motivo
-                </th>
-                <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Otras observaciones
-                </th>
-                <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                  Operador
-                </th>
-              </tr>
-            </thead>
-          </DataTable>
+        <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
+        <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
+          id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
+            responsive: false, autoWidth: false, dom: 'Bftrip', language: {
+              search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
+              info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+              infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+              infoFiltered: '(filtrado de un total de _MAX_ registros)',
+              /* lengthMenu: 'Mostrar _MENU_ registros',
+              paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
+            }, buttons: [botonesPersonalizados],
+
+            paging: false,// Esto es para quitar la paginacion
+            lengthMenu: [] // Este es donde se pone sin limite de filas
+          }">
+          <thead>
+            <tr class="text-sm leading-normal border-b border-gray-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              </th>
+              <!-- Celda vacía para la primera columna -->
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              </th>
+              <!-- Unidad -->
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              </th>
+              <!-- Socio/Prestador -->
+              <th
+                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                colspan="3">ENTRADA</th>
+              <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
+              <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                colspan="3">ÚLTIMAS CORRIDAS</th> <!-- Columna combinada con título "Corte" -->
+              <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
+                colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              </th>
+              <!-- operador -->
+            </tr>
+            <tr class="text-sm leading-normal border-b border-gray-300">
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                ID
+              </th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Ruta
+              </th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Trab. DomINGO
+              </th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Unidad
+              </th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Socio / Prestador
+              </th>
+              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. entrada
+              </th>
+              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Tipo entrada
+              </th>
+              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Extremo
+              </th>
+              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. Corte
+              </th>
+              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Causa
+              </th>
+              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. regreso
+              </th>
+              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Tipo de Corrida
+              </th>
+              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. inicio
+              </th>
+              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. regreso
+              </th>
+              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. inicio
+              </th>
+              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. finaliza
+              </th>
+              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Motivo
+              </th>
+              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Otras observaciones
+              </th>
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Operador
+              </th>
+            </tr>
+          </thead>
+        </DataTable>
       </div>
     </div>
     <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"

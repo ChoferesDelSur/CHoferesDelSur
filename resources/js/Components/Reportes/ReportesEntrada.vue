@@ -1,5 +1,4 @@
 <script setup>
-import Mensaje from '../../Components/Mensaje.vue';
 import Swal from 'sweetalert2';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';

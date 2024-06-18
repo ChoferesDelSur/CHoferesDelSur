@@ -1,10 +1,7 @@
 <script setup>
-import Mensaje from '../../Components/Mensaje.vue';
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
-import Swal from 'sweetalert2';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { ref, reactive } from 'vue';
 import ReportesEntrada from '../../Components/Reportes/ReportesEntrada.vue';
 import ReportesCortes from '../../Components/Reportes/ReportesCortes.vue';
 import ReportesCortesConRegreso from '../../Components/Reportes/ReportesCortesConRegreso.vue';
