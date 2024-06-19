@@ -35,7 +35,11 @@ class LoginController extends Controller
         if($usuario->isEmpty()){
             return Inertia::render('Login/RegisterFT');    
         }
-        return Inertia::render('Login/Login');
+        return Inertia::render('Login/Login',[
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
     }
 
     public function login(Request $request): RedirectResponse

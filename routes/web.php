@@ -51,6 +51,7 @@ Route::controller(PrincipalController::class)->group(function () {
     Route::post('/principal/formarUnidades/trabajaDomingo', 'registrarTrabajanDomingo')->name('principal.trabDomingo');
 
     Route::get('/principal/reportes', 'reportes')->name('principal.reportes');
+    Route::get('/principal/administrarUsuarios', 'adminUsuarios')->name('principal.administrarUsuarios');
 });
 
 Route::controller(ReporteController::class)->group(function(){

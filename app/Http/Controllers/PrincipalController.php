@@ -12,6 +12,8 @@ use App\Models\tipodirectivo;
 use App\Models\tipooperador;
 use App\Models\castigo;
 use App\Models\corte;
+use App\Models\usuario;
+use App\Models\tipoUsuario;
 use App\Models\entrada;
 use App\Models\rolServicio;
 use App\Models\ultimaCorrida;
@@ -1015,6 +1017,19 @@ class PrincipalController extends Controller
             'estado' => $estado,
             'ruta' => $ruta,
             'tipoUltimaCorrida' => $tipoUltimaCorrida,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
+    public function adminUsuarios()
+    {
+        $usuario = usuario::all();
+        $tipoUsuario = tipoUsuario::all(); 
+        return Inertia::render('Principal/AdminUsuarios',[
+            'usuario' => $usuario,
+            'tipoUsuario' => $tipoUsuario,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),

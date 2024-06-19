@@ -2,7 +2,6 @@
 import { useForm } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
-//import Modal from '../Modal.vue';
 
 const props = defineProps({
     show: {
