@@ -5,11 +5,19 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\Auth\LoginController;
 
 //Route::get('/', [PrincipalController::class, 'inicio'])->name('inicio');
 //Route::get('/', [PrincipalController::class, 'formarUnidades'])->name('formarUnidades');
+Route::controller(LoginController::class)->group(function () {
+    Route::get('/', 'index')->name('inicioSesion');
+    Route::post('/', 'login');
+    Route::get('/logout', 'logout')->name('cerrarSesion');
+    Route::post('/register', 'register')->name('registrarse');
+});
+
 Route::controller(PrincipalController::class)->group(function () {
-    Route::get('/', 'inicio')->name('principal.inicio');
+    Route::get('/principal', 'inicio')->name('principal.inicio');//Se agrego principal
     Route::get('/principal/unidades', 'unidades')->name('principal.unidades');
     Route::get('/principal/sociosPrestadores', 'sociosPrestadores')->name('principal.sociosPrestadores');
     Route::get('/principal/operadores', 'operadores')->name('principal.operadores');

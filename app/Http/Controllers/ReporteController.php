@@ -7,6 +7,7 @@ use App\Models\directivo;
 use App\Models\operador;
 use App\Models\calificacion;
 use App\Models\estado;
+use App\Models\usuario;
 use App\Models\formacionunidades;
 use App\Models\ruta;
 use App\Models\tipodirectivo;

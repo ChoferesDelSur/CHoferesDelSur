@@ -37,7 +37,6 @@ const props = defineProps({
   unidad: { type: Object },
   operador: { type: Object },
   directivo: { type: Object },
-  formacionUnidades: { type: Object },
   rolServicio: { type: Object },
   castigo: { type: Object },
   entrada: { type: Object },
@@ -749,11 +748,11 @@ const cerrarModalE = () => {
     </FormularioRegCorte>
     <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
-      :formacionUnidades="props.formacionUnidades" :unidad="props.unidad">
+      :unidad="props.unidad">
     </FormularioRegRegreso>
     <FormularioCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalCastigo" :title="'Registrar un castigo'" :op="'1'" :modal="'modalCreate'"
-      :formacionUnidades="props.formacionUnidades" :unidad="props.unidad" :castigo="props.castigo">
+      :unidad="props.unidad" :castigo="props.castigo">
     </FormularioCastigo>
     <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
       :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida"

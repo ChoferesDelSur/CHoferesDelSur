@@ -1,12 +1,10 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/inertia-vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Mensaje from '../../Components/Mensaje.vue';
 
 const form = useForm({
     nombre: '',
@@ -29,10 +27,12 @@ const submit = () => {
 
     <Head title="Registrarse" />
     <AuthenticationCard>
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <!-- <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
-        </div>
-        <div>
+        </div> -->
+        <div class="flex flex-col items-center">
+            <!-- <i class="fa fa-user-circle-o" aria-hidden="true"></i> -->
+            <i class="fa fa-user-circle text-6xl text-blue-600" aria-hidden="true"></i>
             <h2 class="text-black text-2xl text-center font-semibold p-5">Registrarse</h2>
             <div class="p-4 mb-4 text-sm text-justify rounded-lg">
                 <span class="">Bienvenido al sistema de control y gestión de la empresa Sociedad Cooperativa de Choferes
@@ -40,16 +40,26 @@ const submit = () => {
                     usuario administrador.</span>
             </div>
         </div>
-        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
+        <Mensaje />
         <form @submit.prevent="submit">
             <div class="">
+                <InputLabel for="nombre" value="Nombre(s)" />
+                <TextInput id="nombre" v-model="form.nombre" type="text" class="mt-1 block w-full" required autofocus
+                    autocomplete="nombre" />
+            </div>
+            <div class="">
+                <InputLabel for="apellidoP" value="Apellido Paterno" />
+                <TextInput id="apellidoP" v-model="form.apellidoP" type="text" class="mt-1 block w-full" required
+                    autocomplete="apellidoP" />
+            </div>
+            <div class="">
+                <InputLabel for="apellidoM" value="Apellido Materno" />
+                <TextInput id="apellidoM" v-model="form.apellidoM" type="text" class="mt-1 block w-full" required
+                    autocomplete="apellidoM" />
+            </div>
+            <div class="">
                 <InputLabel for="usuario" value="Usuario" />
-                <TextInput id="usuario" v-model="form.usuario" type="text" class="mt-1 block w-full" required autofocus
+                <TextInput id="usuario" v-model="form.usuario" type="text" class="mt-1 block w-full" required
                     autocomplete="usuario" />
             </div>
 

@@ -7,7 +7,6 @@ use App\Models\directivo;
 use App\Models\operador;
 use App\Models\calificacion;
 use App\Models\estado;
-use App\Models\formacionunidades;
 use App\Models\ruta;
 use App\Models\tipodirectivo;
 use App\Models\tipooperador;
@@ -52,7 +51,6 @@ class PrincipalController extends Controller
         $unidad = unidad::all();
         $operador = operador::all();
         $ruta = ruta::all();
-        $formacionUnidades = formacionunidades::all();
         $castigo = castigo::all();
         $corte = corte::all();
         $entrada = entrada::all();
@@ -65,7 +63,6 @@ class PrincipalController extends Controller
             'operador' => $operador,
             'ruta' => $ruta,
             'castigo' => $castigo,
-            'formacionUnidades' => $formacionUnidades,
             'corte' => $corte,
             'entrada' => $entrada,
             'rolServicio' => $rolServicio,

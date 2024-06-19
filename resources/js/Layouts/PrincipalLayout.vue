@@ -1,6 +1,6 @@
 <script setup>
 //import { defineProps } from 'vue';
-import { Head } from '@inertiajs/inertia-vue3';
+import { Head, router } from '@inertiajs/inertia-vue3';
 import TopContent from '../Components/Principal/TopContent.vue';
 import OpcionesNav from '../Components/Principal/OpcionesNav.vue';
 
@@ -49,8 +49,8 @@ const props = defineProps({
         <!-- Señalador de ubicación -->
         <div class="bg-gradient-to-r from-white to-white h-px mt-2"></div> <!-- Esto es una linea -->
         <!-- Ítem de Cerrar Sesión -->
-        <a
-          class="logout-button block text-white py-2.5 px-4 my-2 rounded transition duration-200 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-500 hover:text-white mt-auto">
+        <a class="logout-button block text-white py-2.5 px-4 my-2 rounded transition duration-200 hover:bg-gradient-to-r hover:from-red-500 hover:to-red-500 hover:text-white mt-auto"
+          :href="route('cerrarSesion')">
           <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
         </a>
       </div>

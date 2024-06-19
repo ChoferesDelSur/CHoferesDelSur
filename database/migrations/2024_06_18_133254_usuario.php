@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('intentos')->nullable(false)->default(10);
             $table->dateTime('fecha_Creacion')->nullable(false)->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->boolean('cambioContrasenia')->nullable(false)->default(false);
+            $table->foreignId(column:'idTipoUsuario')->references('idTipoUsuario')->on('tipoUsuario');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

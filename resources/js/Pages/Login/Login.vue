@@ -1,10 +1,11 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/inertia-vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Mensaje from '../../Components/Mensaje.vue';
 
 defineProps({
     canResetPassword: Boolean,
@@ -28,37 +29,43 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Iniciar sesión" />
 
     <AuthenticationCard>
-        
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+
+        <!-- <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
-        </div>
+        </div> -->
         <div>
             <h2 class="text-black text-2xl text-center font-semibold p-5">Iniciar Sesion</h2>
+            <Mensaje />
             <div class="p-4 mb-4 text-sm text-justify rounded-lg">
-                <span class="">Bienvenido al sistema de control de calificaciones de la escuela telesecundaria con la clave
-                    20DTV1474D. Para acceder a la información es necesario que inicies sesión.</span>
+                <span class="">Bienvenido al sistema de control y gestión de la empresa Sociedad Cooperativa de Choferes
+                    del Sur S.C.L. Para acceder a la información es necesario que inicie sesión.</span>
             </div>
         </div>
-        <div v-if="$page.props.flash.message" class="p-4 mb-4 text-sm rounded-lg" role="alert"
-            :class="`text-${$page.props.flash.color}-700 bg-${$page.props.flash.color}-100 dark:bg-${$page.props.flash.color}-200 dark:text-${$page.props.flash.color}-800`">
-            <span class="font-medium">
-                {{ $page.props.flash.message }}
-            </span>
-        </div>
         <form @submit.prevent="submit">
-            <div class="">
-                <InputLabel for="usuario" value="Usuario" />
+            <div class="mb-4">
+                <div class="flex items-center">
+                    <i class="fa fa-user mr-2" aria-hidden="true"></i>
+                    <div>
+                        <InputLabel for="usuario" value="Usuario" />
+                    </div>
+                </div>
                 <TextInput id="usuario" v-model="form.usuario" type="text" class="mt-1 block w-full" required autofocus
                     autocomplete="usuario" />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+            <div class="mb-4">
+                <div class="flex items-center">
+                    <i class="fa fa-unlock-alt mr-2" aria-hidden="true"></i>
+                    <div>
+                        <InputLabel for="password" value="Password" />
+                    </div>
+                </div>
                 <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" required
                     autocomplete="password" />
                 <InputError class="mt-2" :message="form.errors.password" />

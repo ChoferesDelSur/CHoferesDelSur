@@ -13,7 +13,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class usuarios extends Authenticatable
+class usuario extends Authenticatable
 {
     use HasFactory;
     use HasApiTokens;
@@ -34,6 +34,7 @@ class usuarios extends Authenticatable
         'intentos',
         'fecha_Creacion',
         'cambioContrasenia',
+        'idTipoUsuario'
     ];
 
     protected $hidden = [
@@ -44,5 +45,10 @@ class usuarios extends Authenticatable
     public function getAuthIdentifier()
     {
         return $this->attributes['idUsuario'];
+    }
+
+    public function tipoUsuario(): HasOne
+    {
+        return $this->hasOne(tipoUsuario::class, 'idTipoUsuario', 'idTipoUsuario');
     }
 }
