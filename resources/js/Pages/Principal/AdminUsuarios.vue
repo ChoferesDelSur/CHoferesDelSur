@@ -309,7 +309,7 @@ const optionsUsuario = {
             <Mensaje/>
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-plus mr-2"></i>Agregar Usuario
                 </button>

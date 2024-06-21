@@ -19,8 +19,8 @@ class LoginController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuarios'])->get();
-            $tipoUsuario = $usuario[0]->tipoUsuarios->tipoUsuario;
+            $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
+            $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
             switch ($tipoUsuario) {
                 case "Administrador":
                     return redirect()->route('principal.inicio');
@@ -30,7 +30,7 @@ class LoginController extends Controller
                     break;
             }
         }
-        $tipoUsuario = tipoUsuario::where('tipoUsuario','administrador')->first();
+        $tipoUsuario = tipoUsuario::where('tipoUsuario','Administrador')->first();
         $usuario = usuario::where('idTipoUsuario', $tipoUsuario->idTipoUsuario)->get();
         if($usuario->isEmpty()){
             return Inertia::render('Login/RegisterFT');    

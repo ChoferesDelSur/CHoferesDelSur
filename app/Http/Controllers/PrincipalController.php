@@ -20,34 +20,52 @@ use App\Models\ultimaCorrida;
 use App\Models\tipoUltimaCorrida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
 class PrincipalController extends Controller
 {
-    /* public function index()
+    public function obtenerUsuario()
     {
-        return Inertia::render('Principal');
-    } */
+        return auth()->user();
+    }
+
+    public function obtenerTipoUsuario($idTipoUsuario)
+    {
+        return tipoUsuario::find($idTipoUsuario);
+    }
+
+    public function obtenerInfoUsuario()
+    {
+        $idUsuario = auth()->user()->idUsuario;
+        $usuario = usuario::find($idUsuario);
+        $usuario->tipoUsuario1 = $usuario->tipoUsuarios->tipoUsuario;
+        return $usuario;
+    }
+
     public function inicio()
     {
-        $directivo = directivo::all();
-        $operador = operador::all(); 
-        $tipoOperador = tipooperador::all();
-        $estado = estado::all();
-        $unidad = unidad::all();
-        $ruta = ruta::all();
+        $usuario = $this->obtenerInfoUsuario();
+        if ($usuario->cambioContrasenia === 0) {
+            $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
+            $fechaFormateada = $fechaLimite->format('d/m/Y');
+            $horaFormateada = $fechaLimite->format('H:i');
+            $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivará y sera necesario comunicarse con el administrador para solucionar la situación";
+            $color = "red";
+            return Inertia::render('Principal/Inicio',[
+                'message' => session('message'),
+                'color' => session('color'),
+                'type' => session('type'),
+            ]);
+        }
         return Inertia::render('Principal/Inicio',[
-            'unidad' => $unidad,
-            'operador' => $operador,
-            'tipoOperador' => $tipoOperador,
-            'estado' => $estado,
-            'ruta' => $ruta,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
         ]);
     }
+
     public function formarUnidades(){
         $directivo = directivo::all();
         $unidad = unidad::all();

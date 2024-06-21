@@ -63,7 +63,7 @@ const submit = () => {
                 <div class="flex items-center">
                     <i class="fa fa-unlock-alt mr-2" aria-hidden="true"></i>
                     <div>
-                        <InputLabel for="password" value="Password" />
+                        <InputLabel for="password" value="Contraseña" />
                     </div>
                 </div>
                 <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" required
@@ -72,10 +72,21 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-4">
-
-
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Iniciar sesion
+                <PrimaryButton :class="{ 'opacity-85': form.processing, 'opacity-100': !form.processing }"
+                    :disabled="form.processing">
+                    <template v-if="form.processing">
+                        <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+                                fill="none"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.005 8.005 0 0112 4.245v3.8C9.29 8.674 7.326 10.404 6 12.291zM16 8.674v3.8c1.326 1.887 3.29 3.617 6 4.246zm-3.764 7.764A8.005 8.005 0 0112 19.755v-3.8c2.71-1.628 4.674-3.358 6-5.245z">
+                            </path>
+                        </svg>
+                        Iniciando...
+                    </template>
+                    <template v-else>
+                        Iniciar sesión <i class="fa fa-sign-in" aria-hidden="true" style="margin-left: 0.5rem;"></i>
+                    </template>
                 </PrimaryButton>
             </div>
         </form>

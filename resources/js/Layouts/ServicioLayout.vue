@@ -1,12 +1,11 @@
 <script setup>
 //import { defineProps } from 'vue';
 import { Head, router } from '@inertiajs/inertia-vue3';
-import TopContent from '../Components/Principal/TopContent.vue';
-import OpcionesNav from '../Components/Principal/OpcionesNav.vue';
+import TopContentServ from '../Components/Servicio/TopContentServ.vue';
+import OpcionesNavServ from '../Components/Servicio/OpcionesNavServ.vue';
 
 const props = defineProps({
   title: String,
-  usuario: { type: Object }
 });
 
 </script>
@@ -17,7 +16,7 @@ const props = defineProps({
 
     <Head :title="title" />
 
-    <TopContent :usuario="props.usuario"/> <!--LLama al componente TopContent-->
+    <TopContentServ/> <!--LLama al componente TopContent-->
 
     <div class="flex-1 flex overflow-hidden"><!-- el overflow-hidden: es el encargaddo de ocultar la barra de dezplazamiento 
     que afecta al menu y el encabezado -->
@@ -44,7 +43,7 @@ const props = defineProps({
           <!-- Señalador de ubicación -->
           <div class="bg-gradient-to-r from-white to-white h-px mt-2"></div> <!-- Esto es una linea -->
 
-          <OpcionesNav /> <!--LLama al componente OpcionesNav-->
+          <OpcionesNavServ /> <!--LLama al componente OpcionesNav-->
 
         </nav>
         <!-- Señalador de ubicación -->

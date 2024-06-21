@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\InfoController;
+use App\Http\Controllers\ServicioController;
 
 //Route::get('/', [PrincipalController::class, 'inicio'])->name('inicio');
 //Route::get('/', [PrincipalController::class, 'formarUnidades'])->name('formarUnidades');
@@ -86,4 +88,15 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/UC-semana/unidad/{idUnidad}/semana/{semana}','obtenerUCPorSemana')->name('reportes.UCSemana');
     Route::get('/reporte/UC-mes/unidad/{idUnidad}/mes/{mes}','obtenerUCPorMes')->name('reportes.UCMes');
     Route::get('/reporte/UC/unidad/{idUnidad}/anio/{anio}','obtenerUCPorAnio')->name('reportes.UCAnio');
+});
+
+Route::controller(InfoController::class)->group(
+    function () {
+        Route::get('obtener/info/usuario/login', 'obtenerUsuario')->name('obtenerUsuario');
+        Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUsuario');
+    }
+);
+
+Route::controller(ServicioController::class)->group(function(){
+    Route::get('/servicio', 'inicio')->name('servicio.inicio');
 });

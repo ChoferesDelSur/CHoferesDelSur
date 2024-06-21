@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watchEffect } from 'vue';
 import { usePage } from '@inertiajs/inertia-vue3';
-import { onMounted } from 'vue';
 
 const page = usePage();
 const show = ref(true);
@@ -9,10 +8,8 @@ const style = ref('success');
 const message = ref('');
 
 const props = defineProps({
-    usuario: { type: Object }
+    //usuario: { type: Object }
 });
-
-const tipo_usuario = ref('');
 
 const toggleSidebar = () => {
     sideNav.classList.toggle('hidden'); // Agrega o quita la clase 'hidden' para mostrar u ocultar la navegación lateral
@@ -22,21 +19,6 @@ watchEffect(async () => {
     style.value = page.props.jetstream?.flash?.bannerStyle || 'success';
     message.value = page.props.jetstream?.flash?.banner || '';
     show.value = true;
-});
-
-onMounted(async () => {
-    try {
-        const usuario = await axios.get(route('obtenerUsuario'));
-        const idTipoUsuario = usuario.data.idTipoUsuario;
-
-        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
-        const datosTipoUsuario = tipoUsuario.data.tipoUsuario;
-        tipo_usuario.value = datosTipoUsuario;
-
-    } catch (e) {
-        tipo_usuario.value = "Sin asignar";
-        console.log("Error: " + e);
-    }
 });
 </script>
 
