@@ -18,9 +18,11 @@ class LoginController extends Controller
 {
     public function index()
     {
+        \Log::info('Esta en la funcion index');
         if (auth()->check()) {
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
+            \Log::info('Esta por entrar en el switch de tipoUsuario de index');
             switch ($tipoUsuario) {
                 case "Administrador":
                     return redirect()->route('principal.inicio');
@@ -33,9 +35,10 @@ class LoginController extends Controller
         $tipoUsuario = tipoUsuario::where('tipoUsuario','Administrador')->first();
         $usuario = usuario::where('idTipoUsuario', $tipoUsuario->idTipoUsuario)->get();
         if($usuario->isEmpty()){
-            return Inertia::render('Login/RegisterFT');    
+            return Inertia::render('Autenticacion/RegisterFT');    
         }
-        return Inertia::render('Login/Login',[
+        \Log::info('Rendering component: Autenticacion/Login');
+        return Inertia::render('Autenticacion/Login',[
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
@@ -44,7 +47,7 @@ class LoginController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-
+        \Log::info('Estoy dentro de la funcion login');
         try {
             $request->validate([
                 'usuario' => ['required'],
@@ -68,7 +71,9 @@ class LoginController extends Controller
 
                         $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
                         $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
+                        \Log::info('Está por ingresar al switch de los dos tipos de usuario');
                         switch ($tipoUsuario) {
+                            
                             case "Administrador":
                                 return redirect()->intended(route('principal.inicio'));
                                 break;

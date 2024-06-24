@@ -2,8 +2,8 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use App\Http\Middleware\AdministradorMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -67,8 +67,13 @@ class Kernel extends HttpKernel
         'precognitive' => \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'adminS' => \App\Http\Middleware\AdminMiddleware::class,
-        'alumS' => \App\Http\Middleware\AlumnoMiddleware::class,       
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,  
+        'admin' => \App\Http\Middleware\AdministradorMiddleware::class,
+        'role' => \App\Http\Middleware\CheckRol::class,
     ];
+
+   /*  protected $routeMiddleware = [
+        // ...
+        'role' => \App\Http\Middleware\CheckRol::class,
+    ]; */
 }
