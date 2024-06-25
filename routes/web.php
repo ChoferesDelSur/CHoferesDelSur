@@ -9,6 +9,7 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Middleware\AdminMiddleware;
 
 
 Route::controller(LoginController::class)->group(function () {
@@ -18,7 +19,8 @@ Route::controller(LoginController::class)->group(function () {
     Route::post('/register', 'register')->name('registrarse');
 });
 
-    Route::controller(PrincipalController::class)->middleware(['auth'])->group(function () {
+Route::middleware([AdminMiddleware::class])->group(function () {
+    Route::controller(PrincipalController::class)->group(function () {
         Route::get('/principal', 'inicio')->name('principal.inicio');//Se agrego principal
         Route::get('/principal/unidades', 'unidades')->name('principal.unidades');
         Route::get('/principal/sociosPrestadores', 'sociosPrestadores')->name('principal.sociosPrestadores');
@@ -55,6 +57,7 @@ Route::controller(LoginController::class)->group(function () {
         Route::get('/principal/reportes', 'reportes')->name('principal.reportes');
         Route::get('/principal/administrarUsuarios', 'adminUsuarios')->name('principal.administrarUsuarios');
     });
+});
 
 Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/entradas-semana/unidad/{idUnidad}/semana/{semana}','obtenerEntradasUnidadPorSemana')->name('reportes.entradasSemana');

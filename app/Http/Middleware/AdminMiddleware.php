@@ -2,14 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\usuario;
 use Closure;
+use App\Models\usuario;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-/* use Illuminate\Support\Facades\Auth; */
-use Illuminate\Support\Facades\Log;     
 use Symfony\Component\HttpFoundation\Response;
 
-class AdministradorMiddleware
+class AdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,13 +17,13 @@ class AdministradorMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        \Log::info('Estoy en funcion handle de AdministradorMiddleware');
+        Log::info("Estoy en AdminMiddleware");
+        error_log("Estoy en AdminMiddleware");
         if(auth()->check()){
-            \Log::info('Estoy en el if del check',\auth);
-            console.log("Estoy en handle dentro de AdministradorMiddleware");
-            console.log("auth:",\auth);
+            Log::info("Auth",auth());
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->first();
             if($usuario && $usuario->tipoUsuario && $usuario->tipoUsuario->tipoUsuario==='Administrador'){
+                Log::info('Usuario es administrador. Permitiendo acceso.');
                 return $next($request);
             }
         }

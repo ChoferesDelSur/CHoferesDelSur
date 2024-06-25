@@ -38,9 +38,11 @@ class PrincipalController extends Controller
 
     public function obtenerInfoUsuario()
     {
+        /* dd(auth()->user()); */
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuario::find($idUsuario);
-        $usuario->tipoUsuario1 = $usuario->tipoUsuarios->tipoUsuario;
+        $usuario->tipoUsuario1 = $usuario->tipoUsuario->tipoUsuario;
+        dd('Se está autenticando el usuario:', $usuario);
         return $usuario;
     }
 
