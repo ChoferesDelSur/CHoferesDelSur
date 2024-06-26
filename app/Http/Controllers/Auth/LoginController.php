@@ -21,7 +21,6 @@ class LoginController extends Controller
         \Log::info('Esta en la funcion index de LoginController');
         if (auth()->check()) {
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
-            \Log::info('Usuario:',$usuario);
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
             \Log::info('Esta por entrar en el switch de tipoUsuario de index');
             switch ($tipoUsuario) {
@@ -51,6 +50,7 @@ class LoginController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
+        \Log::info('Entrando en la funcion login de LoginController');
         try {
             $request->validate([
                 'usuario' => ['required'],
@@ -78,9 +78,11 @@ class LoginController extends Controller
                         \Log::info('Está por ingresar al switch de los dos tipos de usuario en la funcino login');
                         switch ($tipoUsuario) {
                             case "Administrador":
+                                \Log::info('Usuario Administrador en login de LoginController');
                                 return redirect()->intended(route('principal.inicio'));
                                 break;
                             case "Servicio":
+                                \Log::info('Usuario Servicio en login de LoginController');
                                 return redirect()->intended(route('servicio.inicio'));
                                 break;
                         }

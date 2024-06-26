@@ -67,10 +67,15 @@ onMounted(async () => {
         </div>
         <div class="flex items-center h-full">
             <div class="flex items-center text-center h-full justify-center mx-1">
-                <div class="h-full">
+                <div class="flex items-center text-center h-full justify-center mx-1">
+                    <i class="fas fa-user text-white font-thin mx-1"></i>
+                    <i class="text-white font-['DM Sans'] mx-1"> {{ " " +
+                        props.usuario.tipoUsuario1.charAt(0).toUpperCase() + props.usuario.tipoUsuario1.slice(1) }} </i>
+                </div>
+                <!-- <div class="h-full">
                     <img :src="'https://i.postimg.cc/gwGpRPZ4/Logo-Tucdosa-SF.png'"
                         class="md:h-full h-14 md:mx-1 border-2 border-cyan-500 object-cover rounded-lg">
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -91,5 +96,4 @@ onMounted(async () => {
         /* Ajusta a tu tamaño deseado para pantallas medianas y grandes */
     }
 }
-
 </style>

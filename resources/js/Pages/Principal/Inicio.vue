@@ -7,6 +7,7 @@ const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
 });
+console.log("Usuario en inicio:",props.usuario);
 </script>
 
 <template>

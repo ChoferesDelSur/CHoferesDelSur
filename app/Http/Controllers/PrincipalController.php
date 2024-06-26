@@ -21,6 +21,7 @@ use App\Models\tipoUltimaCorrida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
@@ -29,20 +30,21 @@ class PrincipalController extends Controller
     public function obtenerUsuario()
     {
         return auth()->user();
+        Log::info('Usuario obtenido:', ['user' => $user]);
     }
 
     public function obtenerTipoUsuario($idTipoUsuario)
     {
         return tipoUsuario::find($idTipoUsuario);
+        Log::info('Tipo de Usuario obtenido:', ['tipoUsuario' => $tipoUsuario]);
     }
 
     public function obtenerInfoUsuario()
     {
-        /* dd(auth()->user()); */
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuario::find($idUsuario);
         $usuario->tipoUsuario1 = $usuario->tipoUsuario->tipoUsuario;
-        dd('Se está autenticando el usuario:', $usuario);
+        Log::info('Información del Usuario:', ['usuario' => $usuario]);
         return $usuario;
     }
 
@@ -56,12 +58,14 @@ class PrincipalController extends Controller
             $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivará y sera necesario comunicarse con el administrador para solucionar la situación";
             $color = "red";
             return Inertia::render('Principal/Inicio',[
+                'usuario' => $usuario,
                 'message' => session('message'),
                 'color' => session('color'),
                 'type' => session('type'),
             ]);
         }
         return Inertia::render('Principal/Inicio',[
+            'usuario' => $usuario,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),

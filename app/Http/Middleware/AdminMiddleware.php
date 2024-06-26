@@ -18,9 +18,8 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         Log::info("Estoy en AdminMiddleware");
-        error_log("Estoy en AdminMiddleware");
         if(auth()->check()){
-            Log::info("Auth",auth());
+            Log::info("Auth", ['user' => auth()->user()]);
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->first();
             if($usuario && $usuario->tipoUsuario && $usuario->tipoUsuario->tipoUsuario==='Administrador'){
                 Log::info('Usuario es administrador. Permitiendo acceso.');

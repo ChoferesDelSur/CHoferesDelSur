@@ -8,6 +8,7 @@ const props = defineProps({
   title: String,
   usuario: { type: Object }
 });
+console.log("Usuario:", props.usuario);
 
 </script>
 
@@ -17,7 +18,7 @@ const props = defineProps({
 
     <Head :title="title" />
 
-    <TopContent :usuario="props.usuario"/> <!--LLama al componente TopContent-->
+    <TopContent :usuario="props.usuario" /> <!--LLama al componente TopContent-->
 
     <div class="flex-1 flex overflow-hidden"><!-- el overflow-hidden: es el encargaddo de ocultar la barra de dezplazamiento 
     que afecta al menu y el encabezado -->
@@ -34,10 +35,10 @@ const props = defineProps({
             </div>
             <div class="flex-col justify-start items-center inline-flex">
               <div class="text-center text-white text-base font-semibold font-['DM Sans'] px-2">{{
-                "Ernesto Alonso Martínez Martínez" }}
+                props.usuario.nombre }} {{ props.usuario.apellidoP }} {{ props.usuario.apellidoM }}
               </div>
-              <div class="text-center text-white text-sm font-normal font-['DM Sans']">{{
-                "Servicio 1" }}
+              <div class="text-center text-white text-sm font-normal font-['DM Sans']"> {{
+                props.usuario.usuario }}
               </div>
             </div>
           </div>
