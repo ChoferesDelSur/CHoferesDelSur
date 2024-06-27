@@ -5,11 +5,12 @@ import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
+    usuario: { type: Object },
 });
 </script>
 
 <template>
-    <ServicioLayout title="Inicio">
+    <ServicioLayout title="Inicio" :usuario="props.usuario">
         <div class="mt-5 bg-white p-4 shadow rounded-lg h-5/6">
 
             <Mensaje />

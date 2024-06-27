@@ -24,7 +24,10 @@ DataTable.use(DataTablesLib);
 DataTable.use(Select);
 
 const props = defineProps({
-    usuario: { type: Object },
+    message: { String, default: '' },
+    color: { String, default: '' },
+    usuario: { type: Object },//obtenerInfo
+    usuarios: { type: Object },//all();
     tipoUsuario: { type: Object },
 });
 
@@ -52,13 +55,13 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-const toggleUsuarioSelection = (usuario) => {
-    if (usuariosSeleccionados.value.includes(usuario)) {
+const toggleUsuarioSelection = (user) => {
+    if (usuariosSeleccionados.value.includes(user)) {
         // Si el usuario ya está seleccionado, la eliminamos del array
-        usuariosSeleccionados.value = usuariosSeleccionados.value.filter((r) => r !== usuario);
+        usuariosSeleccionados.value = usuariosSeleccionados.value.filter((r) => r !== user);
     } else {
         // Si el usuario no está seleccionado, la agregamos al array
-        usuariosSeleccionados.value.push(usuario);
+        usuariosSeleccionados.value.push(user);
     }
     // Llamado del botón de eliminar para cambiar su estado deshabilitado
     const botonEliminar = document.getElementById("eliminarABtn");
@@ -69,12 +72,12 @@ const toggleUsuarioSelection = (usuario) => {
     }
 };
 
-const eliminarUsuario = (idUsuario, usuario) => {
+const eliminarUsuario = (idUsuario, user) => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
     swal.fire({
-        title: `¿Estas seguro que deseas eliminar los datos de ` + usuario + '?',
+        title: `¿Estas seguro que deseas eliminar los datos de ` + user + '?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -101,7 +104,7 @@ const eliminarUsuarios = () => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const usuariosS = selectedUsuarios.value.map((usuario) => usuario.idUsuario);
+                const usuariosS = selectedUsuarios.value.map((user) => user.idUsuario);
                 const $usuariosIds = usuariosS.join(',');
                 console.log(usuariosS);
                 await form.delete(route('admin.elimUsuarios', $usuariosIds));
@@ -116,8 +119,8 @@ const eliminarUsuarios = () => {
     });
 };
 
-const restaurarUsuario = (usuario) => {
-    const idUsuario = usuario.idUsuario;
+const restaurarUsuario = (user) => {
+    const idUsuario = user.idUsuario;
     const swal = Swal.mixin({
         buttonsStyling: true
     })
@@ -148,12 +151,12 @@ onMounted(() => {
         if (checkbox.classList.contains('usuario-checkbox')) {
             const usuarioId = parseInt(checkbox.getAttribute('data-id'));
             // Se asegura que props.materias.data esté definido antes de usar find
-            if (props.usuario) {
-                const usuario = props.usuario.find(usuario => usuario.idUsuario === usuarioId);
-                if (usuario) {
-                    toggleUsuarioSelection(usuario);
+            if (props.usuarios) {
+                const user = props.usuarios.find(user => user.idUsuario === usuarioId);
+                if (user) {
+                    toggleUsuarioSelection(user);
                 } else {
-                    console.log("No se tiene tutor");
+                    console.log("No se tiene usuario");
                 }
             }
         }
@@ -162,35 +165,35 @@ onMounted(() => {
     // Manejar clic en el botón de editar
     $('#usuariosTablaId').on('click', '.editar-button', function () {
         const usuarioId = $(this).data('id');
-        const usuario = props.usuario.find(u => u.idUsuario === usuarioId);
-        abrirUsuarios(usuario);
+        const user = props.usuarios.find(u => u.idUsuario === usuarioId);
+        abrirUsuarios(user);
     });
 
     // Manejar clic en el botón de eliminar
     $('#usuariosTablaId').on('click', '.eliminar-button', function () {
         const usuarioId = $(this).data('id');
-        const usuario = props.usuario.find(u => u.idUsuario === usuarioId);
-        eliminarUsuario(usuarioId, usuario.usuario);
+        const user = props.usuarios.find(u => u.idUsuario === usuarioId);
+        eliminarUsuario(usuarioId, user.usuario);
     });
 
     $('#usuariosTablaId').on('click', '.mostrar-password-button', function () {
         const usuarioId = $(this).data('id');
-        const usuario = props.usuario.find(u => u.idUsuario === usuarioId);
+        const user = props.usuarios.find(u => u.idUsuario === usuarioId);
         const passwordCell = $(this).closest('td').find('.ph');
 
         if (passwordCell.hasClass('password-hidden')) {
             // Muestra la contraseña
-            passwordCell.removeClass('password-hidden').text(usuario.contrasenia);
+            passwordCell.removeClass('password-hidden').text(user.contrasenia);
         } else {
             // Oculta la contraseña
-            passwordCell.addClass('password-hidden').text('*'.repeat(usuario.contrasenia.length));
+            passwordCell.addClass('password-hidden').text('*'.repeat(user.contrasenia.length));
         }
     });
 
     $('#usuariosTablaId').on('click', '.restaurar-usuario', function () {
         const usuarioId = $(this).data('id');
-        const usuario = props.usuario.find(u => u.idUsuario === usuarioId);
-        restaurarUsuario(usuario);
+        const user = props.usuarios.find(u => u.idUsuario === usuarioId);
+        restaurarUsuario(user);
     })
 
 });
@@ -221,7 +224,7 @@ const botonesPersonalizados = [
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         orientation: 'landscape', // Configurar la orientación horizontal
         exportOptions: {
-            columns: [2,3,4,5,6,7,8]
+            columns: [2, 3, 4, 5, 6, 7, 8]
         }
     },
     {
@@ -230,8 +233,8 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-        columns: [2,3,4,5,6,7, 8] // Índices de las columnas que deseas imprimir 
-    }
+            columns: [2, 3, 4, 5, 6, 7, 8] // Índices de las columnas que deseas imprimir 
+        }
     }
 ];
 
@@ -255,6 +258,14 @@ const columnsUsuario = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'usuario' },
+    {
+        data: 'idTipoUsuario',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const tipoUser = props.tipoUsuario.find(tipoUser => tipoUser.idTipoUsuario === data);
+            return tipoUser ? tipoUser.tipoUsuario : '';
+        }
+    },
     {
         data: 'contrasenia', render: function (data, type, row, meta) {
             return `<div class="password-container">
@@ -294,19 +305,19 @@ const optionsUsuario = {
         lengthMenu: 'Mostrar _MENU_ registros',
         paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
     },
-    buttons: botonesPersonalizados,  
+    buttons: botonesPersonalizados,
 };
 
 </script>
 
 <template>
-    <PrincipalLayout title="Usuarios">
+    <PrincipalLayout title="Usuarios" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Usuarios</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-3"></div>
 
-            <Mensaje/>
+            <Mensaje />
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
@@ -317,7 +328,8 @@ const optionsUsuario = {
 
             <div class="">
                 <DataTable class="w-full table-auto text-sm display stripe compact cell-border order-column"
-                    id="usuariosTablaId" :responsive="true" :columns="columnsUsuario" :data="usuario" :options="optionsUsuario">
+                    id="usuariosTablaId" :responsive="true" :columns="columnsUsuario" :data="usuarios"
+                    :options="optionsUsuario">
                     <thead>
                         <tr class="text-sm leading-normal">
                             <th
@@ -332,7 +344,7 @@ const optionsUsuario = {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
+                                Nombre(s)
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -345,6 +357,10 @@ const optionsUsuario = {
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Usuario
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Tipo Usuario
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
@@ -368,7 +384,7 @@ const optionsUsuario = {
             </div>
         </div>
         <FormularioUsuarios :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'"
-            :descripcion="descripcionCrear" :usuario="props.usuario" :tipoUsuario="props.tipoUsuario"></FormularioUsuarios>
+            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'" :descripcion="descripcionCrear"
+            :usuarios="props.usuarios" :tipoUsuario="props.tipoUsuario"></FormularioUsuarios>
     </PrincipalLayout>
 </template>

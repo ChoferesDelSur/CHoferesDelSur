@@ -7,7 +7,6 @@ const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
 });
-console.log("Usuario en inicio:",props.usuario);
 </script>
 
 <template>
@@ -22,6 +21,10 @@ console.log("Usuario en inicio:",props.usuario);
                 <div class="flex-1">
                     <h1 class="font-bold text-center text-xl pt-0"> Bienvenido al sistema de la empresa Choferes del Sur
                     </h1>
+                </div>
+                <div class="h-full">
+                    <img :src="'https://i.postimg.cc/gwGpRPZ4/Logo-Tucdosa-SF.png'"
+                        class="md:h-full h-14 md:mx-1 object-cover rounded-lg">
                 </div>
                 <!-- <img :src="'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjjWteVbsRhdwMVVzQ_iC0LN3KGixAvG8_3J3ZdsWiCQ&s'"
                     class="self-start h-20 w-20 md:h-32 md:w-32 ml-4 md:mx-1 object-cover rounded-lg"> -->

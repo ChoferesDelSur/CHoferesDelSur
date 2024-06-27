@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class ServicioMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,12 +17,12 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info("Estoy en AdminMiddleware");
+        Log::info("Estoy en ServicioMiddleware");
         if(auth()->check()){
             Log::info("Auth", ['user' => auth()->user()]);
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
-            if ($tipoUsuario === "Administrador") {
+            if ($tipoUsuario === "Servicio") {
                 return $next($request);
             }
         }

@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\ServicioMiddleware;
 
 
 Route::controller(LoginController::class)->group(function () {
@@ -56,6 +57,7 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     
         Route::get('/principal/reportes', 'reportes')->name('principal.reportes');
         Route::get('/principal/administrarUsuarios', 'adminUsuarios')->name('principal.administrarUsuarios');
+        Route::post('/principal/usuarios','agregarUsuario')->name('principal.addUsuario');
     });
 });
 
@@ -99,7 +101,8 @@ Route::controller(InfoController::class)->group(
         Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUsuario');
     }
 );
-
-Route::controller(ServicioController::class)->group(function(){
-    Route::get('/servicio', 'inicio')->name('servicio.inicio');
+Route::middleware([ServicioMiddleware::class])->group(function () {
+    Route::controller(ServicioController::class)->group(function(){
+        Route::get('/servicio', 'inicio')->name('servicio.inicio');
+    });
 });

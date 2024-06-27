@@ -25,20 +25,45 @@ use Inertia\Inertia;
 
 class ServicioController extends Controller
 {
+    public function obtenerUsuario()
+    {
+        return auth()->user();
+        Log::info('Usuario obtenido:', ['user' => $user]);
+    }
+
+    public function obtenerTipoUsuario($idTipoUsuario)
+    {
+        return tipoUsuario::find($idTipoUsuario);
+        Log::info('Tipo de Usuario obtenido:', ['tipoUsuario' => $tipoUsuario]);
+    }
+
+    public function obtenerInfoUsuario()
+    {
+        $idUsuario = auth()->user()->idUsuario;
+        $usuario = usuario::find($idUsuario);
+        $usuario->tipoUsuario2 = $usuario->tipoUsuario->tipoUsuario;
+        Log::info('Información del Usuario:', ['usuario' => $usuario]);
+        return $usuario;
+    }
+
     public function inicio()
     {
-        $directivo = directivo::all();
-        $operador = operador::all(); 
-        $tipoOperador = tipooperador::all();
-        $estado = estado::all();
-        $unidad = unidad::all();
-        $ruta = ruta::all();
-        return Inertia::render('Servicio/Inicio',[
-            'unidad' => $unidad,
-            'operador' => $operador,
-            'tipoOperador' => $tipoOperador,
-            'estado' => $estado,
-            'ruta' => $ruta,
+        $usuario = $this->obtenerInfoUsuario();
+        if ($usuario->cambioContrasenia === 0) {
+            $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
+            $fechaFormateada = $fechaLimite->format('d/m/Y');
+            $horaFormateada = $fechaLimite->format('H:i');
+            $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivará y sera necesario comunicarse con el administrador para solucionar la situación";
+            $color = "red";
+            return Inertia::render('Principal/Inicio',[
+                'usuario' => $usuario,
+                'message' => session('message'),
+                'color' => session('color'),
+                'type' => session('type'),
+            ]);
+        }
+        return Inertia::render('Principal/Inicio',[
+            'usuario' => $usuario,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),

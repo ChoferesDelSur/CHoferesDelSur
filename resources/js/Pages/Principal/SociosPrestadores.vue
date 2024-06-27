@@ -28,6 +28,7 @@ const props = defineProps({
     color: { String, default: '' },
     directivo: { type: Object },
     tipDirectivo: { type: Object },
+    usuario: { type: Object},
 });
 
 const botonesPersonalizados = [
@@ -235,7 +236,7 @@ const eliminarDirectivos = () => {
 </script>
 
 <template>
-    <PrincipalLayout title="Directivos">
+    <PrincipalLayout title="Directivos" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->

@@ -18,7 +18,7 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    usuario: {
+    usuarios: {
         type: Object,
         default: () => ({}),
     },
@@ -41,21 +41,18 @@ const close = () => {
 
 
 const form = useForm({
-    idUsuario: props.usuario.idUsuario,
-    nombre: props.usuario.nombre,
-    apellidoP: props.usuario.apellidoP,
-    apellidoM: props.usuario.apellidoM,
-    usuario: props.usuario.usuario,
-    contrasenia: props.usuario.contrasenia,
-    tipoUsuario: props.tipoUsuario.idTipoUsuario
+    idUsuario: props.usuarios.idUsuario,
+    nombre: props.usuarios.nombre,
+    apellidoP: props.usuarios.apellidoP,
+    apellidoM: props.usuarios.apellidoM,
+    tipoUsuario: props.usuarios.idTipoUsuario
 });
 
 // Variables para los mensajes de validación
 const nombreError = ref('');
 const apellidoPError = ref('');
-const apellidoMErrro = ref('');
-const usuarioError = ref('');
-const contraseniaError = ref('');
+const apellidoMError = ref('');
+const tipoUsuarioError = ref('');
 
 // Validación de cadenas no vacias
 const validateStringNotEmpty = (value) => {
@@ -71,55 +68,61 @@ const validateSelect = (selectedValue) => {
 };
 
 const save = () => {
-    usuarioError.value = validateStringNotEmpty(form.usuario) ? '' : 'Ingrese el usuario';
-    contraseniaError.value = validateStringNotEmpty(form.contrasenia) ? '' : 'Ingrese la contraseña';
+    nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
+    apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
+    apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido materno';
+    tipoUsuarioError.value = validateSelect(form.tipoUsuario) ? '' : 'Seleccione el tipo de usuario';
 
     if (
-        usuarioError.value || contraseniaError.value
+        nombreError.value || apellidoPError.value || apellidoMError.value || tipoUsuarioError.value
     ) {
 
         return;
     }
 
-    form.post(route('admin.addUsuarios'), {
+    form.post(route('principal.addUsuario'), {
         onSuccess: () => {
             close()
-            usuarioError.value = '';
-            contraseniaError.value = '';
+            nombreError.value = '';
+            apellidoPError.value = '';
+            apellidoMError.value = '';
+            tipoUsuarioError = '';
         }
     });
 }
 
 const update = () => {
 
-    usuarioError.value = validateStringNotEmpty(form.usuario) ? '' : 'Ingrese el usuario';
-    contraseniaError.value = validateStringNotEmpty(form.contrasenia) ? '' : 'Ingrese la contraseña';
+    nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
+    apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
+    apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido materno';
+    tipoUsuarioError.value = validateSelect(form.tipoUsuario) ? '' : 'Seleccione el tipo de usuario';
 
     if (
-        usuarioError.value || contraseniaError.value
+        nombreError.value || apellidoPError.value || apellidoMError.value || tipoUsuarioError.value
     ) {
 
         return;
     }
 
     var idUsuario = document.getElementById('idUsuario2').value;
-    form.put(route('admin.actualizarUsuarios', idUsuario), {
+    form.put(route('admin.actualizarUsuario', idUsuario), {
         onSuccess: () => {
             close()
-            usuarioError.value = '';
-            contraseniaError.value = '';
+            nombreError.value = '';
+            apellidoPError.value = '';
+            apellidoMError.value = '';
+            tipoUsuarioError = '';
         }
     });
 }
 
-watch(() => props.usuario, (newVal) => {
+watch(() => props.usuarios, (newVal) => {
     console.log(newVal);
     form.idUsuario = newVal.idUsuario;
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;
     form.apellidoM = newVal.apellidoM;
-    form.usuario = newVal.usuario;
-    form.contrasenia = newVal.contrasenia;
     form.tipoUsuario = newVal.tipoUsuario;
 }, { deep: true });
 
@@ -146,68 +149,44 @@ watch(() => props.usuario, (newVal) => {
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-3">
-                            <label for="nombre"
-                                class="block text-sm font-medium leading-6 text-gray-900">Nombre(s)</label>
+                            <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombre(s)
+                                <span class="text-red-500">*</span></label>
                             <div class="mt-2">
                                 <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                     placeholder="Ingrese el nombre del usuario"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
-                            <div v-if="usuarioError != ''" class="text-red-500 text-xs mt-1">{{
-                                usuarioError }}</div>
+                            <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{
+                                nombreError }}</div>
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-3">
                             <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                Paterno</label>
+                                Paterno <span class="text-red-500">*</span></label>
                             <div class="mt-2">
                                 <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                     placeholder="Ingrese el apellido paterno"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
-                            <div v-if="usuarioError != ''" class="text-red-500 text-xs mt-1">{{
-                                usuarioError }}</div>
+                            <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{
+                                apellidoPError }}</div>
                         </div>
 
                         <div class="sm:col-span-1 md:col-span-3">
                             <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                Materno</label>
+                                Materno <span class="text-red-500">*</span></label>
                             <div class="mt-2">
                                 <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoM"
                                     placeholder="Ingrese el apellido materno"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
-                            <div v-if="usuarioError != ''" class="text-red-500 text-xs mt-1">{{
-                                usuarioError }}</div>
-                        </div>
-
-                        <div class="sm:col-span-1 md:col-span-3">
-                            <label for="usuario"
-                                class="block text-sm font-medium leading-6 text-gray-900">Usuario</label>
-                            <div class="mt-2">
-                                <input type="text" name="usuario" :id="'usuario' + op" v-model="form.usuario"
-                                    placeholder="Ingrese el usuario"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                            <div v-if="usuarioError != ''" class="text-red-500 text-xs mt-1">{{
-                                usuarioError }}</div>
-                        </div>
-
-                        <div class="sm:col-span-1 md:col-span-3">
-                            <label for="contrasenia"
-                                class="block text-sm font-medium leading-6 text-gray-900">Contraseña</label>
-                            <div class="mt-2">
-                                <input type="text" name="contrasenia" :id="'contrasenia' + op"
-                                    v-model="form.contrasenia" placeholder="Ingrese la contraseña"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                            <div v-if="contraseniaError != ''" class="text-red-500 text-xs mt-1">{{
-                                contraseniaError }}</div>
+                            <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{
+                                apellidoMError }}</div>
                         </div>
 
                         <div class="sm:col-span-2 px-4">
                             <label for="tipoUsuario" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
-                                usuario</label>
+                                usuario <span class="text-red-500">*</span></label>
                             <div class="mt-2">
                                 <select name="tipoUsuario" :id="'tipoUsuario' + op" v-model="form.tipoUsuario"
                                     placeholder="Seleccione el tipo de usuario"
@@ -219,8 +198,7 @@ watch(() => props.usuario, (newVal) => {
                                     </option>
                                 </select>
                             </div>
-                            <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError
-                                }}
+                            <div v-if="tipoUsuarioError != ''" class="text-red-500 text-xs mt-1">{{ tipoUsuarioError }}
                             </div>
                         </div>
 

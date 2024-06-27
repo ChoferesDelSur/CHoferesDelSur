@@ -18,18 +18,14 @@ class LoginController extends Controller
 {
     public function index()
     {
-        \Log::info('Esta en la funcion index de LoginController');
         if (auth()->check()) {
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
-            \Log::info('Esta por entrar en el switch de tipoUsuario de index');
             switch ($tipoUsuario) {
                 case "Administrador":
-                    \Log::info('El usuario es de tipo Administrador');
                     return redirect()->route('principal.inicio');
                     break;
                 case "Servicio":
-                    \Log::info('El usuario es de tipo Servicio');
                     return redirect()->route('servicio.inicio');
                     break;
             }
@@ -37,10 +33,8 @@ class LoginController extends Controller
         $tipoUsuario = tipoUsuario::where('tipoUsuario','Administrador')->first();
         $usuario = usuario::where('idTipoUsuario', $tipoUsuario->idTipoUsuario)->get();
         if($usuario->isEmpty()){
-            \Log::info('Rendering component: Login/RegisterFT');
             return Inertia::render('Login/RegisterFT');    
         }
-        \Log::info('Rendering component: Autenticacion/Login');
         return Inertia::render('Login/Login',[
             'message' => session('message'),
             'color' => session('color'),
@@ -50,7 +44,6 @@ class LoginController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-        \Log::info('Entrando en la funcion login de LoginController');
         try {
             $request->validate([
                 'usuario' => ['required'],
@@ -59,7 +52,6 @@ class LoginController extends Controller
 
             $remember = $request->remember;
             $user = usuario::where('usuario', $request->usuario)->first();
-            /* dd($user); */
             if ($user) {
                 if ($user->cambioContrasenia === 0) {
                     if (Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()) {
@@ -72,22 +64,18 @@ class LoginController extends Controller
                         $user->save();
                         Auth::login($user, $remember);                        
                         $request->session()->regenerate();
-                        /* dd(Auth::user()); */
+
                         $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
                         $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
-                        \Log::info('Está por ingresar al switch de los dos tipos de usuario en la funcino login');
                         switch ($tipoUsuario) {
                             case "Administrador":
-                                \Log::info('Usuario Administrador en login de LoginController');
                                 return redirect()->intended(route('principal.inicio'));
                                 break;
                             case "Servicio":
-                                \Log::info('Usuario Servicio en login de LoginController');
                                 return redirect()->intended(route('servicio.inicio'));
                                 break;
                         }
                     }
-
                     $user->intentos = $user->intentos - 1;
                     $user->save();
                     if ($user->intentos != 0) {

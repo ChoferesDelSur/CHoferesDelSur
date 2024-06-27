@@ -27,6 +27,7 @@ DataTable.use(DataTablesLib);
 DataTable.use(Select);
 const props = defineProps({
     ruta: { type: Object },
+    usuario: { type: Object},
 });
 
 const botonesPersonalizados = [
@@ -204,7 +205,7 @@ const eliminarRutas = () => {
 </script>
 
 <template>
-    <PrincipalLayout title="Rutas">
+    <PrincipalLayout title="Rutas" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Rutas</h2>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-3"></div>

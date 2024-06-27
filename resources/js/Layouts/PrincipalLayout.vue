@@ -8,7 +8,6 @@ const props = defineProps({
   title: String,
   usuario: { type: Object }
 });
-console.log("Usuario:", props.usuario);
 
 </script>
 

@@ -13,12 +13,12 @@ class TipoUsuarioSeeder extends Seeder
      */
     public function run(): void
     {
-        $tipoUsuario = [
-            "Administrador",
-            "Servicio",
-        ];
-        foreach($tipoUsuario as $tipoUsuario){
-            tipoUsuario::create(['tipoUsuario'=> $tipoUsuario]);
-        }
+        $tipoUsuario1 = new tipoUsuario();
+        $tipoUsuario1->tipoUsuario = "Administrador";
+        $tipoUsuario1->save();
+
+        $tipoUsuario2 = new tipoUsuario();
+        $tipoUsuario2->tipoUsuario = "Servicio";
+        $tipoUsuario2->save();
     }
 }

@@ -24,19 +24,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class PrincipalController extends Controller
 {
     public function obtenerUsuario()
     {
         return auth()->user();
-        Log::info('Usuario obtenido:', ['user' => $user]);
     }
 
     public function obtenerTipoUsuario($idTipoUsuario)
     {
         return tipoUsuario::find($idTipoUsuario);
-        Log::info('Tipo de Usuario obtenido:', ['tipoUsuario' => $tipoUsuario]);
     }
 
     public function obtenerInfoUsuario()
@@ -44,7 +43,6 @@ class PrincipalController extends Controller
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuario::find($idUsuario);
         $usuario->tipoUsuario1 = $usuario->tipoUsuario->tipoUsuario;
-        Log::info('Información del Usuario:', ['usuario' => $usuario]);
         return $usuario;
     }
 
@@ -83,7 +81,9 @@ class PrincipalController extends Controller
         $rolServicio = rolServicio::all();
         $ultimaCorrida = ultimaCorrida::all();
         $tipoUltimaCorrida = tipoUltimaCorrida::all();
+        $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Principal/FormarUnidades',[
+            'usuario' => $usuario,
             'directivo' => $directivo,
             'unidad' => $unidad,
             'operador' => $operador,
@@ -631,8 +631,10 @@ class PrincipalController extends Controller
         $unidadesConOperador = unidad::whereNotNull('idOperador')->get();
         
         $ruta = ruta::all();
+        $usuario = $this->obtenerInfoUsuario();
         
         return Inertia::render('Principal/Unidades', [
+            'usuario' => $usuario,
             'unidad' => $unidad,
             'operador' => $operador,
             'operadoresDisp' => $operadoresDisp,
@@ -777,7 +779,9 @@ class PrincipalController extends Controller
         $tipoOperador = tipooperador::all();
         $estado = estado::all();
         $directivo = directivo::all();
+        $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Principal/Operadores',[
+            'usuario' => $usuario,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
@@ -873,7 +877,9 @@ class PrincipalController extends Controller
         $directivo = directivo::all();
         $operador = operador::all();
         $tipDirectivo = tipodirectivo::all();
+        $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Principal/SociosPrestadores',[
+            'usuario' => $usuario,
             'directivo' => $directivo,
             'operador' => $operador,
             'tipDirectivo' => $tipDirectivo,
@@ -961,7 +967,9 @@ class PrincipalController extends Controller
 
     public function rutas(){
         $ruta = ruta::all();
+        $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Principal/Rutas',[
+            'usuario' => $usuario,
             'ruta' => $ruta,
             'message' => session('message'),
             'color' => session('color'),
@@ -1034,7 +1042,9 @@ class PrincipalController extends Controller
         $unidad = unidad::all();
         $ruta = ruta::all();
         $tipoUltimaCorrida = tipoUltimaCorrida::all();
+        $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Principal/Reportes',[
+            'usuario' => $usuario,
             'unidad' => $unidad,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
@@ -1049,15 +1059,90 @@ class PrincipalController extends Controller
 
     public function adminUsuarios()
     {
-        $usuario = usuario::all();
+        $usuarios = usuario::all();
+        $usuario = $this->obtenerInfoUsuario();
         $tipoUsuario = tipoUsuario::all(); 
         return Inertia::render('Principal/AdminUsuarios',[
+            'usuarios' => $usuarios,
             'usuario' => $usuario,
             'tipoUsuario' => $tipoUsuario,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
         ]);
+    }
+
+    public function generarContrasenia()
+    {
+        // Generar una parte de la contraseña sin dígitos
+        $parteAlfanumerica = Str::random(4, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        $parteEspecial = Str::random(1, '!@#$%&*-_?');
+
+        // Generar exactamente 3 dígitos
+        $parteNumerica = '';
+        for ($i = 0; $i < 3; $i++) {
+            $parteNumerica .= mt_rand(0, 9);
+        }
+
+        // Mezclar las partes de la contraseña para asegurar aleatoriedad
+        $password = str_shuffle($parteAlfanumerica . $parteEspecial . $parteNumerica);
+        return $password;
+    }
+
+    public function quitarAcentos($palabra)
+    {
+        $textoConAcentos = $palabra;
+        // Remplazar caracteres con tilde
+        $textoSinAcentos = strtr($textoConAcentos, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U']);
+        return $textoSinAcentos;
+    }
+
+    public function agregarUsuario(Request $request)
+    {
+        if (Auth::check()) {
+            try {
+
+                // Validación para evitar duplicados
+                $usuarioExistente = usuario::where('nombre', $request->nombre)
+                ->where('apellidoP', $request->apellidoP)
+                ->where('apellidoM', $request->apellidoM)
+                ->first();
+
+                if ($usuarioExistente) {
+                    $mensaje = "Ya existe un usuario registado con los mismos datos: {$request->nombre} {$request->apellidoP}{$request->apellidoM}.";
+                    return redirect()->route('principal.administrarUsuarios')->with([
+                        'message' => $mensaje,
+                        'color' => 'red',
+                        'type' => 'error'
+                    ]);
+                }
+
+                //Contraseña generada
+                $contrasenia = $this->generarContrasenia();
+
+                // Generar usuario
+                $usuarioGenerado = strtolower(
+                    substr($this->quitarAcentos($request->nombre), 0, 2) . 
+                    substr($this->quitarAcentos($request->apellidoP), 0, 1) . 
+                    substr($this->quitarAcentos($request->apellidoM), 0, 1) . 
+                    Str::random(3)
+                );
+
+                $usuario = new usuario();
+                $usuario->nombre = $request->nombre;
+                $usuario->apellidoP = $request->apellidoP;
+                $usuario->apellidoM = $request->apellidoM;
+                $usuario->usuario = $usuarioGenerado;
+                $usuario->contrasenia = $contrasenia;
+                $usuario->password = bcrypt($request->contrasenia);//Encriptado de contraseña
+                $usuario->idTipoUsuario = $request->tipoUsuario;
+                $usuario->save();
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green",'type' => 'success']);
+            } catch (Exception $e) {
+                return redirect()->route('principal.administrarUsuarios')->with(['message' => "Error al agregar el usuario", "color" => "red", 'type' => 'error']);
+            }
+        }
+        return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red", 'type' => 'error']);
     }
 
 }

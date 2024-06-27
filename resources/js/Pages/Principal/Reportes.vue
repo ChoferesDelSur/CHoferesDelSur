@@ -17,6 +17,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
+    usuario: { type: Object},
     unidad: {
         type: Object,
         default: () => ({}),
@@ -34,7 +35,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <PrincipalLayout title="Reportes">
+    <PrincipalLayout title="Reportes" :usuario="props.usuario">
         <div class="mt-1 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0 mb-2">Reportes</h2>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>

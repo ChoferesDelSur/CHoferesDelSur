@@ -32,6 +32,7 @@ const props = defineProps({
     tipoOperador: { type: Object },
     estado: { type: Object },
     directivo: { type: Object },
+    usuario: { type: Object},
 });
 
 const botonesPersonalizados = [
@@ -243,7 +244,7 @@ const eliminarOperadores = () => {
 
 <template>
 
-    <PrincipalLayout title="Operadores">
+    <PrincipalLayout title="Operadores" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Operadores</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->

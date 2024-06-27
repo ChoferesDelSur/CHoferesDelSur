@@ -43,6 +43,7 @@ const props = defineProps({
   corte: { type: Object },
   ultimaCorrida: { type: Object },
   tipoUltimaCorrida: { type: Object },
+  usuario: { type: Object},
 });
 
 // Dentro del bloque <script setup>
@@ -587,7 +588,7 @@ const cerrarModalE = () => {
 </script>
 
 <template>
-  <PrincipalLayout title="Formar Unidades">
+  <PrincipalLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
       <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
