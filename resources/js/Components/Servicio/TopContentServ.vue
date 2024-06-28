@@ -11,6 +11,7 @@ const message = ref('');
 const props = defineProps({
     usuario: { type: Object }
 });
+console.log("Usuario en TopContentServ:",props.usuario);
 
 const tipo_usuario = ref('');
 
@@ -26,10 +27,10 @@ watchEffect(async () => {
 
 onMounted(async () => {
     try {
-        const usuario = await axios.get(route('obtenerUsuario'));
+        const usuario = await axios.get(route('obtenerUser'));
         const idTipoUsuario = usuario.data.idTipoUsuario;
 
-        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
+        const tipoUsuario = await axios.get(route('obtenerTipoUser', idTipoUsuario));
         const datosTipoUsuario = tipoUsuario.data.tipoUsuario;
         tipo_usuario.value = datosTipoUsuario;
 

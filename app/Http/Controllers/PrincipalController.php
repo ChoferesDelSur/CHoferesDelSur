@@ -1097,6 +1097,14 @@ class PrincipalController extends Controller
         return $textoSinAcentos;
     }
 
+    public function randomCase($string) {
+        $result = '';
+        for ($i = 0; $i < strlen($string); $i++) {
+            $result .= rand(0, 1) ? strtoupper($string[$i]) : strtolower($string[$i]);
+        }
+        return $result;
+    }
+
     public function agregarUsuario(Request $request)
     {
         if (Auth::check()) {
@@ -1120,13 +1128,15 @@ class PrincipalController extends Controller
                 //Contraseña generada
                 $contrasenia = $this->generarContrasenia();
 
+                // Generar nombre de usuario con prefijo según el tipo de usuario
+                $prefijo = $request->tipoUsuario == 1 ? 'Admi' : 'Serv'; // Asumiendo que 1 es Administrador y otro valor es Servicio
+
                 // Generar usuario
-                $usuarioGenerado = strtolower(
-                    substr($this->quitarAcentos($request->nombre), 0, 2) . 
-                    substr($this->quitarAcentos($request->apellidoP), 0, 1) . 
-                    substr($this->quitarAcentos($request->apellidoM), 0, 1) . 
-                    Str::random(3)
-                );
+                $nombreParte = substr($this->quitarAcentos($request->nombre), 0, 2);
+                $apellidoPParte = substr($this->quitarAcentos($request->apellidoP), 0, 2);
+                $apellidoMParte = substr($this->quitarAcentos($request->apellidoM), 0, 2);
+
+                $usuarioGenerado = $prefijo . $this->randomCase($nombreParte . $apellidoPParte . $apellidoMParte);
 
                 $usuario = new usuario();
                 $usuario->nombre = $request->nombre;
@@ -1134,7 +1144,8 @@ class PrincipalController extends Controller
                 $usuario->apellidoM = $request->apellidoM;
                 $usuario->usuario = $usuarioGenerado;
                 $usuario->contrasenia = $contrasenia;
-                $usuario->password = bcrypt($request->contrasenia);//Encriptado de contraseña
+                $usuario->password = bcrypt($contrasenia);//Encriptado de contraseña
+                $usuario->cambioContrasenia = true;
                 $usuario->idTipoUsuario = $request->tipoUsuario;
                 $usuario->save();
                 return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green",'type' => 'success']);

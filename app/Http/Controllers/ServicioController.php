@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class ServicioController extends Controller
 {
@@ -55,14 +56,14 @@ class ServicioController extends Controller
             $horaFormateada = $fechaLimite->format('H:i');
             $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivará y sera necesario comunicarse con el administrador para solucionar la situación";
             $color = "red";
-            return Inertia::render('Principal/Inicio',[
+            return Inertia::render('Servicio/Inicio',[
                 'usuario' => $usuario,
                 'message' => session('message'),
                 'color' => session('color'),
                 'type' => session('type'),
             ]);
         }
-        return Inertia::render('Principal/Inicio',[
+        return Inertia::render('Servicio/Inicio',[
             'usuario' => $usuario,
             'message' => session('message'),
             'color' => session('color'),

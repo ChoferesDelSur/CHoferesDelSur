@@ -11,6 +11,7 @@ const message = ref('');
 const props = defineProps({
     usuario: { type: Object }
 });
+console.log("Usuario en TopContent:",props.usuario);
 
 const tipo_usuario = ref('');
 
@@ -26,10 +27,10 @@ watchEffect(async () => {
 
 onMounted(async () => {
     try {
-        const usuario = await axios.get(route('obtenerUsuario'));
+        const usuario = await axios.get(route('obtenerUser'));
         const idTipoUsuario = usuario.data.idTipoUsuario;
 
-        const tipoUsuario = await axios.get(route('obtenerTipoUsuario', idTipoUsuario));
+        const tipoUsuario = await axios.get(route('obtenerTipoUser', idTipoUsuario));
         const datosTipoUsuario = tipoUsuario.data.tipoUsuario;
         tipo_usuario.value = datosTipoUsuario;
 
@@ -71,6 +72,12 @@ onMounted(async () => {
                     <i class="fas fa-user text-white font-thin mx-1"></i>
                     <i class="text-white font-['DM Sans'] mx-1"> {{ " " +
                         props.usuario.tipoUsuario1.charAt(0).toUpperCase() + props.usuario.tipoUsuario1.slice(1) }} </i>
+                       <!--  <i class="text-white font-['DM Sans'] mx-1"> 
+                        {{ props.usuario && props.usuario.tipoUsuario1 ? 
+                            (props.usuario.tipoUsuario1.charAt(0).toUpperCase() + props.usuario.tipoUsuario1.slice(1)) : 
+                            'Sin asignar' 
+                        }} 
+                    </i> -->
                 </div>
                 <!-- <div class="h-full">
                     <img :src="'https://i.postimg.cc/gwGpRPZ4/Logo-Tucdosa-SF.png'"

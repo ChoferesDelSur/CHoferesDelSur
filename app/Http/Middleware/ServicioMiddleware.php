@@ -17,9 +17,8 @@ class ServicioMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info("Estoy en ServicioMiddleware");
+        Log::info("Estoy en Middleware Servicio");
         if(auth()->check()){
-            Log::info("Auth", ['user' => auth()->user()]);
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
             if ($tipoUsuario === "Servicio") {

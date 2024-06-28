@@ -1,5 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/inertia-vue3';
+import { ref} from 'vue';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -25,6 +26,12 @@ const submit = () => {
     })).post(route('inicioSesion'), {
         onFinish: () => form.reset('password'),
     });
+};
+
+const showPassword = ref(false);
+
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
 };
 </script>
 
@@ -66,8 +73,14 @@ const submit = () => {
                         <InputLabel for="password" value="Contraseña" />
                     </div>
                 </div>
-                <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" required
-                    autocomplete="password" />
+                <div class="relative">
+                    <TextInput id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                        class="mt-1 block w-full pr-10" required autocomplete="current-password" />
+                    <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
+                        @click="togglePasswordVisibility">
+                        <i class="fa" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+                </div>
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 

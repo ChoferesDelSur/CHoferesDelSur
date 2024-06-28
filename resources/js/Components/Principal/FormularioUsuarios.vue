@@ -86,7 +86,7 @@ const save = () => {
             nombreError.value = '';
             apellidoPError.value = '';
             apellidoMError.value = '';
-            tipoUsuarioError = '';
+            tipoUsuarioError.value = '';
         }
     });
 }
@@ -112,13 +112,12 @@ const update = () => {
             nombreError.value = '';
             apellidoPError.value = '';
             apellidoMError.value = '';
-            tipoUsuarioError = '';
+            tipoUsuarioError.value = '';
         }
     });
 }
 
 watch(() => props.usuarios, (newVal) => {
-    console.log(newVal);
     form.idUsuario = newVal.idUsuario;
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;

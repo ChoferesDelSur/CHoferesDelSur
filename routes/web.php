@@ -97,8 +97,8 @@ Route::controller(ReporteController::class)->group(function(){
 
 Route::controller(InfoController::class)->group(
     function () {
-        Route::get('obtener/info/usuario/login', 'obtenerUsuario')->name('obtenerUsuario');
-        Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUsuario');
+        Route::get('obtener/info/usuario/login', 'obtenerUsuario')->name('obtenerUser');
+        Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUser');
     }
 );
 Route::middleware([ServicioMiddleware::class])->group(function () {

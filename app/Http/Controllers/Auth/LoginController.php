@@ -51,22 +51,30 @@ class LoginController extends Controller
             ]);
 
             $remember = $request->remember;
-            $user = usuario::where('usuario', $request->usuario)->first();
+            $user = Usuario::where('usuario', $request->usuario)->first();
+
             if ($user) {
                 if ($user->cambioContrasenia === 0) {
                     if (Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()) {
-                        return back()->with(['message' => 'Excedio el tiempo limite para el cambio de contraseña, para solucionarlo es necesario que acuda a la dirección', 'color' => 'red', 'type' => 'error']);
+                        return back()->with([
+                            'message' => 'Excedió el tiempo límite para el cambio de contraseña.',
+                            'color' => 'red',
+                            'type' => 'error'
+                        ]);
                     }
                 }
+
                 if ($user->intentos > 0) {
-                    if ($user && Hash::check($request->password, $user->password)) {
+                    if (Hash::check($request->password, $user->password)) {
                         $user->intentos = 10;
                         $user->save();
-                        Auth::login($user, $remember);                        
+                        Auth::login($user, $remember);
                         $request->session()->regenerate();
 
-                        $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
-                        $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
+                        // Obtener tipo de usuario
+                        $tipoUsuario = $user->tipoUsuario->tipoUsuario;
+
+                        // Redirigir según el tipo de usuario
                         switch ($tipoUsuario) {
                             case "Administrador":
                                 return redirect()->intended(route('principal.inicio'));
@@ -74,22 +82,47 @@ class LoginController extends Controller
                             case "Servicio":
                                 return redirect()->intended(route('servicio.inicio'));
                                 break;
+                            default:
+                                return redirect()->intended(route('login'))->with([
+                                    'message' => 'Tipo de usuario no reconocido.',
+                                    'color' => 'red',
+                                    'type' => 'error'
+                                ]);
                         }
+                    } else {
+                        $user->intentos = $user->intentos - 1;
+                        $user->save();
+                        if ($user->intentos != 0) {
+                            return back()->with([
+                                'message' => 'Credenciales incorrectas. Tiene ' . $user->intentos . ' intentos restantes.',
+                                'color' => 'yellow',
+                                'type' => 'info'
+                            ]);
+                        }
+                        return back()->with([
+                            'message' => 'Intentos máximos de inicio de sesión superados. Comuníquese con el administrador.',
+                            'color' => 'red',
+                            'type' => 'error'
+                        ]);
                     }
-                    $user->intentos = $user->intentos - 1;
-                    $user->save();
-                    if ($user->intentos != 0) {
-                        return back()->with(['message' => 'Credenciales incorrectas, tiene solo ' . $user->intentos . ' intentos para poder acceder a su cuenta.', 'color' => 'yellow', 'type' => 'info']);
-                    }
-                    return back()->with(['message' => 'Intentos maximos de inicio de sesión superados. Para poder acceder a su cuenta es necesario comunicarse con el administrador para su desbloqueo.', 'color' => 'red','type' => 'error']);
                 }
-                return back()->with(['message' => 'Intentos maximos de inicio de sesión superados. Para poder acceder a su cuenta es necesario comunicarse con el administrador para su desbloqueo.', 'color' => 'red', 'type' => 'error']);
+                return back()->with([
+                    'message' => 'Intentos máximos de inicio de sesión superados. Comuníquese con el administrador.',
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
             }
-            return back()->with(['message' => 'No existe el usuario ingresado', 'color' => 'red', 'type' => 'error']);
+
+            return back()->with([
+                'message' => 'Usuario no encontrado.',
+                'color' => 'red',
+                'type' => 'error'
+            ]);
         } catch (Exception $e) {
             dd($e);
         }
     }
+
 
     public function logout(Request $request)
     {
