@@ -101,8 +101,11 @@ Route::controller(InfoController::class)->group(
         Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUser');
     }
 );
+
 Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::controller(ServicioController::class)->group(function(){
         Route::get('/servicio', 'inicio')->name('servicio.inicio');
+        Route::get('/servicio/perfil', 'perfil')->name('servicio.perfil');
+        Route::put('/servicio/perfil/actualizar/contrasenia','actualizarContrasenia')->name('servicio.actualizarContrasenia');
     });
 });

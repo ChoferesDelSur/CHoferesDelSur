@@ -11,7 +11,6 @@ const message = ref('');
 const props = defineProps({
     usuario: { type: Object }
 });
-console.log("Usuario en TopContentServ:",props.usuario);
 
 const tipo_usuario = ref('');
 

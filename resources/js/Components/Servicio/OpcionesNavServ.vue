@@ -36,6 +36,10 @@ defineProps
       :href="route('servicio.inicio')">
       <i class="fa fa-folder-open" aria-hidden="true"></i> Reportes
     </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('servicio.perfil')">
+      <i class="fa fa-user" aria-hidden="true"></i> Perfil
+    </a>
   </div>
 </template>
 

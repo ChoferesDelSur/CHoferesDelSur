@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ServicioController extends Controller
 {
@@ -54,12 +56,12 @@ class ServicioController extends Controller
             $fechaLimite = Carbon::parse($usuario->fecha_Creacion)->addHours(48);
             $fechaFormateada = $fechaLimite->format('d/m/Y');
             $horaFormateada = $fechaLimite->format('H:i');
-            $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivará y sera necesario comunicarse con el administrador para solucionar la situación";
+            $message = "Tiene hasta el " . $fechaFormateada . " a las " . $horaFormateada . " hrs para realizar el cambio de contraseña, en caso contrario, esta se desactivará y será necesario comunicarse con el administrador para solucionar la situación";
             $color = "red";
             return Inertia::render('Servicio/Inicio',[
                 'usuario' => $usuario,
-                'message' => session('message'),
-                'color' => session('color'),
+                'message' => $message /* session('message') */,
+                'color' => $color,
                 'type' => session('type'),
             ]);
         }
@@ -69,5 +71,41 @@ class ServicioController extends Controller
             'color' => session('color'),
             'type' => session('type'),
         ]);
+    }
+
+    public function perfil()
+    {
+        try {
+            $usuario = $this->obtenerInfoUsuario();
+
+            return Inertia::render('Servicio/Perfil', [
+                'usuario' => $usuario,
+                'message' => session('message'),
+                'color' => session('color'),
+                'type' => session('type'),
+            ]);
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function actualizarContrasenia(Request $request)
+    {
+        try {
+            $usuario = usuario::find($request->idUsuario);
+            $user = Auth::user();
+            if (Hash::check($request->password_actual, $user->password)) {
+                $usuario->contrasenia = $request->password_nueva;
+                $usuario->password = bcrypt($request->password_nueva);
+                $usuario->cambioContrasenia = 1;
+                $usuario->save();
+
+                return redirect()->route('servicio.perfil')->With(["message" => "Contraseña actualizada correctamente, recuerde su contraseña: " . $usuario->contrasenia, "color" => "green",'type' => 'success']);
+            }
+            return redirect()->route('servicio.perfil')->With(["message" => "Contraseña actual incorrecta", "color" => "red",'type' => 'error']);
+        } catch (Exception $e) {
+            return redirect()->route('servicio.perfil')->With(["message" => "Error al actualizar contraseña", "color" => "red",'type' => 'error']);
+            dd($e);
+        }
     }
 }

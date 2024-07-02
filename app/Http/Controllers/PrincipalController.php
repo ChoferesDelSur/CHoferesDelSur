@@ -1145,7 +1145,7 @@ class PrincipalController extends Controller
                 $usuario->usuario = $usuarioGenerado;
                 $usuario->contrasenia = $contrasenia;
                 $usuario->password = bcrypt($contrasenia);//Encriptado de contraseña
-                $usuario->cambioContrasenia = true;
+                /* $usuario->cambioContrasenia = true; */
                 $usuario->idTipoUsuario = $request->tipoUsuario;
                 $usuario->save();
                 return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario agregado correctamente: " . " || \nUsuario: " . $usuario->usuario . " || \nContraseña: " . $usuario->contrasenia . " ||.", "color" => "green",'type' => 'success']);
