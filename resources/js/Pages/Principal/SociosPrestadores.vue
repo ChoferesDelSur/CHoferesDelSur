@@ -14,6 +14,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioSP from '../../Components/Principal/FormularioSP.vue';
 import Mensaje from '../../Components/Mensaje.vue';
+import FormularioActualizarSP from '../../Components/Principal/FormularioActualizarSP.vue';
 
 window.JSZip = jsZip;
 
@@ -146,20 +147,6 @@ const toggleDirectivoSelection = (directivo) => {
 };
 
 onMounted(() => {
-    /* // Verifica si hay un mensaje en la sesión flash
-    console.log("Estoy en onMounted");
-    console.log("Window.flas:",window.flash);
-    if (window.flash) {
-        // Muestra el mensaje en un cuadro de diálogo o de alguna otra manera que desees
-        Swal.fire({
-            title: window.flash.message,
-            icon: 'success'
-        });
-        console.log("Window.flash:", window.flash);
-        // Limpia la sesión flash para que el mensaje no se muestre en la siguiente solicitud
-        window.flash = null;
-    } */
-
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('directivosTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
@@ -303,9 +290,9 @@ const eliminarDirectivos = () => {
         <FormularioSP :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir directivo'" :op="'1'" :modal="'modalCreate'" :tipDirectivo="props.tipDirectivo"
             :directivo="props.directivo"></FormularioSP>
-        <FormularioSP :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+        <FormularioActualizarSP :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar directivo'" :op="'2'" :modal="'modalEdit'" :tipDirectivo="props.tipDirectivo"
-            :directivo="directivoE"></FormularioSP>
+            :directivo="directivoE"></FormularioActualizarSP>
     </PrincipalLayout>
 </template>
 

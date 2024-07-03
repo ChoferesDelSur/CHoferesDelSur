@@ -41,6 +41,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
+    _method: 'PUT', // Método simulado para Laravel
     idOperador: props.operador.idOperador,
     nombre: props.operador.nombre,
     apellidoP: props.operador.apellidoP,
@@ -126,16 +127,14 @@ const update = async () => {
         return;
     }
     var idOperador = document.getElementById('idOperador2').value;
-    console.log("idOperador:"+idOperador);
-    form.put(route('principal.actualizarOperador', idOperador), {
+    form.post(route('principal.actualizarOperador', idOperador), {
         onSuccess: () => {
             close()
-            console.log("idOperador Editando:" + idOperador);
-            nombreError = '';
-            apellidoPError = '';
-            apellidoMError = '';
-            tipoOperadorError = '';
-            directivoError = '';
+            nombreError.value = '';
+            apellidoPError.value = '';
+            apellidoMError.value = '';
+            tipoOperadorError.value = '';
+            directivoError.value = '';
         }
     });
 }

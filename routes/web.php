@@ -30,12 +30,12 @@ Route::middleware([AdminMiddleware::class])->group(function () {
         Route::post('/principal/operadores', 'addOperador')->name('principal.addOperador');
         Route::put('/principal/operadores/{idOperador}/edit', 'actualizarOperador')->name('principal.actualizarOperador');
         Route::delete('/principal/operadores/{operadoresIds}', 'eliminarOperador')->name('principal.eliminarOperador');
+        Route::post('/principal/unidades/asignarOper', 'asignarOperador')->name('principal.asignarOperador');
+        Route::post('/principal/unidades/quitarOper', 'quitarOperador')->name('principal.quitarOperador');
     
         Route::post('/principal/unidades', 'addUnidad')->name('principal.addUnidad');
         Route::put('/principal/unidades/{idUnidad}/edit', 'actualizarUnidad')->name('principal.actualizarUnidad');
         Route::delete('/principal/unidades/{unidadesIds}', 'eliminarUnidad')->name('principal.eliminarUnidad');
-        Route::post('/principal/unidades/asignarOper', 'asignarOperador')->name('principal.asignarOperador');
-        Route::post('/principal/unidades/quitarOper', 'quitarOperador')->name('principal.quitarOperador');
         
         Route::post('/principal/sociosPrestadores', 'addDirectivo')->name('principal.addDirectivo');
         Route::put('/principal/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('principal.actualizarDirectivo');
@@ -106,6 +106,6 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::controller(ServicioController::class)->group(function(){
         Route::get('/servicio', 'inicio')->name('servicio.inicio');
         Route::get('/servicio/perfil', 'perfil')->name('servicio.perfil');
-        Route::put('/servicio/perfil/actualizar/contrasenia','actualizarContrasenia')->name('servicio.actualizarContrasenia');
+        Route::post('/servicio/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia');
     });
 });

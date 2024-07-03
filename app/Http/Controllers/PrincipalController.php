@@ -849,8 +849,12 @@ class PrincipalController extends Controller
             $operador->idTipoOperador = $request->tipoOperador;
             $operador->idEstado = $request->estado;
             $operador->idDirectivo = $request->directivo;
+
+            $nombreCompleto = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
+            $operador->nombre_completo = $nombreCompleto;
+            
             $operador->save();
-            return redirect()->route('principal.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre, "color" => "green"]);
+            return redirect()->route('principal.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green"]);
         }catch(Exception $e){
             return redirect()->route('principal.operadores')->with(['message' => "El operador no se actualizó correctamente: " . $requests->nombre, "color" => "reed"]);
         }

@@ -136,7 +136,6 @@ const form = useForm({});
 var operadorE = ({});
 const abrirE = ($operadoress) => {
     operadorE = $operadoress;
-    console.log($operadoress);
     mostrarModalE.value = true;
 }
 

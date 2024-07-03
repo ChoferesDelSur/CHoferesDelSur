@@ -1,15 +1,16 @@
 <script setup>
-import { useForm } from '@inertiajs/inertia-vue3';
-import { ref, onMounted } from 'vue';
+import { useForm, usePage } from '@inertiajs/inertia-vue3';
+import { ref, onMounted, computed } from 'vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 import Mensaje from '../../Components/Mensaje.vue';
-import axios from 'axios';
 
 const props = defineProps({
     usuario: { type: Object },
 });
+
+/* const csrfToken = ref(props.value.csrf_token); */
 
 const form = useForm({
     password_actual: '',
@@ -30,25 +31,49 @@ const validateContrasenias = (value1, value2) => {
     return value1 === value2 && value1.trim() !== '' && value2.trim() !== '';
 };
 
-const validateLongContrasenias = (value1, value2) => {
-    return value1.length >= 8 && value2.length >= 8;
+const validarLargoContrasenia = (value) => {
+    return typeof value === 'string' && value.length >= 8;
 };
+
+const validarComplejidadContrasenia = (value) => {
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasLowerCase = /[a-z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSymbol = /[@$!%*?&#]/.test(value);
+    return hasUpperCase && hasLowerCase && hasNumber && hasSymbol;
+};
+
+const cumpleLargoContrasenia = computed(() => validarLargoContrasenia(form.password_nueva));
+const cumpleMayuscula = computed(() => /[A-Z]/.test(form.password_nueva));
+const cumpleMinuscula = computed(() => /[a-z]/.test(form.password_nueva));
+const cumpleNumero = computed(() => /[0-9]/.test(form.password_nueva));
+const cumpleSimbolo = computed(() => /[@$!%*?&#]/.test(form.password_nueva));
 
 const update = () => {
     console.log("Entró en update");
     contraActualError.value = validateStringNotEmpty(form.password_actual) ? '' : 'Ingrese la contraseña actual';
     contraNuevaError.value = validateStringNotEmpty(form.password_nueva) ? '' : 'Ingrese la nueva contraseña';
     contraConfirmacionError.value = validateStringNotEmpty(form.password_confirmacion) ? '' : 'Ingrese nuevamente la contraseña creada';
-    contraNuevaError.value = validateContrasenias(form.password_nueva, form.password_confirmacion) ? '' : 'Las contraseñas no coinciden';
-    contraConfirmacionError.value = validateContrasenias(form.password_nueva, form.password_confirmacion) ? '' : 'Las contraseñas no coinciden';
-    contraNuevaError.value = validateLongContrasenias(form.password_nueva, form.password_confirmacion) ? '' : 'La contraseña tiene que ser igual o mayor a 8 digitos';
+
+    if (contraNuevaError.value === '') {
+        contraNuevaError.value = validateContrasenias(form.password_nueva, form.password_confirmacion) ? '' : 'Las contraseñas no coinciden';
+    }
+    if (contraConfirmacionError.value === '') {
+        contraConfirmacionError.value = validateContrasenias(form.password_nueva, form.password_confirmacion) ? '' : 'Las contraseñas no coinciden';
+    }
+    if (contraNuevaError.value === '') {
+        contraNuevaError.value = validarLargoContrasenia(form.password_nueva) ? '' : 'La contraseña tiene que ser igual o mayor a 8 dígitos';
+    }
+    if (contraNuevaError.value === '' && !validarComplejidadContrasenia(form.password_nueva)) {
+        contraNuevaError.value = 'La contraseña no cumple con las características necesarias';
+    }
 
 
     if (contraActualError.value || contraNuevaError.value || contraConfirmacionError.value) {
         return;
     }
     console.log("Ya estoy por entrar en axios");
-    form.put(route('servicio.actualizarContrasenia', form.idUsuario), {
+    form.post(route('servicio.actualizarContrasenia', form.idUsuario), {
         onSuccess: () => {
             console.log("Estoy despues de onSuccess");
             form.password_actual = '';
@@ -173,9 +198,53 @@ const togglePasswordVisibilityConfirmacion = () => {
                                             <i class="fa" :class="showPasswordNueva ? 'fa-eye-slash' : 'fa-eye'"></i>
                                         </button>
                                     </div>
-                                </div>
-                                <div v-if="contraNuevaError != ''" class="text-red-500 text-xs mt-1">{{ contraNuevaError
-                                    }}
+                                    <div class="flex items-center mt-1">
+                                        <div class="h-3 w-3 rounded-full mr-2"
+                                            :class="{ 'bg-green-500': cumpleLargoContrasenia, 'bg-gray-300': !cumpleLargoContrasenia }">
+                                        </div>
+                                        <span class="text-sm"
+                                            :class="{ 'text-green-500': cumpleLargoContrasenia, 'text-gray-600': !cumpleLargoContrasenia }">
+                                            Mínimo 8 caracteres
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center mt-1">
+                                        <div class="h-3 w-3 rounded-full mr-2"
+                                            :class="{ 'bg-green-500': cumpleMayuscula, 'bg-gray-300': !cumpleMayuscula }">
+                                        </div>
+                                        <span class="text-sm"
+                                            :class="{ 'text-green-500': cumpleMayuscula, 'text-gray-600': !cumpleMayuscula }">
+                                            Al menos una mayúscula (A-Z)
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center mt-1">
+                                        <div class="h-3 w-3 rounded-full mr-2"
+                                            :class="{ 'bg-green-500': cumpleMinuscula, 'bg-gray-300': !cumpleMinuscula }">
+                                        </div>
+                                        <span class="text-sm"
+                                            :class="{ 'text-green-500': cumpleMinuscula, 'text-gray-600': !cumpleMinuscula }">
+                                            Al menos una minúscula (a-z)
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center mt-1">
+                                        <div class="h-3 w-3 rounded-full mr-2"
+                                            :class="{ 'bg-green-500': cumpleNumero, 'bg-gray-300': !cumpleNumero }">
+                                        </div>
+                                        <span class="text-sm"
+                                            :class="{ 'text-green-500': cumpleNumero, 'text-gray-600': !cumpleNumero }">
+                                            Al menos un número (0-9)
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center mt-1">
+                                        <div class="h-3 w-3 rounded-full mr-2"
+                                            :class="{ 'bg-green-500': cumpleSimbolo, 'bg-gray-300': !cumpleSimbolo }">
+                                        </div>
+                                        <span class="text-sm"
+                                            :class="{ 'text-green-500': cumpleSimbolo, 'text-gray-600': !cumpleSimbolo }">
+                                            Al menos un símbolo (@$!%*?&#)
+                                        </span>
+                                    </div>
+                                    <div v-if="contraNuevaError" class="text-red-500 text-xs mt-1">{{ contraNuevaError
+                                        }}</div>
                                 </div>
                                 <div class="col-span-6 sm:col-span-4 mt-2">
                                     <InputLabel for="password_confirmacion" value="Confirmar contraseña" />
