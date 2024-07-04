@@ -1160,4 +1160,62 @@ class PrincipalController extends Controller
         return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red", 'type' => 'error']);
     }
 
+    public function eliminarUsuario($idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = usuario::find($idUsuario);
+                $usuario->delete();
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario eliminado correctamente.", "color" => "green",'type' => 'success']);
+            } catch (Exception $e) {
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Error al eliminar al usuario, es necesario eliminar los datos de la persona que tiene asignado dicho usuario.", "color" => "red",'type' => 'error']);
+            }
+        }
+        return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red",'type' => 'error']);
+    }
+
+    public function restaurarUsuario($idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = Usuario::where("idUsuario", $idUsuario)->first();
+                $usuario->intentos = 10;
+                $usuario->fecha_Creacion = now();
+                $usuario->save();
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario restaurado correctamente: " . $usuario->usuario, "color" => "green",'type' => 'success']);
+            } catch (Exception $e) {
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Error al restaurar al usuario", "color" => "red",'type' => 'error']);
+            }
+        }
+        return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red",'type' => 'error']);
+    }
+
+    public function actualizarUsuario(Request $request, $idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuarios = usuario::find($idUsuario);
+                $request->validate([
+                    'nombre' => 'required',
+                    'apellidoP' => 'required',
+                    'apellidoM' => 'required',
+                    'usuario' => 'required',
+                    'contrasenia' => 'required',
+                ]);
+                $usuarios->nombre = $request->nombre;
+                $usuarios->apellidoP = $request->apellidoP;
+                $usuarios->apellidoM = $request->apellidoM;
+                $usuarios->usuario = $request->usuario;
+                $usuarios->contrasenia = $request->contrasenia;
+                $usuarios->password = bcrypt($request->contrasenia);
+
+                $usuarios->save();
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario actualizado correctamente "  . $usuarios->usuario, "color" => "green",'type' => 'success']);
+            } catch (Exception $e) {
+                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Error al actualizar el usuario", "color" => "red",'type' => 'error']);
+            }
+        }
+        return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red",'type' => 'error']);
+    }
+
 }

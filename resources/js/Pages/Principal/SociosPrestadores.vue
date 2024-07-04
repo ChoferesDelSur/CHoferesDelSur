@@ -110,7 +110,9 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-const form = useForm({});
+const form = useForm({
+    _method: 'DELETE',
+});
 
 const directivosSeleccionados = ref([]);
 
@@ -190,7 +192,7 @@ const eliminarDirectivos = () => {
             try {
                 const directivoE = directivosSeleccionados.value.map((directivo) => directivo.idDirectivo);
                 const $directivosIds = directivoE.join(',');
-                await form.delete(route('principal.eliminarDirectivo', $directivosIds));
+                await form.post(route('principal.eliminarDirectivo', $directivosIds));
                 directivosSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
                 if (directivosSeleccionados.value.length > 0) {

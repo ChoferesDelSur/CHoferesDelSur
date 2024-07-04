@@ -122,100 +122,109 @@ const update = async () => {
             <form @submit.prevent="update">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Modifique los datos según sea necesario y guarde los cambios.
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Modifique los datos según sea necesario y
+                        guarde los cambios.
                     </p>
                     <div class="flex flex-wrap">
-                    <div class="md:col-span-2">
-                        <div class="sm:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idOperador"
-                                class="block text-sm font-medium leading-6 text-gray-900">idOperador</label>
-                            <div class="mt-1">
-                                <input type="number" name="idOperador" v-model="form.idOperador"
-                                    placeholder="Ingrese id del operador" :id="'idOperador' + op"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <div class="md:col-span-2">
+                            <div class="sm:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
+                                <label for="idOperador"
+                                    class="block text-sm font-medium leading-6 text-gray-900">idOperador</label>
+                                <div class="mt-1">
+                                    <input type="number" name="idOperador" v-model="form.idOperador"
+                                        placeholder="Ingrese id del operador" :id="'idOperador' + op"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
+                                Paterno<span class="text-red-500">*</span></label>
+                            <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
+                                <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
+                                    placeholder="Ingrese el apellido paterno"
+                                    class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
+                            <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
+                                Materno<span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
+                                    placeholder="Ingrese el apellido materno"
+                                    class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres<span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
+                                    placeholder="Ingrese el nombre"
+                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                operador<span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
+                                    placeholder="Seleccione el tipo de operador"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione el tipo de operador</option>
+                                    <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador"
+                                        :value="tOperador.idTipoOperador">
+                                        {{ tOperador.tipOperador }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError
+                                }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado<span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="estado" :id="'estado' + op" v-model="form.estado"
+                                    placeholder="Seleccione el tipo de estado"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione el estado del operador</option>
+                                    <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
+                                        {{ est.estado }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
+                        </div>
+                        <p class="mt-2 text-sm leading-6 text-gray-600">A continuación, seleccione al socio/prestador
+                            para el que trabajará el operador que se está registrando.
+                        </p>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Jefe<span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
+                                    placeholder="Seleccione a un socio/prestador"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione a un socio/prestador</option>
+                                    <option v-for="jefe in directivo" :key="jefe.idDirectivo" :value="jefe.idDirectivo">
+                                        {{ jefe.nombre_completo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}
                             </div>
                         </div>
                     </div>
-                    <div class="md:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Paterno<span class="text-red-500">*</span></label>
-                        <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
-                            <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
-                                placeholder="Ingrese el apellido paterno"
-                                class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                        <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
-                        <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}</div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Materno<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
-                                placeholder="Ingrese el apellido materno"
-                                class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}</div>
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
-                                placeholder="Ingrese el nombre"
-                                class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
-                            operador<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
-                                placeholder="Seleccione el tipo de operador"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione el tipo de operador</option>
-                                <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador"
-                                    :value="tOperador.idTipoOperador">
-                                    {{ tOperador.tipOperador }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError }}
-                        </div>
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="estado" :id="'estado' + op" v-model="form.estado"
-                                placeholder="Seleccione el tipo de estado"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione el estado del operador</option>
-                                <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
-                                    {{ est.estado }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
-                    </div>
-                    <p class="mt-2 text-sm leading-6 text-gray-600">A continuación, seleccione al socio/prestador para el que trabajará el operador que se está registrando.
-                    </p>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Jefe<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
-                                placeholder="Seleccione a un socio/prestador"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione a un socio/prestador</option>
-                                <option v-for="jefe in directivo" :key="jefe.idDirectivo" :value="jefe.idDirectivo">
-                                    {{ jefe.nombre_completo }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}</div>
-                    </div>
-                </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"

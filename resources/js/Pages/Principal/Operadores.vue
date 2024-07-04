@@ -132,7 +132,9 @@ const maxWidth = 'xl';
 const closeable = true;
 const operadoresSeleccionados = ref([]);
 
-const form = useForm({});
+const form = useForm({
+    _method: 'DELETE',
+});
 
 var operadorE = ({});
 const abrirE = ($operadoress) => {
@@ -210,7 +212,7 @@ const eliminarOperadores = () => {
             try {
                 const operadorE = operadoresSeleccionados.value.map((operador) => operador.idOperador);
                 const $operadoresIds = operadorE.join(',');
-                await form.delete(route('principal.eliminarOperador', $operadoresIds));
+                await form.post(route('principal.eliminarOperador', $operadoresIds));
                 operadoresSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
                 if (operadoresSeleccionados.value.length > 0) {
@@ -319,11 +321,11 @@ const eliminarOperadores = () => {
             </div>
         </div>
         <formulario-operadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir operador'" :op="'1'" :modal="'modalCreate'" :operador="props.operador"
+            :title="'Añadir operador'" :modal="'modalCreate'" :operador="props.operador"
             :tipoOperador="props.tipoOperador" :estado="props.estado"
             :directivo="props.directivo"></formulario-operadores>
         <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar operador'" :op="'2'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
+            :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
             :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></FormularioActualizarOperadores>
     </PrincipalLayout>
 </template>

@@ -164,7 +164,6 @@ const togglePasswordVisibilityConfirmacion = () => {
                                     Para realizar el cambio de contraseña es necesario recordar la contraseña actual, en
                                     caso de haberlo olvidado, es necesario comunicarse con el administrador para su
                                     recuperación.
-                                    La nueva contraseña tiene que ser mayor a 8 digitos.
                                 </p>
                             </div>
                             <div class="col-span-4 m-2 md:grid md:grid-4">

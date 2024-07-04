@@ -56,8 +56,12 @@ Route::middleware([AdminMiddleware::class])->group(function () {
         Route::post('/principal/formarUnidades/trabajaDomingo', 'registrarTrabajanDomingo')->name('principal.trabDomingo');
     
         Route::get('/principal/reportes', 'reportes')->name('principal.reportes');
+
         Route::get('/principal/administrarUsuarios', 'adminUsuarios')->name('principal.administrarUsuarios');
         Route::post('/principal/usuarios','agregarUsuario')->name('principal.addUsuario');
+        Route::delete('/principal/usuarios/{idUsuario}', 'eliminarUsuario')->name('principal.eliminarUsuario');
+        Route::put('/principal/usuarios/restaurar-usuario/{idUsuario}', 'restaurarUsuario')->name('principal.restUsuario');
+        Route::put('/principal/usuarios/{idUsuario}/edit', 'actualizarUsuario')->name('principal.actualizarUsuario');
     });
 });
 

@@ -141,7 +141,9 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-const form = useForm({});
+const form = useForm({
+    _method: 'DELETE',
+});
 const unidadesSeleccionados = ref([]);
 
 var unidadE = ({});
@@ -228,7 +230,7 @@ const eliminarUnidades = () => {
             try {
                 const unidadE = unidadesSeleccionados.value.map((unidad) => unidad.idUnidad);
                 const $unidadesIds = unidadE.join(',');
-                await form.delete(route('principal.eliminarUnidad', $unidadesIds));
+                await form.post(route('principal.eliminarUnidad', $unidadesIds));
                 unidadesSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
                 if (unidadesSeleccionados.value.length > 0) {

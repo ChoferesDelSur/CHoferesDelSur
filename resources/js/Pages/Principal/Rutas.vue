@@ -93,7 +93,9 @@ const mostrarModalE = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
-const form = useForm({});
+const form = useForm({
+    _method: 'DELETE', // Método simulado para Laravel
+});
 const rutasSeleccionados = ref([]);
 var rutaE = ({});
 
@@ -173,7 +175,7 @@ const eliminarRutas = () => {
             try {
                 const rutaE = rutasSeleccionados.value.map((ruta) => ruta.idRuta);
                 const $rutasIds = rutaE.join(',');
-                await form.delete(route('principal.eliminarRuta', $rutasIds));
+                await form.post(route('principal.eliminarRuta', $rutasIds));
                 rutasSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
                 if (rutasSeleccionados.value.length > 0) {

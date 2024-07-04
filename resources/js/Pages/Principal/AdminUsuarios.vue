@@ -14,6 +14,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import FormularioUsuarios from '../../Components/Principal/FormularioUsuarios.vue';
+import FormularioActualizarUsuario from '../../Components/Principal/FormularioActualizarUsuario.vue';
 
 window.JSZip = jsZip;
 
@@ -37,13 +38,20 @@ const maxWidth = 'xl';
 const closeable = true;
 const usuariosSeleccionados = ref([]);
 
-const form = useForm({});
+const formEliminar = useForm({
+    _method: 'DELETE',
+});
+
+const formRestaurar = useForm({
+    _method: 'PUT',
+});
 
 const descripcionCrear = "Rellene todos los campos para poder registrar un nuevo usuario";
 const descripcionEditar = "Rellene todos los campos para poder actualizar la información de un usuario";
 
 var usuarioE = ({});
-const abrirE = ($usuarioss) => {
+const abrirUsuarios = ($usuarioss) => {
+    usuarioE = $usuarioss;
     mostrarModalE.value = true;
 }
 
@@ -64,7 +72,7 @@ const toggleUsuarioSelection = (user) => {
         usuariosSeleccionados.value.push(user);
     }
     // Llamado del botón de eliminar para cambiar su estado deshabilitado
-    const botonEliminar = document.getElementById("eliminarABtn");
+    const botonEliminar = document.getElementById("eliminar-button");
     if (usuariosSeleccionados.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
     } else {
@@ -84,39 +92,10 @@ const eliminarUsuario = (idUsuario, user) => {
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            form.delete(route('admin.eliminarUsuarios', idUsuario));
+            formEliminar.post(route('principal.eliminarUsuario', idUsuario));
         }
 
     })
-};
-
-const eliminarUsuarios = () => {
-    const swal = Swal.mixin({
-        buttonsStyling: true
-    })
-
-    swal.fire({
-        title: '¿Estas seguro que deseas eliminar los datos de los usuarios seleccionados?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const usuariosS = selectedUsuarios.value.map((user) => user.idUsuario);
-                const $usuariosIds = usuariosS.join(',');
-                console.log(usuariosS);
-                await form.delete(route('admin.elimUsuarios', $usuariosIds));
-
-                // Limpia las materias seleccionadas después de la eliminación
-                selectedUsuarios.value = [];
-            } catch (error) {
-                console.log('El error se origina aquí');
-                console.log(error);
-            }
-        }
-    });
 };
 
 const restaurarUsuario = (user) => {
@@ -134,7 +113,7 @@ const restaurarUsuario = (user) => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                await form.put(route('admin.restUsuario', idUsuario));
+                await formRestaurar.post(route('principal.restUsuario', idUsuario));
             } catch (error) {
                 console.log('El error se origina aquí');
                 console.log(error);
@@ -384,7 +363,11 @@ const optionsUsuario = {
             </div>
         </div>
         <FormularioUsuarios :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir usuario'" :op="'1'" :modal="'modalCreate'" :descripcion="descripcionCrear"
+            :title="'Añadir usuario'" :modal="'modalCreate'" :descripcion="descripcionCrear"
             :usuarios="props.usuarios" :tipoUsuario="props.tipoUsuario"></FormularioUsuarios>
+        <FormularioActualizarUsuario :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalE" :title="'Editar usuario'" :modal="'modalEdit'"
+            :descripcion="descripcionEditar" :usuarios="usuarioE" :tipoUsuario="props.tipoUsuario">
+        </FormularioActualizarUsuario>
     </PrincipalLayout>
 </template>
