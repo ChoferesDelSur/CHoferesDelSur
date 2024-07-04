@@ -12,8 +12,9 @@ import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts'; 
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import Mensaje from '../../Components/Mensaje.vue';
+import FormularioActualizarRuta from '../../Components/Principal/FormularioActualizarRuta.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -27,7 +28,7 @@ DataTable.use(DataTablesLib);
 DataTable.use(Select);
 const props = defineProps({
     ruta: { type: Object },
-    usuario: { type: Object},
+    usuario: { type: Object },
 });
 
 const botonesPersonalizados = [
@@ -210,7 +211,7 @@ const eliminarRutas = () => {
             <h2 class="font-bold text-center text-xl pt-0">Rutas</h2>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-3"></div>
 
-            <Mensaje/>
+            <Mensaje />
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -256,8 +257,9 @@ const eliminarRutas = () => {
         </div>
         <FormularioRuta :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir ruta'" :op="'1'" :modal="'modalCreate'" :ruta="props.ruta"></FormularioRuta>
-        <FormularioRuta :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar ruta'" :op="'2'" :modal="'modalEdit'" :ruta="rutaE"></FormularioRuta>
+        <FormularioActualizarRuta :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalE" :title="'Editar ruta'" :op="'2'" :modal="'modalEdit'" :ruta="rutaE">
+        </FormularioActualizarRuta>
     </PrincipalLayout>
 </template>
 <style>

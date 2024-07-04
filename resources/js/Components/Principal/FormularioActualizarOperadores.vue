@@ -41,6 +41,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
+    _method: 'PUT', // Método simulado para Laravel
     idOperador: props.operador.idOperador,
     nombre: props.operador.nombre,
     apellidoP: props.operador.apellidoP,
@@ -88,12 +89,11 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
-const save = async () => {
+const update = async () => {
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
-    tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Seleccione el tipo de operador';
-    estadoError.value = validateSelect(form.estado) ? '' : 'Seleccione el estado';
+    tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Selecciones el tipo de operador';
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
 
     if (
@@ -101,7 +101,8 @@ const save = async () => {
     ) {
         return;
     }
-    form.post(route('principal.addOperador'), {
+    var idOperador = document.getElementById('idOperador2').value;
+    form.post(route('principal.actualizarOperador', idOperador), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -110,18 +111,18 @@ const save = async () => {
             tipoOperadorError.value = '';
             directivoError.value = '';
         }
-    })
+    });
 }
+
 </script>
 
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-            <form @submit.prevent="save">
+            <form @submit.prevent="update">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar a un
-                        nuevo operador. Los campos con <span class="text-red-500">*</span> son obligatorios.
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Modifique los datos según sea necesario y guarde los cambios.
                     </p>
                     <div class="flex flex-wrap">
                     <div class="md:col-span-2">

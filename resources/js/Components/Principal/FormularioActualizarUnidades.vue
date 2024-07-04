@@ -21,6 +21,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    operador: {
+        type: Object,
+        default: () => ({}),
+    },
     operadoresDisp: {
         type: Object,
         default: () => ({}),
@@ -41,11 +45,12 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
+    _method: 'PUT', // Método simulado para Laravel
     idUnidad: props.unidad.idUnidad,
     numeroUnidad: props.unidad.numeroUnidad,
     ruta: props.unidad.idRuta,
     operador: props.unidad.idOperador,
-    directivo: props.directivo.idDirectivo,
+    directivo: props.unidad.idDirectivo,
 });
 
 watch(() => props.unidad, async (newVal) => {
@@ -82,37 +87,43 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
-const save = async () => {
+const update = async () => {
     numeroUnidadError.value = validateStringNotEmpty(form.numeroUnidad) ? '' : 'Ingrese el número de la unidad';
     rutaError.value = validateSelect(form.ruta) ? '' : 'Selecciones la ruta';
     /* operadorError.value = validateSelect(form.operador) ? '' : 'Seleccione el operador'; */
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione el dueño de la unidad';
 
     if (
-        numeroUnidadError.value || rutaError.value || /* operadorError.value || */ directivoError.value
+        numeroUnidadError.value || rutaError.value /* || operadorError.value */ || directivoError.value
     ) {
         return;
     }
-    form.post(route('principal.addUnidad'), {
+
+    var idUnidad = document.getElementById('idUnidad2').value;
+    form.post(route('principal.actualizarUnidad', idUnidad), {
         onSuccess: () => {
             close()
             numeroUnidadError.value = '';
             rutaError.value = '';
-            /* operadorError.value = ''; */
+            /* operadorError = ''; */
             directivoError.value = '';
         }
-    })
+    });
 }
+
+const getOperadorNombre = (idOperador) => {
+    const operador = props.operador.find(op => op.idOperador === idOperador);
+    return operador ? operador.nombre_completo : 'Operador no encontrado';
+};
 </script>
 
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-            <form @submit.prevent="save">
+            <form @submit.prevent="update">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar una
-                        unidad. Los campos con <span class="text-red-500">*</span> son obligatorios
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Modifique los datos según sea necesario y guarde los cambios.
                     </p>
                     <div class="flex flex-wrap -mx-4">
                         <div class="sm:col-span-2">
@@ -157,20 +168,12 @@ const save = async () => {
                             </div>
                         </div>
                         <div class="sm:col-span-2 px-4">
-                            <label for="operador"
-                                class="block text-sm font-medium leading-6 text-gray-900">Operador</label>
+                            <label for="operador" class="block text-sm font-medium leading-6 text-gray-900">Operador</label>
                             <div class="mt-2">
-                                <select name="operador" :id="'operador' + op" v-model="form.operador"
-                                    placeholder="Seleccione al operador"
-                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Seleccione al operador para esta unidad</option>
-                                    <option v-for="chofer in operadoresDisp" :key="chofer.idOperador"
-                                        :value="chofer.idOperador">
-                                        {{ chofer.nombre_completo }}
-                                    </option>
-                                </select>
+                                <p class="block rounded-md py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6">
+                                    {{ getOperadorNombre(form.operador) }}
+                                </p>
                             </div>
-                            <!-- <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div> -->
                         </div>
                         <div class="sm:col-span-2 px-4">
                             <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Dueño de la

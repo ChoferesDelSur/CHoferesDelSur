@@ -30,6 +30,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
+    _method: 'PUT', // Método simulado para Laravel
     idRuta: props.ruta.idRuta,
     nombreRuta: props.ruta.nombreRuta,
 });
@@ -54,30 +55,35 @@ const validateStringNotEmpty = (value) => {
     return typeof value === 'string' && value.trim() !== '';
 }
 
-const save = async () => {
-    nombreRutaError.value = validateStringNotEmpty(form.nombreRuta) ? '' : 'Ingrese el nombre de la ruta';
-
+const update = async () => {
+    nombreRutaError.value = validateStringNotEmpty(form.nombreRuta) ? '' : 'Ingrese el número de la ruta';
     if (
         nombreRutaError.value
     ) {
         return;
     }
-    form.post(route('principal.addRuta'), {
+    var idRuta = document.getElementById('idRuta2').value;
+    form.post(route('principal.actualizarRuta', idRuta), {
         onSuccess: () => {
             close()
             nombreRutaError.value = '';
+
+        },
+        onError: (error) => {
+            console.error("Error al actualizar la ruta:", error);
+            // Manejar el error aquí, mostrar un mensaje al usuario, etc.
         }
-    })
+    });
 }
 </script>
 
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-            <form @submit.prevent="save">
+            <form @submit.prevent="update">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el campo para registrar una nueva ruta
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Modifique el campo y guarde los cambios.
                     </p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->
@@ -114,5 +120,4 @@ const save = async () => {
             </form>
         </div>
     </Modal>
-
 </template>

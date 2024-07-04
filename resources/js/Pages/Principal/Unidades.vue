@@ -16,6 +16,7 @@ import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vu
 import FormularioAsignarOperador from '../../Components/Principal/FormularioAsignarOperador.vue';
 import Mensaje from '../../Components/Mensaje.vue';
 import FormularioQuitarOperador from '../../Components/Principal/FormularioQuitarOperador.vue';
+import FormularioActualizarUnidades from '../../Components/Principal/FormularioActualizarUnidades.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -37,7 +38,7 @@ const props = defineProps({
     operadoresDisp: { type: Object },
     unidadesDisp: { type: Object },
     unidadesConOperador: { type: Object },
-    usuario: { type: Object},
+    usuario: { type: Object },
 });
 
 const botonesPersonalizados = [
@@ -66,7 +67,7 @@ const botonesPersonalizados = [
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         orientation: 'landscape', // Configurar la orientación horizontal
         exportOptions: {
-            columns: [2,3,4,5,6]
+            columns: [2, 3, 4, 5, 6]
         }
     },
     {
@@ -75,8 +76,8 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-        columns: [2,3,4,5,6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
-    }
+            columns: [2, 3, 4, 5, 6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+        }
     }
 ];
 
@@ -266,7 +267,7 @@ const eliminarUnidades = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-3"></div>
 
-            <Mensaje/>
+            <Mensaje />
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -298,7 +299,7 @@ const eliminarUnidades = () => {
                             infoFiltered: '(filtrado de un total de _MAX_ registros)',
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
-                        },  buttons: [botonesPersonalizados],
+                        }, buttons: [botonesPersonalizados],
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
@@ -336,16 +337,18 @@ const eliminarUnidades = () => {
         <formulario-unidades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :unidad="props.unidad" :ruta="props.ruta"
             :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
-        <formulario-unidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE" :ruta="props.ruta"
-            :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
+        <FormularioActualizarUnidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalE" :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE"
+            :ruta="props.ruta" :operador="props.operador" :operadoresDisp="props.operadoresDisp" :directivo="props.directivo">
+        </FormularioActualizarUnidades>
         <FormularioAsignarOperador :show="mostrarModalAsigOper" :max-width="maxWidth" :closeable="closeable"
             @close="cerrarModalAsigOper" :title="'Asignar operador'" :op="'1'" :modal="'modalCreate'"
             :unidad="props.unidad" :unidadesDisp="props.unidadesDisp" :operadoresDisp="props.operadoresDisp">
         </FormularioAsignarOperador>
         <FormularioQuitarOperador :show="mostrarModalQuitarOper" :max-width="maxWidth" :closeable="closeable"
             @close="cerrarModalQuitargOper" :title="'Quitar operador'" :op="'1'" :modal="'modalCreate'"
-            :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :operadoresDisp="props.operadoresDisp">
+            :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador"
+            :operadoresDisp="props.operadoresDisp">
         </FormularioQuitarOperador>
     </PrincipalLayout>
 </template>

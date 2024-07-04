@@ -106,6 +106,6 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::controller(ServicioController::class)->group(function(){
         Route::get('/servicio', 'inicio')->name('servicio.inicio');
         Route::get('/servicio/perfil', 'perfil')->name('servicio.perfil');
-        Route::post('/servicio/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia');
+        Route::put('/servicio/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia');
     });
 });

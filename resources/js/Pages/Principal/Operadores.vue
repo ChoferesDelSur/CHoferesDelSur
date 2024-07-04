@@ -14,6 +14,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import FormularioOperadores from '../../Components/Principal/FormularioOperadores.vue';
 import Mensaje from '../../Components/Mensaje.vue';
+import FormularioActualizarOperadores from '../../Components/Principal/FormularioActualizarOperadores.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -321,9 +322,9 @@ const eliminarOperadores = () => {
             :title="'Añadir operador'" :op="'1'" :modal="'modalCreate'" :operador="props.operador"
             :tipoOperador="props.tipoOperador" :estado="props.estado"
             :directivo="props.directivo"></formulario-operadores>
-        <formulario-operadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+        <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar operador'" :op="'2'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
-            :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></formulario-operadores>
+            :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></FormularioActualizarOperadores>
     </PrincipalLayout>
 </template>
 

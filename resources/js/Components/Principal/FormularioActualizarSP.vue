@@ -106,8 +106,7 @@ const update = async () => {
             <form @submit.prevent="update">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar a un
-                        nuevo socio o prestador. Los campos con <span class="text-red-500">*</span> son obligatorios.
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Modifique los datos según sea necesario y guarde los cambios.
                     </p>
                     <input v-if="op !== '1'" type="hidden" name="_method" value="PUT">
                     <div class="flex flex-wrap -mx-4">

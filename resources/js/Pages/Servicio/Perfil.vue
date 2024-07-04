@@ -13,6 +13,7 @@ const props = defineProps({
 /* const csrfToken = ref(props.value.csrf_token); */
 
 const form = useForm({
+    _method: 'PUT', // Método simulado para Laravel
     password_actual: '',
     password_nueva: '',
     password_confirmacion: '',
@@ -50,7 +51,6 @@ const cumpleNumero = computed(() => /[0-9]/.test(form.password_nueva));
 const cumpleSimbolo = computed(() => /[@$!%*?&#]/.test(form.password_nueva));
 
 const update = () => {
-    console.log("Entró en update");
     contraActualError.value = validateStringNotEmpty(form.password_actual) ? '' : 'Ingrese la contraseña actual';
     contraNuevaError.value = validateStringNotEmpty(form.password_nueva) ? '' : 'Ingrese la nueva contraseña';
     contraConfirmacionError.value = validateStringNotEmpty(form.password_confirmacion) ? '' : 'Ingrese nuevamente la contraseña creada';
@@ -72,10 +72,8 @@ const update = () => {
     if (contraActualError.value || contraNuevaError.value || contraConfirmacionError.value) {
         return;
     }
-    console.log("Ya estoy por entrar en axios");
     form.post(route('servicio.actualizarContrasenia', form.idUsuario), {
         onSuccess: () => {
-            console.log("Estoy despues de onSuccess");
             form.password_actual = '';
             form.password_nueva = '';
             form.password_confirmacion = '';
