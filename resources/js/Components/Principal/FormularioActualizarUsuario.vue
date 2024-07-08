@@ -104,24 +104,30 @@ const cumpleNumero = computed(() => /[0-9]/.test(form.contrasenia));
 const cumpleSimbolo = computed(() => /[@$!%*?&#]/.test(form.contrasenia));
 
 const update = () => {
-
+    // Validaciones
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido materno';
     tipoUsuarioError.value = validateSelect(form.tipoUsuario) ? '' : 'Seleccione el tipo de usuario';
-    contraseniaError.value = validateStringNotEmpty(form.contrasenia) ? '' : 'Ingrese la contrasenia';
+    contraseniaError.value = validateStringNotEmpty(form.contrasenia) ? '' : 'Ingrese la contraseña';
 
-    if (
-        nombreError.value || apellidoPError.value || apellidoMError.value || tipoUsuarioError.value || contraseniaError
-    ) {
-
+    // Verificación de errores
+    if (nombreError.value || apellidoPError.value || apellidoMError.value || tipoUsuarioError.value || contraseniaError.value) {
         return;
     }
 
-    var idUsuario = document.getElementById('idUsuario2').value;
-    form.post(route('principal.actualizarUsuario', idUsuario), {
+    // Construcción de los datos para enviar
+    const data = {};
+    if (form.nombre) data.nombre = form.nombre;
+    if (form.apellidoP) data.apellidoP = form.apellidoP;
+    if (form.apellidoM) data.apellidoM = form.apellidoM;
+    if (form.tipoUsuario) data.tipoUsuario = form.tipoUsuario;
+    if (form.contrasenia) data.contrasenia = form.contrasenia;
+
+    form.post(route('principal.actualizarUsuario', form.idUsuario), {
+        data: data,
         onSuccess: () => {
-            close()
+            close();
             nombreError.value = '';
             apellidoPError.value = '';
             apellidoMError.value = '';

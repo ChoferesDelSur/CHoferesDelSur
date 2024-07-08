@@ -1191,31 +1191,60 @@ class PrincipalController extends Controller
     }
 
     public function actualizarUsuario(Request $request, $idUsuario)
-    {
-        if (Auth::check()) {
-            try {
-                $usuarios = usuario::find($idUsuario);
-                $request->validate([
-                    'nombre' => 'required',
-                    'apellidoP' => 'required',
-                    'apellidoM' => 'required',
-                    'usuario' => 'required',
-                    'contrasenia' => 'required',
-                ]);
-                $usuarios->nombre = $request->nombre;
-                $usuarios->apellidoP = $request->apellidoP;
-                $usuarios->apellidoM = $request->apellidoM;
-                $usuarios->usuario = $request->usuario;
-                $usuarios->contrasenia = $request->contrasenia;
-                $usuarios->password = bcrypt($request->contrasenia);
+{
+    if (Auth::check()) {
+        try {
+            $usuario = usuario::find($idUsuario);
 
-                $usuarios->save();
-                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Usuario actualizado correctamente "  . $usuarios->usuario, "color" => "green",'type' => 'success']);
-            } catch (Exception $e) {
-                return redirect()->route('principal.administrarUsuarios')->With(["message" => "Error al actualizar el usuario", "color" => "red",'type' => 'error']);
+            // Validar solo los campos que están presentes en la solicitud
+            $request->validate([
+                'nombre' => 'sometimes|required',
+                'apellidoP' => 'sometimes|required',
+                'apellidoM' => 'sometimes|required',
+                'usuario' => 'sometimes|required',
+                'contrasenia' => 'sometimes|required',
+            ]);
+
+            // Actualizar solo los campos proporcionados en la solicitud
+            if ($request->has('nombre')) {
+                $usuario->nombre = $request->nombre;
             }
+            if ($request->has('apellidoP')) {
+                $usuario->apellidoP = $request->apellidoP;
+            }
+            if ($request->has('apellidoM')) {
+                $usuario->apellidoM = $request->apellidoM;
+            }
+            if ($request->has('usuario')) {
+                $usuario->usuario = $request->usuario;
+            }
+            if ($request->has('contrasenia')) {
+                $usuario->contrasenia = $request->contrasenia;
+                $usuario->password = bcrypt($request->contrasenia);
+            }
+
+            $usuario->save();
+
+            return redirect()->route('principal.administrarUsuarios')->with([
+                "message" => "Usuario actualizado correctamente " . $usuario->usuario,
+                "color" => "green",
+                'type' => 'success'
+            ]);
+        } catch (Exception $e) {
+            return redirect()->route('principal.administrarUsuarios')->with([
+                "message" => "Error al actualizar el usuario",
+                "color" => "red",
+                'type' => 'error'
+            ]);
         }
-        return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red",'type' => 'error']);
     }
+
+    return redirect()->route('principal.inicio')->with([
+        "message" => "No tienes acceso a esta función",
+        "color" => "red",
+        'type' => 'error'
+    ]);
+}
+
 
 }

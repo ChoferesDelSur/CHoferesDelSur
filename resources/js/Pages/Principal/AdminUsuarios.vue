@@ -371,3 +371,15 @@ const optionsUsuario = {
         </FormularioActualizarUsuario>
     </PrincipalLayout>
 </template>
+
+<style>
+.password-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mostrar-password-button {
+    margin-left: auto;
+}
+</style>
