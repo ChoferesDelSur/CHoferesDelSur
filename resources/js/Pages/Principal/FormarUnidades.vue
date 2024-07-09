@@ -685,7 +685,7 @@ const cerrarModalE = () => {
                 Ruta
               </th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Trab. DomINGO
+                Trab. DOMINGO
               </th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Unidad

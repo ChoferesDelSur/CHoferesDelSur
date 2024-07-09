@@ -104,8 +104,8 @@ const update = async () => {
         onSuccess: () => {
             close()
             console.log("idUnidad Editando:" + idUnidad);
-            unidadError = '';
-            operadorError = '';
+            unidadError.value = '';
+            operadorError.value = '';
         }
     });
 }

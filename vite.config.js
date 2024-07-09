@@ -8,7 +8,14 @@ export default defineConfig({
         host: '192.168.0.30', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
         // cuarto = '192.168.1.94'
         //trabajo = 192.168.0.55
-      }, 
+    },
+    resolve: {
+        alias: {
+            '@inertiajs/vue3': '/node_modules/@inertiajs/vue3/dist/index.mjs',
+            'pdfmake/build/pdfmake': 'pdfmake/build/pdfmake.js',
+            'pdfmake/build/vfs_fonts': 'pdfmake/build/vfs_fonts.js',
+        },
+    },
     plugins: [
         laravel({
             input: 'resources/js/app.js',

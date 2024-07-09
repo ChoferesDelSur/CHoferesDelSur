@@ -108,8 +108,20 @@ Route::controller(InfoController::class)->group(
 
 Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::controller(ServicioController::class)->group(function(){
-        Route::get('/servicio', 'inicio')->name('servicio.inicio');
-        Route::get('/servicio/perfil', 'perfil')->name('servicio.perfil');
-        Route::put('/servicio/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia');
+    Route::get('/servicio', 'inicio')->name('servicio.inicio');
+    Route::get('/servicio/perfil', 'perfil')->name('servicio.perfil');
+    Route::put('/servicio/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia');
+
+    Route::get('/servicio/rutas', 'rutas')->name('servicio.rutas');
+    Route::post('/servicio/rutas', 'addRuta')->name('servicio.addRuta');
+    Route::put('/servicio/rutas/{idRuta}/edit','actualizarRuta')->name('servicio.actualizarRuta');
+    Route::delete('/servicio/rutas/{rutasIds}', 'eliminarRuta')->name('servicio.eliminarRuta');
+
+    Route::get('/servicio/sociosPrestadores', 'sociosPrestadores')->name('servicio.sociosPrestadores');
+    Route::post('/servicio/sociosPrestadores', 'addDirectivo')->name('servicio.addDirectivo');
+    Route::put('/servicio/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('servicio.actualizarDirectivo');
+    Route::delete('/servicio/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('servicio.eliminarDirectivo');
+
     });
+
 });
