@@ -1,5 +1,4 @@
 <script setup>
-import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -12,11 +11,12 @@ import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
-import FormularioAsignarOperador from '../../Components/Principal/FormularioAsignarOperador.vue';
 import Mensaje from '../../Components/Mensaje.vue';
-import FormularioQuitarOperador from '../../Components/Principal/FormularioQuitarOperador.vue';
-import FormularioActualizarUnidades from '../../Components/Principal/FormularioActualizarUnidades.vue';
+import ServicioLayout from '../../Layouts/ServicioLayout.vue';
+import FormularioUnidades from '../../Components/Servicio/FormularioUnidades.vue';
+import FormularioActualizarUnidades from '../../Components/Servicio/FormularioActualizarUnidades.vue';
+import FormularioAsignarOperador from '../../Components/Servicio/FormularioAsignarOperador.vue';
+import FormularioQuitarOperador from '../../Components/Servicio/FormularioQuitarOperador.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -230,7 +230,7 @@ const eliminarUnidades = () => {
             try {
                 const unidadE = unidadesSeleccionados.value.map((unidad) => unidad.idUnidad);
                 const $unidadesIds = unidadE.join(',');
-                await form.post(route('principal.eliminarUnidad', $unidadesIds));
+                await form.post(route('servicio.eliminarUnidad', $unidadesIds));
                 unidadesSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
                 if (unidadesSeleccionados.value.length > 0) {
@@ -263,7 +263,7 @@ const eliminarUnidades = () => {
 </script>
 
 <template>
-    <PrincipalLayout title="Formar Unidades" :usuario="props.usuario">
+    <ServicioLayout title="Formar Unidades" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Unidades</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -336,9 +336,9 @@ const eliminarUnidades = () => {
                 </DataTable>
             </div>
         </div>
-        <formulario-unidades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+        <FormularioUnidades :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir unidad'" :op="'1'" :modal="'modalCreate'" :unidad="props.unidad" :ruta="props.ruta"
-            :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></formulario-unidades>
+            :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></FormularioUnidades>
         <FormularioActualizarUnidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
             @close="cerrarModalE" :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE"
             :ruta="props.ruta" :operador="props.operador" :operadoresDisp="props.operadoresDisp" :directivo="props.directivo">
@@ -352,7 +352,7 @@ const eliminarUnidades = () => {
             :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador"
             :operadoresDisp="props.operadoresDisp">
         </FormularioQuitarOperador>
-    </PrincipalLayout>
+    </ServicioLayout>
 </template>
 
 <style>

@@ -122,6 +122,20 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::put('/servicio/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('servicio.actualizarDirectivo');
     Route::delete('/servicio/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('servicio.eliminarDirectivo');
 
+    Route::get('/servicio/operadores', 'operadores')->name('servicio.operadores');
+    Route::post('/servicio/operadores', 'addOperador')->name('servicio.addOperador');
+    Route::put('/servicio/operadores/{idOperador}/edit', 'actualizarOperador')->name('servicio.actualizarOperador');
+    Route::delete('/servicio/operadores/{operadoresIds}', 'eliminarOperador')->name('servicio.eliminarOperador');
+
+    Route::get('/servicio/unidades', 'unidades')->name('servicio.unidades');
+    Route::post('/servicio/unidades', 'addUnidad')->name('servicio.addUnidad');
+    Route::put('/servicio/unidades/{idUnidad}/edit', 'actualizarUnidad')->name('servicio.actualizarUnidad');
+    Route::delete('/servicio/unidades/{unidadesIds}', 'eliminarUnidad')->name('servicio.eliminarUnidad');
+    Route::post('/servicio/unidades/asignarOper', 'asignarOperador')->name('servicio.asignarOperador');
+    Route::post('/servicio/unidades/quitarOper', 'quitarOperador')->name('servicio.quitarOperador');
+
+    Route::get('/servicio/reportes', 'reportes')->name('servicio.reportes');
+
     });
 
 });

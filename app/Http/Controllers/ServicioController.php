@@ -269,4 +269,291 @@ class ServicioController extends Controller
             return redirect()->route('servicio.sociosPrestadores')->with(['message' => "No se pudo eliminar al directivo", "color" => "red"]);
         }
     }
+
+    public function operadores(){
+        $operador = operador::all(); 
+        $tipoOperador = tipooperador::all();
+        $estado = estado::all();
+        $directivo = directivo::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('Servicio/Operadores',[
+            'usuario' => $usuario,
+            'operador' => $operador,
+            'tipoOperador' => $tipoOperador,
+            'estado' => $estado,
+            'directivo' => $directivo,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
+    public function addOperador(Request $request){
+        try{
+            $request->validate([
+                'nombre'=> 'required',
+                'apellidoP'=> 'required',
+                'apellidoM' => 'required',
+                'tipoOperador' => 'required',
+                'estado' => 'required',
+                'directivo' => 'required',
+            ]);
+            // Verificar si el operador ya existe
+            $existingOperador = Operador::where('nombre', $request->nombre)
+            ->where('apellidoP', $request->apellidoP)
+            ->where('apellidoM', $request->apellidoM)
+            ->first();
+
+            if($existingOperador){
+            // Operador ya existe, puedes devolver una respuesta indicando el error
+            return redirect()->route('servicio.operadores')->with(['message' => "El operador ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, "color" => "yellow", 'type' => 'info']);
+            }
+    
+            $operador = new operador();
+            $operador->nombre = $request->nombre;
+            $operador->apellidoP = $request->apellidoP;
+            $operador->apellidoM = $request->apellidoM;
+            $operador->idTipoOperador = $request->tipoOperador;
+            $operador->idEstado = $request->estado;
+            $operador->idDirectivo = $request->directivo;
+
+            $nombreCompleto = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
+            $operador->nombre_completo = $nombreCompleto;
+
+            $operador->save();
+            return redirect()->route('servicio.operadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
+        }catch(Exception $e){
+            return redirect()->route('servicio.operadores')->with(['message' => "Error al agregar al operador", "color" => "red", 'type' => 'error']);
+        }
+    }
+
+    public function actualizarOperador(Request $request, $idOperador)
+    {
+        try{
+            $request->validate([
+                'nombre'=> 'required',
+                'apellidoP'=> 'required',
+                'apellidoM' => 'required',
+                'tipoOperador' => 'required',
+                'estado' => 'required',
+                'directivo' => 'required',
+            ]);
+            $operador = operador::find($idOperador);
+            $operador->nombre = $request->nombre;
+            $operador->apellidoP = $request->apellidoP;
+            $operador->apellidoM = $request->apellidoM;
+            $operador->idTipoOperador = $request->tipoOperador;
+            $operador->idEstado = $request->estado;
+            $operador->idDirectivo = $request->directivo;
+
+            $nombreCompleto = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
+            $operador->nombre_completo = $nombreCompleto;
+            
+            $operador->save();
+            return redirect()->route('servicio.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('servicio.operadores')->with(['message' => "El operador no se actualizó correctamente: " . $requests->nombre, "color" => "reed"]);
+        }
+    }
+
+    public function eliminarOperador($operadoresIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $operadoresIdsArray = explode(',', $operadoresIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $operadoresIdsArray = array_map('intval', $operadoresIdsArray);
+
+            // Elimina las materias
+            operador::whereIn('idOperador', $operadoresIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('servicio.operadores')->with(['message' => "Operador eliminado correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('servicio.operadores')->with(['message' => "No se pudo eliminar al operador", "color" => "red"]);
+        }
+    }
+
+    public function unidades(){
+        $unidad = unidad::all();
+        $operador = operador::all(); 
+        $directivo = directivo::all();
+        
+        // Obtener los operadores disponibles
+        $operadoresDisp = operador::where('idEstado', 1) // Filtrar por estado "Alta"
+                                   ->whereDoesntHave('unidad') // Verificar que no estén relacionados con ninguna unidad
+                                   ->get();
+        
+        // Obtener las unidades disponibles (sin operador asignado)
+        $unidadesDisp = unidad::whereNull('idOperador')->get();
+
+        // Obtener las unidades que están relacionadas con algún operador
+        $unidadesConOperador = unidad::whereNotNull('idOperador')->get();
+        
+        $ruta = ruta::all();
+        $usuario = $this->obtenerInfoUsuario();
+        
+        return Inertia::render('Servicio/Unidades', [
+            'usuario' => $usuario,
+            'unidad' => $unidad,
+            'operador' => $operador,
+            'operadoresDisp' => $operadoresDisp,
+            'unidadesDisp' => $unidadesDisp, // Pasar las unidades disponibles a la vista
+            'unidadesConOperador' => $unidadesConOperador, // Pasar las unidades con operador a la vista
+            'ruta' => $ruta,
+            'directivo' => $directivo,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+    
+
+    public function addUnidad(Request $request){
+        try{
+            $request->validate([
+                'numeroUnidad'=> 'required',
+                'ruta' => 'required',
+                'directivo' => 'required',
+            ]);
+    
+            // Verificar si la unidad ya existe
+            $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
+                ->where('idRuta', $request->ruta)
+                ->where('idDirectivo', $request->directivo)
+                ->first();
+
+        // Obtener el nombre completo del directivo y el nombre de la ruta
+        $nombredirectivo = directivo::find($request->directivo)->nombre_completo;
+        $nombreruta = ruta::find($request->ruta)->nombreRuta;
+    
+            if($existingUnidad){
+                // Unidad ya existe, puedes devolver una respuesta indicando el error
+                return redirect()->route('servicio.unidades')->with(['message' => "La unidad ya está registrada: " .$request->numeroUnidad ." - " .$nombreruta ." - " .$nombredirectivo, "color" => "yellow", 'type' => 'info']);
+            }
+
+            $existingNumero = unidad::where('numeroUnidad', $request->numeroUnidad)
+            ->first();
+
+        if($existingNumero){
+            // Unidad ya existe con un número igual pero diferentes ruta y directivo
+            return redirect()->route('servicio.unidades')->with(['message' => "Ya existe una unidad con el número proporcionado, pero con una ruta y directivo diferente: " .$request->numeroUnidad, "color" => "yellow", 'type' => 'info']);
+        }
+        
+            $unidad = new unidad();
+            $unidad->numeroUnidad = $request->numeroUnidad;
+            $unidad->idRuta = $request->ruta;
+            $unidad->idDirectivo = $request->directivo;
+    
+            // Verifica si se proporcionó un operador antes de asignarlo a la unidad
+            if ($request->has('operador')) {
+                $unidad->idOperador = $request->operador;
+            }
+            
+            $unidad->save();
+    
+            // Ahora, registra la misma unidad en la tabla "formacionUnidades"
+            /* $formacionUnidad = new formacionunidades();
+            $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
+            $formacionUnidad->save(); */
+            
+            return redirect()->route('servicio.unidades')->with(['message' => "Unidad agregada correctamente: " . $request->numeroUnidad, "color" => "green", 'type' => 'success']);
+        } catch(Exception $e){
+            return redirect()->route('servicio.unidades')->with(['message' => "Error al agregar la unidad " .$request->numeroUnidad, "color" => "red", 'type' => 'error']);
+        }
+    }
+
+    public function actualizarUnidad(Request $request, $idUnidad)
+    {
+        try{
+            $request->validate([
+                'numeroUnidad'=> 'required',
+                'ruta' => 'required',
+                'operador' => 'required',
+            ]);
+            $unidad = unidad::find($idUnidad);
+            $unidad->numeroUnidad = $request -> numeroUnidad;
+            $unidad->idOperador = $request->operador;
+            $unidad->idRuta = $request->ruta;
+            $unidad->save();
+
+            return redirect()->route('servicio.unidades')->with(['message' => "Unidad actualizado correctamente: " . $request->numeroUnidad, "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('servicio.unidades')->with(['message' => "La unidad no se actualizó correctamente: " . $requests->numeroUnidad, "color" => "reed"]);
+        }
+    }
+
+    public function eliminarUnidad($unidadesIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $unidadesIdsArray = explode(',', $unidadesIds);
+
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $unidadesIdsArray = array_map('intval', $unidadesIdsArray);
+
+            // Elimina las materias
+            unidad::whereIn('idUnidad', $unidadesIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('servicio.unidades')->with(['message' => "Unidad eliminado correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('servicio.unidades')->with(['message' => "No se pudo eliminar la unidad", "color" => "red"]);
+        }
+    }
+
+    public function asignarOperador(Request $request)
+    {
+        // Obtener los IDs de la unidad y el operador del request
+        $unidadId = $request->input('unidad');
+        $operadorId = $request->input('operador');
+        
+        // Buscar la unidad y el operador en la base de datos
+        $unidad = Unidad::findOrFail($unidadId);
+        $operador = Operador::findOrFail($operadorId);
+
+        // Asignar el operador a la unidad
+        $unidad->idOperador = $operadorId; // Suponiendo que tienes una columna 'operador_id' en tu tabla de unidades
+        $unidad->save();
+
+        // Puedes retornar algún mensaje de éxito si lo deseas
+        return redirect()->route('servicio.unidades')->with(['message' => 'Operador asignado correctamente a la unidad.', "color" => "green", 'type' => 'success']);
+    }
+
+    public function quitarOperador(Request $request)
+    {
+        // Obtener el ID de la unidad del request
+        $unidadId = $request->input('unidad');
+
+        // Buscar la unidad en la base de datos
+        $unidad = Unidad::findOrFail($unidadId);
+
+        // Disociar el operador de la unidad
+        $unidad->operador()->dissociate();
+        $unidad->save();
+
+        // Puedes retornar algún mensaje de éxito si lo deseas
+        return redirect()->route('servicio.unidades')->with(['message' => 'Operador eliminado correctamente de la unidad.', "color" => "green", 'type' => 'success']);
+    }
+
+    public function reportes()
+    {
+        $directivo = directivo::all();
+        $operador = operador::all(); 
+        $tipoOperador = tipooperador::all();
+        $estado = estado::all();
+        $unidad = unidad::all();
+        $ruta = ruta::all();
+        $tipoUltimaCorrida = tipoUltimaCorrida::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('Servicio/Reportes',[
+            'usuario' => $usuario,
+            'unidad' => $unidad,
+            'operador' => $operador,
+            'tipoOperador' => $tipoOperador,
+            'estado' => $estado,
+            'ruta' => $ruta,
+            'tipoUltimaCorrida' => $tipoUltimaCorrida,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
 }

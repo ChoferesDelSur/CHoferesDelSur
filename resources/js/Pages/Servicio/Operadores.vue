@@ -11,10 +11,10 @@ import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import FormularioOperadores from '../../Components/Principal/FormularioOperadores.vue';
 import Mensaje from '../../Components/Mensaje.vue';
-import FormularioActualizarOperadores from '../../Components/Principal/FormularioActualizarOperadores.vue';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
+import FormularioOperadores from '../../Components/Servicio/FormularioOperadores.vue';
+import FormularioActualizarOperadores from '../../Components/Servicio/FormularioActualizarOperadores.vue';
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
@@ -320,10 +320,10 @@ const eliminarOperadores = () => {
                 </DataTable>
             </div>
         </div>
-        <formulario-operadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+        <FormularioOperadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir operador'" :modal="'modalCreate'" :operador="props.operador"
             :tipoOperador="props.tipoOperador" :estado="props.estado"
-            :directivo="props.directivo"></formulario-operadores>
+            :directivo="props.directivo"></FormularioOperadores>
         <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
             :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></FormularioActualizarOperadores>
