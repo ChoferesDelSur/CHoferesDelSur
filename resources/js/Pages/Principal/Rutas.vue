@@ -12,7 +12,6 @@ import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 import Mensaje from '../../Components/Mensaje.vue';
 import FormularioActualizarRuta from '../../Components/Principal/FormularioActualizarRuta.vue';
 
@@ -20,8 +19,19 @@ import FormularioActualizarRuta from '../../Components/Principal/FormularioActua
 // documentos
 window.JSZip = jsZip;
 
+pdfMake.fonts = {
+  Roboto: {
+    normal:
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
+    bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
+    italics:
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
+    bolditalics:
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
+  },
+};
 // Cargar fuentes personalizadas
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+/* pdfMake.vfs = pdfFonts.pdfMake.vfs; */
 
 
 DataTable.use(DataTablesLib);
@@ -131,7 +141,6 @@ const toggleRutaSelection = (ruta) => {
 };
 
 onMounted(() => {
-
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('rutasTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;

@@ -1,7 +1,7 @@
 <script setup>
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+const pdfMake = require('pdfmake/build/pdfmake');
+const pdfFonts = require('pdfmake/build/vfs_fonts');
 import ReportesEntrada from '../../Components/Reportes/ReportesEntrada.vue';
 import ReportesCortes from '../../Components/Reportes/ReportesCortes.vue';
 import ReportesCortesConRegreso from '../../Components/Reportes/ReportesCortesConRegreso.vue';

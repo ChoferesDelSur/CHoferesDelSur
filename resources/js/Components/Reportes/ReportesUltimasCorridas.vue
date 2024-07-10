@@ -1,8 +1,10 @@
 <script setup>
 import Mensaje from '../../Components/Mensaje.vue';
 import Swal from 'sweetalert2';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+/* import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts'; */
+const pdfMake = require('pdfmake/build/pdfmake');
+const pdfFonts = require('pdfmake/build/vfs_fonts');
 import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';

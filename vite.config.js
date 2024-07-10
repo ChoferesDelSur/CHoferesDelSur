@@ -12,8 +12,6 @@ export default defineConfig({
     resolve: {
         alias: {
             '@inertiajs/vue3': '/node_modules/@inertiajs/vue3/dist/index.mjs',
-            'pdfmake/build/pdfmake': 'pdfmake/build/pdfmake.js',
-            'pdfmake/build/vfs_fonts': 'pdfmake/build/vfs_fonts.js',
         },
     },
     plugins: [
