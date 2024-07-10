@@ -20,19 +20,13 @@ import FormularioActualizarRuta from '../../Components/Principal/FormularioActua
 window.JSZip = jsZip;
 
 pdfMake.fonts = {
-  Roboto: {
-    normal:
-      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-    bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-    italics:
-      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-    bolditalics:
-      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-  },
+    Roboto: {
+        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
+        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
+        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
+        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
+    },
 };
-// Cargar fuentes personalizadas
-/* pdfMake.vfs = pdfFonts.pdfMake.vfs; */
-
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -139,8 +133,33 @@ const toggleRutaSelection = (ruta) => {
         botonEliminar.setAttribute("disabled", "");
     }
 };
+/* 
+const importarPdfMake = async () => {
+    try {
+        // Importa pdfmake y configura las fuentes
+        const pdfMake = await import('pdfmake/build/pdfmake');
+        const pdfFonts = await import('pdfmake/build/vfs_fonts');
+
+        // Asigna pdfMake al objeto global y configura las fuentes
+        window.pdfMake = pdfMake.default;
+        window.pdfMake.vfs = pdfFonts.default.pdfMake.vfs;
+
+        // Configura las fuentes específicas (en este caso, solo Roboto)
+        pdfMake.defaultFont = {
+            normal: 'Roboto-Regular.ttf',
+            bold: 'Roboto-Medium.ttf',
+            italics: 'Roboto-Italic.ttf',
+            bolditalics: 'Roboto-MediumItalic.ttf'
+        };
+
+        // Ahora puedes utilizar pdfMake y pdfFonts en tu código
+    } catch (error) {
+        console.error('Error al importar pdfmake:', error);
+    }
+}; */
 
 onMounted(() => {
+    /* importarPdfMake(); */
     // Agrega un escuchador de eventos fuera de la lógica de Vue
     document.getElementById('rutasTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
@@ -213,7 +232,6 @@ const eliminarRutas = () => {
         }
     });
 };
-
 </script>
 
 <template>

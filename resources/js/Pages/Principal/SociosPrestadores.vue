@@ -10,16 +10,21 @@ import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-const pdfMake = require('pdfmake/build/pdfmake');
-const pdfFonts = require('pdfmake/build/vfs_fonts');
+import pdfMake from 'pdfmake/build/pdfmake';
 import FormularioSP from '../../Components/Principal/FormularioSP.vue';
 import Mensaje from '../../Components/Mensaje.vue';
 import FormularioActualizarSP from '../../Components/Principal/FormularioActualizarSP.vue';
 
 window.JSZip = jsZip;
 
-// Cargar fuentes personalizadas
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.fonts = {
+    Roboto: {
+        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
+        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
+        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
+        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
+    },
+};
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
