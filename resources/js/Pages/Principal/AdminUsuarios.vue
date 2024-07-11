@@ -9,7 +9,7 @@ import Mensaje from '../../Components/Mensaje.vue';
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-import pdfMake from 'pdfmake/build/pdfmake';
+/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import FormularioUsuarios from '../../Components/Principal/FormularioUsuarios.vue';
@@ -17,7 +17,7 @@ import FormularioActualizarUsuario from '../../Components/Principal/FormularioAc
 
 window.JSZip = jsZip;
 
-pdfMake.fonts = {
+/* pdfMake.fonts = {
     Roboto: {
         normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
         bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
@@ -25,7 +25,7 @@ pdfMake.fonts = {
         bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
     },
 };
-
+ */
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
 

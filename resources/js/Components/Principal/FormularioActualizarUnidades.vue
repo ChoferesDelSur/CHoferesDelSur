@@ -99,8 +99,8 @@ const update = async () => {
         return;
     }
 
-    var idUnidad = document.getElementById('idUnidad2').value;
-    form.post(route('principal.actualizarUnidad', idUnidad), {
+    /* var idUnidad = document.getElementById('idUnidad2').value; */
+    form.post(route('principal.actualizarUnidad', form.idUnidad), {
         onSuccess: () => {
             close()
             numeroUnidadError.value = '';

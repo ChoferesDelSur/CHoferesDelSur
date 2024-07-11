@@ -5,29 +5,37 @@ import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
-import jsZip from 'jszip';
+/* import jsZip from 'jszip'; */
 import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-import pdfMake from 'pdfmake/build/pdfmake';
+/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import Mensaje from '../../Components/Mensaje.vue';
 import FormularioActualizarRuta from '../../Components/Principal/FormularioActualizarRuta.vue';
+/* import RobotoBold from '../../../fonts/Roboto-Bold.ttf';
+import RobotoNormal from '../../../fonts/Roboto-Regular.ttf';
+import RobotoItalic from '../../../fonts/Roboto-Italic.ttf';
+import RobotoBoldItalic from '../../../fonts/Roboto-BoldItalic.ttf'; */
 
 // Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
 // documentos
-window.JSZip = jsZip;
+/* window.JSZip = jsZip; */
 
-pdfMake.fonts = {
+/* pdfMake.fonts = {
     Roboto: {
+        normal: RobotoNormal,
         normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
+        bold: RobotoBold,
         bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
+        italic: RobotoItalic,
         italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
+        bolditalic: RobotoBoldItalic,
         bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
     },
 };
-
+ */
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
 const props = defineProps({
@@ -133,30 +141,6 @@ const toggleRutaSelection = (ruta) => {
         botonEliminar.setAttribute("disabled", "");
     }
 };
-/* 
-const importarPdfMake = async () => {
-    try {
-        // Importa pdfmake y configura las fuentes
-        const pdfMake = await import('pdfmake/build/pdfmake');
-        const pdfFonts = await import('pdfmake/build/vfs_fonts');
-
-        // Asigna pdfMake al objeto global y configura las fuentes
-        window.pdfMake = pdfMake.default;
-        window.pdfMake.vfs = pdfFonts.default.pdfMake.vfs;
-
-        // Configura las fuentes específicas (en este caso, solo Roboto)
-        pdfMake.defaultFont = {
-            normal: 'Roboto-Regular.ttf',
-            bold: 'Roboto-Medium.ttf',
-            italics: 'Roboto-Italic.ttf',
-            bolditalics: 'Roboto-MediumItalic.ttf'
-        };
-
-        // Ahora puedes utilizar pdfMake y pdfFonts en tu código
-    } catch (error) {
-        console.error('Error al importar pdfmake:', error);
-    }
-}; */
 
 onMounted(() => {
     /* importarPdfMake(); */

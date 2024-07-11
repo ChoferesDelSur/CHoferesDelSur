@@ -1,8 +1,21 @@
 <script setup>
 //import { defineProps } from 'vue';
-import { Head, router } from '@inertiajs/inertia-vue3';
+import { Head} from '@inertiajs/inertia-vue3';
 import TopContent from '../Components/Principal/TopContent.vue';
 import OpcionesNav from '../Components/Principal/OpcionesNav.vue';
+import pdfMake from 'pdfmake/build/pdfmake';
+import RobotoBold from '../../fonts/Roboto-Bold.ttf';
+import RobotoNormal from '../../fonts/Roboto-Regular.ttf';
+import jsZip from 'jszip';
+
+window.JSZip = jsZip;
+
+pdfMake.fonts = {
+    Roboto: {
+        normal: RobotoNormal,
+        bold: RobotoBold,
+    },
+};
 
 const props = defineProps({
   title: String,

@@ -1,6 +1,6 @@
 <script setup>
 import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
-import pdfMake from 'pdfmake/build/pdfmake';
+/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import ReportesEntrada from '../../Components/Reportes/ReportesEntrada.vue';
 import ReportesCortes from '../../Components/Reportes/ReportesCortes.vue';
 import ReportesCortesConRegreso from '../../Components/Reportes/ReportesCortesConRegreso.vue';
@@ -10,14 +10,14 @@ import ReportesDiasTrabajados from '../../Components/Reportes/ReportesDiasTrabaj
 import ReportesCastigos from '../../Components/Reportes/ReportesCastigos.vue';
 import ReportesUltimasCorridas from '../../Components/Reportes/ReportesUltimasCorridas.vue';
 
-pdfMake.fonts = {
+/* pdfMake.fonts = {
     Roboto: {
         normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
         bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
         italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
         bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
     },
-};
+}; */
 
 const props = defineProps({
     message: { String, default: '' },

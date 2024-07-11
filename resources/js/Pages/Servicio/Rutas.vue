@@ -9,7 +9,7 @@ import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-import pdfMake from 'pdfmake/build/pdfmake';
+/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import Mensaje from '../../Components/Mensaje.vue';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 import FormularioRuta from '../../Components/Servicio/FormularioRuta.vue';
@@ -19,7 +19,7 @@ import FormularioActualizarRuta from '../../Components/Servicio/FormularioActual
 // documentos
 window.JSZip = jsZip;
 
-pdfMake.fonts = {
+/* pdfMake.fonts = {
     Roboto: {
         normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
         bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
@@ -27,7 +27,7 @@ pdfMake.fonts = {
         bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
     },
 };
-
+ */
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
 const props = defineProps({

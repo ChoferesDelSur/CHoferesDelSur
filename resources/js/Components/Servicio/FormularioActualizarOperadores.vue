@@ -101,8 +101,8 @@ const update = async () => {
     ) {
         return;
     }
-    var idOperador = document.getElementById('idOperador2').value;
-    form.post(route('servicio.actualizarOperador', idOperador), {
+    /* var idOperador = document.getElementById('idOperador2').value; */
+    form.post(route('servicio.actualizarOperador', form.idOperador), {
         onSuccess: () => {
             close()
             nombreError.value = '';
