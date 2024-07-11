@@ -28,6 +28,9 @@ class LoginController extends Controller
                 case "Servicio":
                     return redirect()->route('servicio.inicio');
                     break;
+                case "RH":
+                    return redirect()->route('rh.inicio');
+                    break;
             }
         }
         $tipoUsuario = tipoUsuario::where('tipoUsuario','Administrador')->first();
@@ -81,6 +84,9 @@ class LoginController extends Controller
                                 break;
                             case "Servicio":
                                 return redirect()->intended(route('servicio.inicio'));
+                                break;
+                            case "RH":
+                                return redirect()->intended(route('rh.inicio'));
                                 break;
                             default:
                                 return redirect()->intended(route('login'))->with([

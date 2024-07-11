@@ -9,9 +9,10 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\RHController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ServicioMiddleware;
-
+use App\Http\Middleware\RHMiddleware;
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/', 'index')->name('inicioSesion');
@@ -136,6 +137,15 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
 
     Route::get('/servicio/reportes', 'reportes')->name('servicio.reportes');
 
+    });
+
+    Route::middleware([RHMiddleware::class])->group(function () {
+        Route::controller(RHController::class)->group(function(){
+        Route::get('/RecursosHumanos', 'inicio')->name('rh.inicio');
+        /* Route::get('/RecursosHumanos/perfil', 'perfil')->name('servicio.perfil');
+        Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia'); */
+    
+        });
     });
 
 });

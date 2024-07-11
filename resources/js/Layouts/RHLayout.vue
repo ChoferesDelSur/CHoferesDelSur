@@ -1,7 +1,20 @@
 <script setup>
-import { Head, router } from '@inertiajs/inertia-vue3';
-import TopContentServ from '../Components/Servicio/TopContentServ.vue';
-import OpcionesNavServ from '../Components/Servicio/OpcionesNavServ.vue';
+import { Head} from '@inertiajs/inertia-vue3';
+import TopContent from '../Components/RH/TopContent.vue';
+import OpcionesNav from '../Components/RH/OpcionesNav.vue';
+import pdfMake from 'pdfmake/build/pdfmake';
+import RobotoBold from '../../fonts/Roboto-Bold.ttf';
+import RobotoNormal from '../../fonts/Roboto-Regular.ttf';
+import jsZip from 'jszip';
+
+window.JSZip = jsZip;
+
+pdfMake.fonts = {
+    Roboto: {
+        normal: RobotoNormal,
+        bold: RobotoBold,
+    },
+};
 
 const props = defineProps({
   title: String,
@@ -16,7 +29,7 @@ const props = defineProps({
 
     <Head :title="title" />
 
-    <TopContentServ :usuario="props.usuario"/> <!--LLama al componente TopContent-->
+    <TopContent :usuario="props.usuario" /> <!--LLama al componente TopContent-->
 
     <div class="flex-1 flex overflow-hidden"><!-- el overflow-hidden: es el encargaddo de ocultar la barra de dezplazamiento 
     que afecta al menu y el encabezado -->
@@ -43,7 +56,7 @@ const props = defineProps({
           <!-- Señalador de ubicación -->
           <div class="bg-gradient-to-r from-white to-white h-px mt-2"></div> <!-- Esto es una linea -->
 
-          <OpcionesNavServ /> <!--LLama al componente OpcionesNav-->
+          <OpcionesNav /> <!--LLama al componente OpcionesNav-->
 
         </nav>
         <!-- Señalador de ubicación -->

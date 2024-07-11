@@ -4,31 +4,16 @@ import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
-import jsZip from 'jszip';
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import Mensaje from '../../Components/Mensaje.vue';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 import FormularioUnidades from '../../Components/Servicio/FormularioUnidades.vue';
 import FormularioActualizarUnidades from '../../Components/Servicio/FormularioActualizarUnidades.vue';
 import FormularioAsignarOperador from '../../Components/Servicio/FormularioAsignarOperador.vue';
 import FormularioQuitarOperador from '../../Components/Servicio/FormularioQuitarOperador.vue';
-
-// Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
-// documentos
-window.JSZip = jsZip;
-
-/* pdfMake.fonts = {
-    Roboto: {
-        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-}; */
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);

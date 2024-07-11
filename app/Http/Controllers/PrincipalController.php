@@ -1135,7 +1135,17 @@ class PrincipalController extends Controller
                 $contrasenia = $this->generarContrasenia();
 
                 // Generar nombre de usuario con prefijo según el tipo de usuario
-                $prefijo = $request->tipoUsuario == 1 ? 'Admi' : 'Serv'; // Asumiendo que 1 es Administrador y otro valor es Servicio
+                $prefijo = '';
+                if ($request->tipoUsuario == 1) {
+                    $prefijo = 'Admi';
+                } elseif ($request->tipoUsuario == 2) {
+                    $prefijo = 'Serv';
+                } elseif ($request->tipoUsuario == 3) {
+                    $prefijo = 'RH'; // Puedes ajustar el prefijo según tu convención
+                } else {
+                    // Manejo de otros casos si es necesario
+                    $prefijo = 'Otro';
+                }
 
                 // Generar usuario
                 $nombreParte = substr($this->quitarAcentos($request->nombre), 0, 2);
