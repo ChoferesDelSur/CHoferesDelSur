@@ -136,15 +136,13 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::post('/servicio/unidades/quitarOper', 'quitarOperador')->name('servicio.quitarOperador');
 
     Route::get('/servicio/reportes', 'reportes')->name('servicio.reportes');
-
     });
 
     Route::middleware([RHMiddleware::class])->group(function () {
         Route::controller(RHController::class)->group(function(){
-        Route::get('/RecursosHumanos', 'inicio')->name('rh.inicio');
-        /* Route::get('/RecursosHumanos/perfil', 'perfil')->name('servicio.perfil');
-        Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('servicio.actualizarContrasenia'); */
-    
+        Route::get('/RecursosHumanos', 'inicio')->name('recursoshumanos.inicio');
+        Route::get('/RecursosHumanos/perfil', 'perfil')->name('recursoshumanos.perfil');
+        Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('recursoshumanos.actualizarContrasenia');
         });
     });
 

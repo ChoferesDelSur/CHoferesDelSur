@@ -19,8 +19,9 @@ class LoginController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
-            $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
+            $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->first();//Tenía get
+            if ($usuario && $usuario->tipoUsuario) {
+                $tipoUsuario = $usuario->tipoUsuario->tipoUsuario;
             switch ($tipoUsuario) {
                 case "Administrador":
                     return redirect()->route('principal.inicio');
@@ -29,9 +30,10 @@ class LoginController extends Controller
                     return redirect()->route('servicio.inicio');
                     break;
                 case "RH":
-                    return redirect()->route('rh.inicio');
+                    return redirect()->route('recursoshumanos.inicio');
                     break;
             }
+        }
         }
         $tipoUsuario = tipoUsuario::where('tipoUsuario','Administrador')->first();
         $usuario = usuario::where('idTipoUsuario', $tipoUsuario->idTipoUsuario)->get();
@@ -73,10 +75,8 @@ class LoginController extends Controller
                         $user->save();
                         Auth::login($user, $remember);
                         $request->session()->regenerate();
-
                         // Obtener tipo de usuario
                         $tipoUsuario = $user->tipoUsuario->tipoUsuario;
-
                         // Redirigir según el tipo de usuario
                         switch ($tipoUsuario) {
                             case "Administrador":
@@ -86,14 +86,8 @@ class LoginController extends Controller
                                 return redirect()->intended(route('servicio.inicio'));
                                 break;
                             case "RH":
-                                return redirect()->intended(route('rh.inicio'));
+                                return redirect()->intended(route('recursoshumanos.inicio'));
                                 break;
-                            default:
-                                return redirect()->intended(route('login'))->with([
-                                    'message' => 'Tipo de usuario no reconocido.',
-                                    'color' => 'red',
-                                    'type' => 'error'
-                                ]);
                         }
                     } else {
                         $user->intentos = $user->intentos - 1;
@@ -118,7 +112,6 @@ class LoginController extends Controller
                     'type' => 'error'
                 ]);
             }
-
             return back()->with([
                 'message' => 'Usuario no encontrado.',
                 'color' => 'red',
@@ -128,7 +121,6 @@ class LoginController extends Controller
             dd($e);
         }
     }
-
 
     public function logout(Request $request)
     {

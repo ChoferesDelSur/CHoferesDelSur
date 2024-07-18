@@ -40,11 +40,6 @@ const togglePasswordVisibility = () => {
     <Head title="Iniciar sesión" />
 
     <AuthenticationCard>
-
-
-        <!-- <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div> -->
         <div>
             <h2 class="text-black text-2xl text-center font-semibold p-5">Iniciar Sesion</h2>
             <Mensaje />

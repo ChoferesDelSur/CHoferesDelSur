@@ -1142,10 +1142,10 @@ class PrincipalController extends Controller
                     $prefijo = 'Serv';
                 } elseif ($request->tipoUsuario == 3) {
                     $prefijo = 'RH'; // Puedes ajustar el prefijo según tu convención
-                } else {
+                } /* else {
                     // Manejo de otros casos si es necesario
                     $prefijo = 'Otro';
-                }
+                } */
 
                 // Generar usuario
                 $nombreParte = substr($this->quitarAcentos($request->nombre), 0, 2);
@@ -1216,7 +1216,6 @@ class PrincipalController extends Controller
                 'usuario' => 'sometimes|required',
                 'contrasenia' => 'sometimes|required',
             ]);
-
             // Actualizar solo los campos proporcionados en la solicitud
             if ($request->has('nombre')) {
                 $usuario->nombre = $request->nombre;

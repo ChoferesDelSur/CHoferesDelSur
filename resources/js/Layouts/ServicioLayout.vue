@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router } from '@inertiajs/inertia-vue3';
+import { Head } from '@inertiajs/inertia-vue3';
 import TopContentServ from '../Components/Servicio/TopContentServ.vue';
 import OpcionesNavServ from '../Components/Servicio/OpcionesNavServ.vue';
 
@@ -16,7 +16,7 @@ const props = defineProps({
 
     <Head :title="title" />
 
-    <TopContentServ :usuario="props.usuario"/> <!--LLama al componente TopContent-->
+    <TopContentServ :usuario="props.usuario" /> <!--LLama al componente TopContent-->
 
     <div class="flex-1 flex overflow-hidden"><!-- el overflow-hidden: es el encargaddo de ocultar la barra de dezplazamiento 
     que afecta al menu y el encabezado -->
