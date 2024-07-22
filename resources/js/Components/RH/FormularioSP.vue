@@ -33,7 +33,6 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    _method: 'PUT',
     idDirectivo: props.directivo.idDirectivo,
     nombre: props.directivo.nombre,
     apellidoP: props.directivo.apellidoP,
@@ -75,19 +74,18 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
-const update = async () => {
+const save = async () => {
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
     tipoDirectivoError.value = validateSelect(form.tipDirectivo) ? '' : 'Seleccione el tipo de directivo';
+
     if (
         nombreError.value || apellidoPError.value || apellidoMError.value || tipoDirectivoError.value
     ) {
         return;
     }
-
-    var idDirectivo = document.getElementById('idDirectivo2').value;
-    form.post(route('rh.actualizarDirectivo', idDirectivo), {
+    form.post(route('servicio.addDirectivo'), {
         onSuccess: () => {
             close()
             nombreError.value = '';
@@ -95,7 +93,7 @@ const update = async () => {
             apellidoMError.value = '';
             tipoDirectivoError.value = '';
         }
-    });
+    })
 }
 
 </script>
@@ -103,12 +101,12 @@ const update = async () => {
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-            <form @submit.prevent="update">
+            <form @submit.prevent="save">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Modifique los datos según sea necesario y guarde los cambios.
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar a un
+                        nuevo socio o prestador. Los campos con <span class="text-red-500">*</span> son obligatorios.
                     </p>
-                    <input v-if="op !== '1'" type="hidden" name="_method" value="PUT">
                     <div class="flex flex-wrap -mx-4">
                         <div class="sm:col-span-2">
                             <div class="sm:col-span-1" hidden> <!-- Definir el tamaño del cuadro de texto -->

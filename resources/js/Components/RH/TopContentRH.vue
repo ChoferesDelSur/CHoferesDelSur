@@ -69,8 +69,8 @@ onMounted(async () => {
             <div class="flex items-center text-center h-full justify-center mx-1">
                 <div class="flex items-center text-center h-full justify-center mx-1">
                     <i class="fas fa-user text-white font-thin mx-1"></i>
-                    <i class="text-white font-['DM Sans'] mx-1"> {{ " " +
-                        props.usuario.tipoUsuario3.charAt(0).toUpperCase() + props.usuario.tipoUsuario3.slice(1) }} </i>
+                    <i class="text-white font-['DM Sans'] mx-1"> {{ " Recursos Humanos" /* +
+                        props.usuario.tipoUsuario3.charAt(0).toUpperCase() + props.usuario.tipoUsuario3.slice(1) */ }} </i>
                 </div>
                 <!-- <div class="h-full">
                     <img :src="'https://i.postimg.cc/gwGpRPZ4/Logo-Tucdosa-SF.png'"

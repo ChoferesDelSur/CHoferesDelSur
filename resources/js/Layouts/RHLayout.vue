@@ -1,7 +1,7 @@
 <script setup>
 import { Head } from '@inertiajs/inertia-vue3';
 import TopContentRH from '../Components/RH/TopContentRH.vue';
-import TopContentRH from '../Components/RH/TopContentRH.vue';
+import OpcionesNavRH from '../Components/RH/OpcionesNavRH.vue';
 
 const props = defineProps({
   title: String,

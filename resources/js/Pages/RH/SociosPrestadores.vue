@@ -9,9 +9,9 @@ import Swal from 'sweetalert2';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';
-import ServicioLayout from '../../Layouts/ServicioLayout.vue';
-import FormularioSP from '../../Components/Servicio/FormularioSP.vue';
-import FormularioActualizarSP from '../../Components/Servicio/FormularioActualizarSP.vue';
+import RHLayout from '../../Layouts/RHLayout.vue';
+import FormularioSP from '../../Components/RH/FormularioSP.vue';
+import FormularioActualizarSP from '../../Components/RH/FormularioActualizarSP.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -184,7 +184,7 @@ const eliminarDirectivos = () => {
             try {
                 const directivoE = directivosSeleccionados.value.map((directivo) => directivo.idDirectivo);
                 const $directivosIds = directivoE.join(',');
-                await form.post(route('servicio.eliminarDirectivo', $directivosIds));
+                await form.post(route('rh.eliminarDirectivo', $directivosIds));
                 directivosSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
                 if (directivosSeleccionados.value.length > 0) {
@@ -217,7 +217,7 @@ const eliminarDirectivos = () => {
 </script>
 
 <template>
-    <ServicioLayout title="Directivos" :usuario="props.usuario">
+    <RHLayout title="Directivos" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
@@ -225,7 +225,7 @@ const eliminarDirectivos = () => {
 
             <Mensaje/>
 
-            <!-- <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
+            <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
                     @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
                     <i class="fa fa-plus mr-2"></i>Agregar Socio/Prestador
@@ -235,7 +235,7 @@ const eliminarDirectivos = () => {
                     @click="eliminarDirectivos">
                     <i class="fa fa-trash mr-2"></i>Borrar Socio/Prestador
                 </button>
-            </div> -->
+            </div>
             <div>
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
                     id="directivosTablaId" name="directivosTablaId" :columns="columnas" :data="directivo" :options="{
@@ -287,7 +287,7 @@ const eliminarDirectivos = () => {
         <FormularioActualizarSP :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar directivo'" :op="'2'" :modal="'modalEdit'" :tipDirectivo="props.tipDirectivo"
             :directivo="directivoE"></FormularioActualizarSP>
-    </ServicioLayout>
+    </RHLayout>
 </template>
 
 <style>

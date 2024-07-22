@@ -100,8 +100,7 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/UC/unidad/{idUnidad}/anio/{anio}','obtenerUCPorAnio')->name('reportes.UCAnio');
 });
 
-Route::controller(InfoController::class)->group(
-    function () {
+Route::controller(InfoController::class)->group(function () {
         Route::get('obtener/info/usuario/login', 'obtenerUsuario')->name('obtenerUser');
         Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUser');
     }
@@ -138,12 +137,23 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::get('/servicio/reportes', 'reportes')->name('servicio.reportes');
     });
 
-    Route::middleware([RHMiddleware::class])->group(function () {
-        Route::controller(RHController::class)->group(function(){
-        Route::get('/RH', 'inicio')->name('rh.inicio');
-        Route::get('/RecursosHumanos/perfil', 'perfil')->name('rh.perfil');
-        Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('rh.actualizarContrasenia');
-        });
-    });
+});
 
+Route::middleware([RHMiddleware::class])->group(function () {
+    Route::controller(RHController::class)->group(function(){
+    Route::get('/RecursosHumanos', 'inicio')->name('rh.inicio');
+    Route::get('/RecursosHumanos/perfil', 'perfil')->name('rh.perfil');
+    Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('rh.actualizarContrasenia');
+
+    Route::get('/RecursosHumanos/operadores', 'operadores')->name('rh.operadores');
+    Route::post('/RecursosHumanos/operadores', 'addOperador')->name('rh.addOperador');
+    Route::put('/RecursosHumanos/operadores/{idOperador}/edit', 'actualizarOperador')->name('rh.actualizarOperador');
+    Route::delete('/RecursosHumanos/operadores/{operadoresIds}', 'eliminarOperador')->name('rh.eliminarOperador');
+
+    Route::get('/RecursosHumanos/sociosPrestadores', 'sociosPrestadores')->name('rh.sociosPrestadores');
+    Route::post('/RecursosHumanos/sociosPrestadores', 'addDirectivo')->name('rh.addDirectivo');
+    Route::put('/RecursosHumanos/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('rh.actualizarDirectivo');
+    Route::delete('/RecursosHumanos/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('rh.eliminarDirectivo');
+
+    });
 });

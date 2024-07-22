@@ -47,8 +47,8 @@ class usuario extends Authenticatable
         return $this->attributes['idUsuario'];
     }
 
-    public function tipoUsuario(): HasOne
+    public function tipoUsuario(): BelongsTo
     {
-        return $this->hasOne(tipoUsuario::class, 'idTipoUsuario', 'idTipoUsuario');
+        return $this->belongsTo(tipoUsuario::class, 'idTipoUsuario', 'idTipoUsuario');
     }
 }
