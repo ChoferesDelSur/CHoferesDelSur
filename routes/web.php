@@ -140,9 +140,9 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
 
     Route::middleware([RHMiddleware::class])->group(function () {
         Route::controller(RHController::class)->group(function(){
-        Route::get('/RecursosHumanos', 'inicio')->name('recursoshumanos.inicio');
-        Route::get('/RecursosHumanos/perfil', 'perfil')->name('recursoshumanos.perfil');
-        Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('recursoshumanos.actualizarContrasenia');
+        Route::get('/RH', 'inicio')->name('rh.inicio');
+        Route::get('/RecursosHumanos/perfil', 'perfil')->name('rh.perfil');
+        Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('rh.actualizarContrasenia');
         });
     });
 

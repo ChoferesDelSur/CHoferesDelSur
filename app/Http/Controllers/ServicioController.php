@@ -29,16 +29,17 @@ use Illuminate\Support\Str;
 
 class ServicioController extends Controller
 {
+    
     public function obtenerUsuario()
     {
         return auth()->user();
-        Log::info('Usuario obtenido:', ['user' => $user]);
+        Log::info('Usuario servicio:', ['user' => $user]);
+        
     }
 
     public function obtenerTipoUsuario($idTipoUsuario)
     {
         return tipoUsuario::find($idTipoUsuario);
-        Log::info('Tipo de Usuario obtenido:', ['tipoUsuario' => $tipoUsuario]);
     }
 
     public function obtenerInfoUsuario()

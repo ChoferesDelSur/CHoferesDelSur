@@ -25,13 +25,10 @@ class LoginController extends Controller
             switch ($tipoUsuario) {
                 case "Administrador":
                     return redirect()->route('principal.inicio');
-                    break;
                 case "Servicio":
                     return redirect()->route('servicio.inicio');
-                    break;
                 case "RH":
-                    return redirect()->route('recursoshumanos.inicio');
-                    break;
+                    return redirect()->route('rh.inicio');
             }
         }
         }
@@ -48,79 +45,77 @@ class LoginController extends Controller
     }
 
     public function login(Request $request): RedirectResponse
-    {
-        try {
-            $request->validate([
-                'usuario' => ['required'],
-                'password' => ['required'],
-            ]);
+{
+    try {
+        $request->validate([
+            'usuario' => ['required'],
+            'password' => ['required'],
+        ]);
 
-            $remember = $request->remember;
-            $user = Usuario::where('usuario', $request->usuario)->first();
+        $remember = $request->remember;
+        $user = Usuario::where('usuario', $request->usuario)->first();
 
-            if ($user) {
-                if ($user->cambioContrasenia === 0) {
-                    if (Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()) {
+        if ($user) {
+            if ($user->cambioContrasenia === 0) {
+                if (Carbon::parse($user->fecha_Creacion)->addHours(48) <= Carbon::now()) {
+                    return back()->with([
+                        'message' => 'Excedió el tiempo límite para el cambio de contraseña.',
+                        'color' => 'red',
+                        'type' => 'error'
+                    ]);
+                }
+            }
+
+            if ($user->intentos > 0) {
+                if (Hash::check($request->password, $user->password)) {
+                    $user->intentos = 10;
+                    $user->save();
+                    Auth::login($user, $remember);
+                    $request->session()->regenerate();
+
+                    // Obtener tipo de usuario
+                    $tipoUsuario = $user->tipoUsuario->tipoUsuario;
+                    // Redirigir según el tipo de usuario
+                    switch ($tipoUsuario) {
+                        case "Administrador":
+                            return redirect()->intended(route('principal.inicio'));
+                        case "Servicio":
+                            return redirect()->intended(route('servicio.inicio'));
+                        case "RH":
+                            return redirect()->intended(route('rh.inicio'));
+                    }
+                } else {
+                    $user->intentos = $user->intentos - 1;
+                    $user->save();
+                    if ($user->intentos != 0) {
                         return back()->with([
-                            'message' => 'Excedió el tiempo límite para el cambio de contraseña.',
-                            'color' => 'red',
-                            'type' => 'error'
+                            'message' => 'Credenciales incorrectas. Tiene ' . $user->intentos . ' intentos restantes.',
+                            'color' => 'yellow',
+                            'type' => 'info'
                         ]);
                     }
+                    return back()->with([
+                        'message' => 'Intentos máximos de inicio de sesión superados. Comuníquese con el administrador.',
+                        'color' => 'red',
+                        'type' => 'error'
+                    ]);
                 }
-
-                if ($user->intentos > 0) {
-                    if (Hash::check($request->password, $user->password)) {
-                        $user->intentos = 10;
-                        $user->save();
-                        Auth::login($user, $remember);
-                        $request->session()->regenerate();
-                        // Obtener tipo de usuario
-                        $tipoUsuario = $user->tipoUsuario->tipoUsuario;
-                        // Redirigir según el tipo de usuario
-                        switch ($tipoUsuario) {
-                            case "Administrador":
-                                return redirect()->intended(route('principal.inicio'));
-                                break;
-                            case "Servicio":
-                                return redirect()->intended(route('servicio.inicio'));
-                                break;
-                            case "RH":
-                                return redirect()->intended(route('recursoshumanos.inicio'));
-                                break;
-                        }
-                    } else {
-                        $user->intentos = $user->intentos - 1;
-                        $user->save();
-                        if ($user->intentos != 0) {
-                            return back()->with([
-                                'message' => 'Credenciales incorrectas. Tiene ' . $user->intentos . ' intentos restantes.',
-                                'color' => 'yellow',
-                                'type' => 'info'
-                            ]);
-                        }
-                        return back()->with([
-                            'message' => 'Intentos máximos de inicio de sesión superados. Comuníquese con el administrador.',
-                            'color' => 'red',
-                            'type' => 'error'
-                        ]);
-                    }
-                }
-                return back()->with([
-                    'message' => 'Intentos máximos de inicio de sesión superados. Comuníquese con el administrador.',
-                    'color' => 'red',
-                    'type' => 'error'
-                ]);
             }
             return back()->with([
-                'message' => 'Usuario no encontrado.',
+                'message' => 'Intentos máximos de inicio de sesión superados. Comuníquese con el administrador.',
                 'color' => 'red',
                 'type' => 'error'
             ]);
-        } catch (Exception $e) {
-            dd($e);
         }
+        return back()->with([
+            'message' => 'Usuario no encontrado.',
+            'color' => 'red',
+            'type' => 'error'
+        ]);
+    } catch (Exception $e) {
+        dd($e);
     }
+}
 
     public function logout(Request $request)
     {

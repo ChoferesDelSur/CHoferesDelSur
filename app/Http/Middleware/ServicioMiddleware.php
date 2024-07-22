@@ -18,6 +18,7 @@ class ServicioMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        Log::info('Estoy en ServicioMiddleware');
         /* if(auth()->check()){
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
@@ -32,7 +33,7 @@ class ServicioMiddleware
                 return $next($request);
             }
         }
-        
+        Log::info('Redirigiendo a inicioSesion desde ServicioMiddleware');
         return redirect()->route('inicioSesion')->withErrors(['message' => 'Acceso denegado.']);
     }
 }

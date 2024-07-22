@@ -43,6 +43,7 @@ class PrincipalController extends Controller
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuario::find($idUsuario);
         $usuario->tipoUsuario1 = $usuario->tipoUsuario->tipoUsuario;
+        Log::info('Información del Usuario:', ['usuario' => $usuario]);
         return $usuario;
     }
 
