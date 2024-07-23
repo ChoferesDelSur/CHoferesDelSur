@@ -13,6 +13,7 @@ use App\Models\tipooperador;
 use App\Models\castigo;
 use App\Models\corte;
 use App\Models\usuario;
+use App\Models\incapacidad;
 use App\Models\tipoUsuario;
 use App\Models\entrada;
 use App\Models\rolServicio;
@@ -113,12 +114,14 @@ class RHController extends Controller
         $tipoOperador = tipooperador::all();
         $estado = estado::all();
         $directivo = directivo::all();
+        $incapacidad = incapacidad::all();
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('RH/Operadores',[
             'usuario' => $usuario,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
+            'incapacidad' => $incapacidad,
             'directivo' => $directivo,
             'message' => session('message'),
             'color' => session('color'),
@@ -140,6 +143,7 @@ class RHController extends Controller
             $existingOperador = Operador::where('nombre', $request->nombre)
             ->where('apellidoP', $request->apellidoP)
             ->where('apellidoM', $request->apellidoM)
+            ->where('idDirectivo', $request->directivo)
             ->first();
 
             if($existingOperador){

@@ -18,6 +18,13 @@ class operador extends Model
         'nombre',
         'apellidoP',
         'apellidoM',
+        'fechaNacimiento',
+        'edad',
+        'CURP',
+        'RFC',
+        'telefono',
+        'NSS',
+        'domicilio',
         'idEstado',
         'idTipoOperador',
         'nombre_completo'

@@ -67,7 +67,7 @@ const botonesPersonalizados = [
 ];
 
 const columnas = [
-    {
+    /* {
         data: null,
         render: function (data, type, row, meta) {
             return "";
@@ -78,7 +78,7 @@ const columnas = [
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="operador-checkboxes" data-id="${row.idOperador}" ">`;
         }
-    },
+    }, */
     {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
@@ -109,11 +109,11 @@ const columnas = [
             return jefe ? jefe.nombre_completo : '';
         }
     },
-    {
+    /* {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idOperador}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
         }
-    },
+    }, */
 ]
 
 const mostrarModal = ref(false);
@@ -240,9 +240,9 @@ const eliminarOperadores = () => {
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Operadores</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
-            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-3"></div>
+            <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <Mensaje/>
+            <!-- <Mensaje/> -->
 
             <!-- <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -271,12 +271,12 @@ const eliminarOperadores = () => {
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
-                            <th
+                            <!-- <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
+                            </th> -->
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 ID

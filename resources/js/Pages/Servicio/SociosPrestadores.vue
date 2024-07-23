@@ -65,18 +65,6 @@ const botonesPersonalizados = [
 
 const columnas = [
     {
-        data: null,
-        render: function (data, type, row, meta) {
-            return "";
-        }
-    },
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="directivos-checkboxes" data-id="${row.idDirectivo}" ">`;
-        }
-    },
-    {
         data: null, render: function (data, type, row, meta) { return meta.row + 1 }
     },
     { data: 'apellidoP' },
@@ -90,11 +78,11 @@ const columnas = [
             return tDirectivo ? tDirectivo.tipoDirectivo : '';
         }
     },
-    {
+    /* {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idDirectivo}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
         }
-    },
+    }, */
 ]
 
 const mostrarModal = ref(false);
@@ -223,7 +211,7 @@ const eliminarDirectivos = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <Mensaje/>
+            <!-- <Mensaje/> -->
 
             <!-- <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -250,12 +238,6 @@ const eliminarDirectivos = () => {
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 ID

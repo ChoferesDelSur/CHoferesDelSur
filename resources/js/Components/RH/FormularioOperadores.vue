@@ -33,6 +33,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    incapacidad: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -48,6 +52,10 @@ const form = useForm({
     tipoOperador: props.operador.idTipoOperador,
     estado: props.operador.idEstado,
     directivo: props.operador.idDirectivo,
+    motivo: props.incapacidad.motivo,
+    numeroDias: props.incapacidad.numeroDias,
+    fechaInicio: props.incapacidad.fechaInicio,
+    fechaFin: props.incapacidad.fechaFin,
 });
 
 watch(() => props.operador, async (newVal) => {
@@ -58,6 +66,18 @@ watch(() => props.operador, async (newVal) => {
     form.tipoOperador = newVal.idTipoOperador;
     form.estado = newVal.idEstado;
     form.directivo = newVal.idDirectivo;
+
+    // Ajusta los campos de incapacidad si el estado es Incapacidad
+    if (newVal.idEstado === 3) { // idEstado para Incapacidad
+        incapacidad.value.idOperador = newVal.idOperador;
+    } else {
+        incapacidad.value = {
+            motivo: '',
+            numeroDias: '',
+            fechaInicio: '',
+            fechaFin: '',
+        };
+    }
 }, { deep: true }
 );
 
@@ -89,6 +109,7 @@ const validateSelect = (selectedValue) => {
 };
 
 const save = async () => {
+    // Validación de los campos del formulario principal
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
     apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
@@ -96,22 +117,48 @@ const save = async () => {
     estadoError.value = validateSelect(form.estado) ? '' : 'Seleccione el estado';
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
 
-    if (
-        nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value || directivoError.value
-    ) {
-        return;
+    // Validación adicional para los campos de incapacidad si el estado es Incapacidad
+    if (form.estado === 3) { // idEstado para Incapacidad
+        incapacidad.motivo = validateStringNotEmpty(incapacidad.motivo) ? '' : 'Ingrese el motivo';
+        incapacidad.numeroDias = validateStringNotEmpty(incapacidad.numeroDias) ? '' : 'Ingrese el número de días';
+        incapacidad.fechaInicio = validateStringNotEmpty(incapacidad.fechaInicio) ? '' : 'Ingrese la fecha de inicio';
+        incapacidad.fechaFin = validateStringNotEmpty(incapacidad.fechaFin) ? '' : 'Ingrese la fecha de fin';
+
+        if (
+            incapacidad.motivo || incapacidad.numeroDias || incapacidad.fechaInicio || incapacidad.fechaFin
+        ) {
+            return;
+        }
     }
+
+    // Si no hay errores, enviar el formulario
     form.post(route('rh.addOperador'), {
+        data: {
+            ...form.data,
+            ...(form.estado === 3 ? { incapacidad: incapacidad.value } : {}), // Incluye datos de incapacidad si aplica
+        },
         onSuccess: () => {
-            close()
+            close();
+            // Limpia los errores y campos si es necesario
             nombreError.value = '';
             apellidoPError.value = '';
             apellidoMError.value = '';
             tipoOperadorError.value = '';
+            estadoError.value = '';
             directivoError.value = '';
+            incapacidad.value = {
+                motivo: '',
+                numeroDias: '',
+                fechaInicio: '',
+                fechaFin: '',
+            }; // Limpia los campos de incapacidad
+        },
+        onError: () => {
+            // Maneja errores de la solicitud si es necesario
         }
-    })
-}
+    });
+};
+
 </script>
 
 <template>
@@ -124,97 +171,154 @@ const save = async () => {
                         nuevo operador. Los campos con <span class="text-red-500">*</span> son obligatorios.
                     </p>
                     <div class="flex flex-wrap">
-                    <div class="md:col-span-2">
-                        <div class="sm:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="idOperador"
-                                class="block text-sm font-medium leading-6 text-gray-900">idOperador</label>
-                            <div class="mt-1">
-                                <input type="number" name="idOperador" v-model="form.idOperador"
-                                    placeholder="Ingrese id del operador" :id="'idOperador' + op"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <div class="md:col-span-2">
+                            <div class="sm:col-span-2" hidden> <!-- Definir el tamaño del cuadro de texto -->
+                                <label for="idOperador"
+                                    class="block text-sm font-medium leading-6 text-gray-900">idOperador</label>
+                                <div class="mt-1">
+                                    <input type="number" name="idOperador" v-model="form.idOperador"
+                                        placeholder="Ingrese id del operador" :id="'idOperador' + op"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
+                            <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
+                                Paterno<span class="text-red-500">*</span></label>
+                            <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
+                                <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
+                                    placeholder="Ingrese el apellido paterno"
+                                    class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
+                            <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}
+                            </div>
+                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
+                                Materno<span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
+                                    placeholder="Ingrese el apellido materno"
+                                    class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres<span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
+                                    placeholder="Ingrese el nombre"
+                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
+                                operador<span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
+                                    placeholder="Seleccione el tipo de operador"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione el tipo de operador</option>
+                                    <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador"
+                                        :value="tOperador.idTipoOperador">
+                                        {{ tOperador.tipOperador }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError
+                                }}
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado<span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="estado" :id="'estado' + op" v-model="form.estado"
+                                    placeholder="Seleccione el tipo de estado"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione el estado del operador</option>
+                                    <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
+                                        {{ est.estado }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
+                        </div>
+                        <!-- Campos adicionales para Incapacidad -->
+                        <div v-if="form.estado == 3">
+                            <!-- Asumiendo que 3 es el idEstado para Incapacidad -->
+                            <p class="mt-2 text-sm leading-6 text-gray-600">Ingrese los datos sobre la
+                                incapacidad.
+                            </p>
+                            <div class="flex flex-wrap mt-4">
+                                <div class="sm:col-span-2 px-4">
+                                    <label for="motivo"
+                                        class="block text-sm font-medium leading-6 text-gray-900">Motivo</label>
+                                    <div class="mt-2">
+                                        <input type="text" name="motivo" v-model="incapacidad.motivo"
+                                            placeholder="Ingrese el motivo de la incapacidad"
+                                            class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    </div>
+                                </div>
+                                <div class="sm:col-span-2 px-4">
+                                    <label for="numeroDias"
+                                        class="block text-sm font-medium leading-6 text-gray-900">Número
+                                        de Días</label>
+                                    <div class="mt-2">
+                                        <input type="number" name="numeroDias" v-model="incapacidad.numeroDias"
+                                            placeholder="Ingrese el número de días"
+                                            class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    </div>
+                                </div>
+                                <div class="sm:col-span-2 px-4">
+                                    <label for="fechaInicio"
+                                        class="block text-sm font-medium leading-6 text-gray-900">Fecha
+                                        de Inicio</label>
+                                    <div class="mt-2">
+                                        <input type="date" name="fechaInicio" v-model="incapacidad.fechaInicio"
+                                            placeholder="Ingrese la fecha de inicio"
+                                            class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    </div>
+                                </div>
+                                <div class="sm:col-span-2 px-4">
+                                    <label for="fechaFin"
+                                        class="block text-sm font-medium leading-6 text-gray-900">Fecha de
+                                        Fin</label>
+                                    <div class="mt-2">
+                                        <input type="date" name="fechaFin" v-model="incapacidad.fechaFin"
+                                            placeholder="Ingrese la fecha de fin"
+                                            class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Parte de Directivo -->
+                        <p class="mt-2 text-sm leading-6 text-gray-600">A continuación, seleccione al socio/prestador
+                            para el que trabajará el operador que se está registrando.
+                        </p>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Jefe<span
+                                    class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
+                                    placeholder="Seleccione a un socio/prestador"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione a un socio/prestador</option>
+                                    <option v-for="jefe in directivo" :key="jefe.idDirectivo" :value="jefe.idDirectivo">
+                                        {{ jefe.nombre_completo }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}
                             </div>
                         </div>
                     </div>
-                    <div class="md:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                        <label for="apellidoP" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Paterno<span class="text-red-500">*</span></label>
-                        <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
-                            <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
-                                placeholder="Ingrese el apellido paterno"
-                                class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                        <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
-                        <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{ apellidoPError }}</div>
-                        <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="apellidoM" class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                            Materno<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
-                                placeholder="Ingrese el apellido materno"
-                                class="block w-56 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}</div>
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombres<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
-                                placeholder="Ingrese el nombre"
-                                class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-                        <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo de
-                            operador<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
-                                placeholder="Seleccione el tipo de operador"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione el tipo de operador</option>
-                                <option v-for="tOperador in tipoOperador" :key="tOperador.idTipoOperador"
-                                    :value="tOperador.idTipoOperador">
-                                    {{ tOperador.tipOperador }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{ tipoOperadorError }}
-                        </div>
-                    </div>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="estado" :id="'estado' + op" v-model="form.estado"
-                                placeholder="Seleccione el tipo de estado"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione el estado del operador</option>
-                                <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
-                                    {{ est.estado }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
-                    </div>
-                    <p class="mt-2 text-sm leading-6 text-gray-600">A continuación, seleccione al socio/prestador para el que trabajará el operador que se está registrando.
-                    </p>
-                    <div class="sm:col-span-2 px-4">
-                        <label for="directivo" class="block text-sm font-medium leading-6 text-gray-900">Jefe<span class="text-red-500">*</span></label>
-                        <div class="mt-2">
-                            <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
-                                placeholder="Seleccione a un socio/prestador"
-                                class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                <option value="" disabled selected>Seleccione a un socio/prestador</option>
-                                <option v-for="jefe in directivo" :key="jefe.idDirectivo" :value="jefe.idDirectivo">
-                                    {{ jefe.nombre_completo }}
-                                </option>
-                            </select>
-                        </div>
-                        <div v-if="directivoError != ''" class="text-red-500 text-xs mt-1">{{ directivoError }}</div>
-                    </div>
-                </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"

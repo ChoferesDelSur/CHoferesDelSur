@@ -24,6 +24,7 @@ const props = defineProps({
     estado: { type: Object },
     directivo: { type: Object },
     usuario: { type: Object},
+    incapacidad: {type: Object},
 });
 
 const botonesPersonalizados = [
@@ -312,7 +313,7 @@ const eliminarOperadores = () => {
         </div>
         <FormularioOperadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir operador'" :modal="'modalCreate'" :operador="props.operador"
-            :tipoOperador="props.tipoOperador" :estado="props.estado"
+            :tipoOperador="props.tipoOperador" :estado="props.estado" :incapacidad="props.incapacidad"
             :directivo="props.directivo"></FormularioOperadores>
         <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
             :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"

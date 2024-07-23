@@ -22,6 +22,10 @@ defineProps
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
       :href="route('rh.perfil')">
+      <i class="fa fa-heartbeat" aria-hidden="true"></i> Incapacidades
+    </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('rh.perfil')">
       <i class="fa fa-user" aria-hidden="true"></i> Perfil
     </a>
   </div>

@@ -85,7 +85,7 @@ const save = async () => {
     ) {
         return;
     }
-    form.post(route('servicio.addDirectivo'), {
+    form.post(route('rh.addDirectivo'), {
         onSuccess: () => {
             close()
             nombreError.value = '';
