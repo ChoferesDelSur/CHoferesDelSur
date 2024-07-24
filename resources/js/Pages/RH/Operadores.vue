@@ -23,8 +23,10 @@ const props = defineProps({
     tipoOperador: { type: Object },
     estado: { type: Object },
     directivo: { type: Object },
-    usuario: { type: Object},
-    incapacidad: {type: Object},
+    usuario: { type: Object },
+    incapacidad: { type: Object },
+    empresa: { type: Object },
+    convenioPago: { type: Object },
 });
 
 const botonesPersonalizados = [
@@ -53,7 +55,7 @@ const botonesPersonalizados = [
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         orientation: 'landscape', // Configurar la orientación horizontal
         exportOptions: {
-            columns: [2,3,4,5,6,7,8]
+            columns: [2, 3, 4, 5, 6, 7, 8]
         }
     },
     {
@@ -62,8 +64,8 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-        columns: [2,3,4,5,6,7, 8] // Índices de las columnas que deseas imprimir 
-    }
+            columns: [2, 3, 4, 5, 6, 7, 8] // Índices de las columnas que deseas imprimir 
+        }
     }
 ];
 
@@ -243,7 +245,7 @@ const eliminarOperadores = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-3"></div>
 
-            <Mensaje/>
+            <Mensaje />
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -314,10 +316,12 @@ const eliminarOperadores = () => {
         <FormularioOperadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir operador'" :modal="'modalCreate'" :operador="props.operador"
             :tipoOperador="props.tipoOperador" :estado="props.estado" :incapacidad="props.incapacidad"
-            :directivo="props.directivo"></FormularioOperadores>
-        <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
-            :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></FormularioActualizarOperadores>
+            :directivo="props.directivo" :empresa="props.empresa" :convenioPago="props.convenioPago">
+        </FormularioOperadores>
+        <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalE" :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
+            :estado="props.estado" :directivo="props.directivo" :operador="operadorE" :empresa="props.empresa"
+            :convenioPago="props.convenioPago"></FormularioActualizarOperadores>
     </RHLayout>
 </template>
 

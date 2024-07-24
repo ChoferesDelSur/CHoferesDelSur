@@ -125,7 +125,7 @@ const save = async () => {
                             <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                                 <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                     placeholder="Ingrese el apellido paterno"
-                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-64 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
                             <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
@@ -139,7 +139,7 @@ const save = async () => {
                             <div class="mt-2">
                                 <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
                                     placeholder="Ingrese el apellido materno"
-                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-64 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{ apellidoMError }}
                             </div>
@@ -150,7 +150,7 @@ const save = async () => {
                             <div class="mt-2">
                                 <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                     placeholder="Ingrese el nombre"
-                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-64 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{ nombreError }}</div>
                         </div>
@@ -160,7 +160,7 @@ const save = async () => {
                             <div class="mt-2">
                                 <select name="tipoDirectivo" :id="'tipoDirectivo' + op" v-model="form.tipDirectivo"
                                     placeholder="Seleccione el tipo de directivo"
-                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Seleccione un tipo de directivo</option>
                                     <option v-for="tDir in tipDirectivo" :key="tDir.idTipoDirectivo"
                                         :value="tDir.idTipoDirectivo">

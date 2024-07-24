@@ -24,9 +24,21 @@ class operador extends Model
         'RFC',
         'telefono',
         'NSS',
-        'domicilio',
         'idEstado',
         'idTipoOperador',
+        'idDireccion',
+        'numLicencia',
+        'vigenciaLicencia',
+        'numINE',
+        'vigenciaINE',
+        'ultimoContrato',
+        'antiguedad',
+        'fechaAlta',
+        'fechaBaja',
+        'idEmpresa',
+        'constanciaSF',
+        'idConvenioPago',
+        'cursoSemovi',
         'nombre_completo'
     ];
 
@@ -34,5 +46,10 @@ class operador extends Model
 {
     return $this->hasOne(Unidad::class, 'idOperador');
 }
+
+public function direcciones(): HasOne
+    {
+        return $this->hasOne(direccion::class, 'idDireccion', 'idDireccion');
+    }
 
 }

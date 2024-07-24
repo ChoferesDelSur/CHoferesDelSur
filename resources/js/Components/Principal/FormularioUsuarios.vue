@@ -127,7 +127,7 @@ watch(() => props.usuarios, (newVal) => {
                             <div class="mt-2">
                                 <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                     placeholder="Ingrese el nombre del usuario"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="nombreError != ''" class="text-red-500 text-xs mt-1">{{
                                 nombreError }}</div>
@@ -139,7 +139,7 @@ watch(() => props.usuarios, (newVal) => {
                             <div class="mt-2">
                                 <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                     placeholder="Ingrese el apellido paterno"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="apellidoPError != ''" class="text-red-500 text-xs mt-1">{{
                                 apellidoPError }}</div>
@@ -151,7 +151,7 @@ watch(() => props.usuarios, (newVal) => {
                             <div class="mt-2">
                                 <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoM"
                                     placeholder="Ingrese el apellido materno"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <div v-if="apellidoMError != ''" class="text-red-500 text-xs mt-1">{{
                                 apellidoMError }}</div>
@@ -163,7 +163,7 @@ watch(() => props.usuarios, (newVal) => {
                             <div class="mt-2">
                                 <select name="tipoUsuario" :id="'tipoUsuario' + op" v-model="form.tipoUsuario"
                                     placeholder="Seleccione el tipo de usuario"
-                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    class="block rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Seleccione el tipo de usuario</option>
                                     <option v-for="tUsuario in tipoUsuario" :key="tUsuario.idTipoUsuario"
                                         :value="tUsuario.idTipoUsuario">

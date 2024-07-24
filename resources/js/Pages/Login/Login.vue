@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/inertia-vue3';
-import { ref} from 'vue';
+import { ref } from 'vue';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -41,9 +41,14 @@ const togglePasswordVisibility = () => {
 
     <AuthenticationCard>
         <div>
-            <h2 class="text-black text-2xl text-center font-semibold p-5">Iniciar Sesion</h2>
+            <h2 class="text-black text-2xl text-center font-semibold p-2">Iniciar Sesión</h2>
+
+            <div class="flex justify-center">
+                <img src="https://i.postimg.cc/Pqxt4sy5/busAzul.gif" alt="Bus Amarillo" class="w-32 h-32" />
+            </div>
+
             <Mensaje />
-            <div class="p-4 mb-4 text-sm text-justify rounded-lg">
+            <div class="p-4 mb-0 text-sm text-justify rounded-lg">
                 <span class="">Bienvenido al sistema de control y gestión de la empresa Sociedad Cooperativa de Choferes
                     del Sur S.C.L. Para acceder a la información es necesario que inicie sesión.</span>
             </div>

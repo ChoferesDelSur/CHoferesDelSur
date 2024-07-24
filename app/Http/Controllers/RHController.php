@@ -15,7 +15,10 @@ use App\Models\corte;
 use App\Models\usuario;
 use App\Models\incapacidad;
 use App\Models\tipoUsuario;
+use App\Models\convenioPago;
 use App\Models\entrada;
+use App\Models\empresa;
+use App\Models\direccion;
 use App\Models\rolServicio;
 use App\Models\ultimaCorrida;
 use App\Models\tipoUltimaCorrida;
@@ -115,6 +118,9 @@ class RHController extends Controller
         $estado = estado::all();
         $directivo = directivo::all();
         $incapacidad = incapacidad::all();
+        $direccion = direccion::all();
+        $empresa = empresa::all();
+        $convenioPago = convenioPago::all();
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('RH/Operadores',[
             'usuario' => $usuario,
@@ -123,6 +129,9 @@ class RHController extends Controller
             'estado' => $estado,
             'incapacidad' => $incapacidad,
             'directivo' => $directivo,
+            'empresa' => $empresa,
+            'convenioPago' => $convenioPago,
+            'direccion' => $direccion,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),

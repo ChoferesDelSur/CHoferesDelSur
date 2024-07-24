@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\RHController;
+use App\Http\Controllers\DireccionesApiController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ServicioMiddleware;
 use App\Http\Middleware\RHMiddleware;
@@ -105,6 +106,26 @@ Route::controller(InfoController::class)->group(function () {
         Route::get('obtener/info/tipoUsuario/{idTipoUsuario}', 'obtenerTipoUsuario')->name('obtenerTipoUser');
     }
 );
+
+//Rutas para obtener los estados, municipios, asentamientos y codigos postales
+Route::controller(DireccionesApiController::class)->group(function () {
+    // Ruta para obtener todos los estados
+    Route::get('obtener/estados', 'consultarEntidades')->name('consEstados');
+
+    // Rutas para encontrar Estados, municipios, asentamientos por codigo postal
+    Route::get('obtener/estado/codigoPostal/{codigoPostal}', 'obtenerEstadoPorCodigoPostal')->name('consEstadoXCodPostal');
+    Route::get('obtener/municipios/codigoPostal/{codigoPostal}', 'obtenerMunicipiosPorCodigoPostal')->name('consMunicipiosXCodPostal');
+    Route::get('obtener/asentamientos/codigoPostal/{codigoPostal}', 'obtenerAsentamientosPorCodigoPostal')->name('consAsentamientosXCodPostal');
+
+    //Rutas para encotrar municipios y asentamientos por el codigo de estado y municipios respectivamente
+    Route::get('obtener/municipios/idEstado/{idEntidad}', 'obtenerMunicipiosPorEstado')->name('consMunicipiosXIdEstado');
+    Route::get('obtener/asentamientos/idMunicipio/{idMunicipio}', 'obtenerAsentamientosPorMunicipio')->name('consAsentamientosXIdMunicipio');
+
+    //Ruta para datos con codigo postal
+    Route::get('obtener/datos/estado/municipio/asentamientos/{codigoPostal}', 'consDatosPorCodigoPostal')->name('consDatosXCodigoPostal');
+
+    Route::get('obtener/datos/asentamiento/{idAsentamiento}', 'informacionAsentamiento')->name('infoAsentamiento');
+});
 
 Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::controller(ServicioController::class)->group(function(){
