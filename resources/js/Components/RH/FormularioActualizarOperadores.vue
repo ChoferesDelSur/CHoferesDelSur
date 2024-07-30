@@ -33,6 +33,14 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    empresa: {
+        type: Object,
+        default: () => ({}),
+    },
+    convenioPago: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },

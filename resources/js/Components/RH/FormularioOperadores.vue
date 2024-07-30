@@ -74,7 +74,7 @@ const form = useForm({
     edad: props.operador.edad,
     CURP: props.operador.CURP,
     RFC: props.operador.RFC,
-    telefono: props.operador.telefono,
+    numTelefono: props.operador.numTelefono,
     NSS: props.operador.NSS,
     direccion: props.operador.idDireccion,
     tipoOperador: props.operador.idTipoOperador,
@@ -87,10 +87,6 @@ const form = useForm({
     calle: props.operador.calle,
     numero: props.operador.numero,
     idDireccion: props.operador.idDireccion,
-    motivo: props.incapacidad.motivo,
-    numeroDias: props.incapacidad.numeroDias,
-    fechaInicio: props.incapacidad.fechaInicio,
-    fechaFin: props.incapacidad.fechaFin,
     numLicencia: props.operador.numLicencia,
     vigenciaLicencia: props.operador.vigenciaLicencia,
     numINE: props.operador.numINE,
@@ -105,6 +101,11 @@ const form = useForm({
     cursoSemovi: props.operador.cursoSemovi,
     cursoPsicologico: props.operador.cursoPsicologico,
     constanciaSemovi: props.operador.constanciaSemovi,
+    idIncapacidad: props.incapacidad.idIncapacidad,
+    motivo: props.incapacidad.motivo,
+    numeroDias: props.incapacidad.numeroDias,
+    fechaInicio: props.incapacidad.fechaInicio,
+    fechaFin: props.incapacidad.fechaFin,
 });
 
 watch(() => props.operador, async (newVal) => {
@@ -136,6 +137,16 @@ watch(() => props.operador, async (newVal) => {
 }, { deep: true }
 );
 
+// Watcher para numeroDias y fechaInicio
+watch([() => form.numeroDias, () => form.fechaInicio], ([newNumeroDias, newFechaInicio]) => {
+    if (newNumeroDias && newFechaInicio) {
+        const startDate = new Date(newFechaInicio);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + parseInt(newNumeroDias, 10));
+        form.fechaFin = endDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    }
+});
+
 // Variables para los mensajes de validación
 const nombreError = ref('');
 const apellidoPError = ref('');
@@ -147,7 +158,7 @@ const fechaNError = ref('');
 const edadError = ref('');
 const CURPError = ref('');
 const RFCError = ref('');
-const telErrror = ref('');
+const telError = ref('');
 const NSSError = ref('');
 const NLicenciaError = ref('');
 const VigenciaLError = ref('');
@@ -194,14 +205,23 @@ const validateFechaNacimiento = (fechaNacimiento) => {
 
 // Validación de cadenas no vacías y solo números enteros
 const validateIntegerField = (value) => {
-    // Primero, verificar que el valor no esté vacío
-    if (typeof value !== 'string' || value.trim() === '') {
+    // Verificar que el valor no sea null o undefined
+    if (value == null) {
         return false;
     }
 
+    // Verificar que el valor sea un número entero
+    return Number.isInteger(value) && value >= 0;
+}
+
+const validateEdad = (edad) => {
+    // Primero, verificar que el valor no esté vacío
+    if (typeof edad !== 'string' || edad.trim() === '') {
+        return false;
+    }
     // Luego, verificar que el valor sea un número entero
     const integerRegex = /^\d+$/; // Regex para números enteros positivos
-    return integerRegex.test(value.trim());
+    return integerRegex.test(edad.trim());
 }
 
 // Función para validar CURP
@@ -211,17 +231,16 @@ const validateCURP = (CURP) => {
     return /^[A-Z]{4}\d{6}[HM]{1}[A-Z]{5}[A-Z0-9]{1}\d{1}$/.test(CURP);
 }
 
-// Función para validar RFC
+// Función para validar que el campo no esté vacío
 const validateRFC = (RFC) => {
-    // Validación con expresión regular
-    // Devuelve true si el RFC es válido, de lo contrario, devuelve false
-    return /^[A-Z&Ñ]{4}\d{6}[A-Z0-9]{3}$/.test(RFC);
+    // Verificar que el campo no esté vacío
+    return RFC.trim() !== '';
 }
 
 // Validación de numero telefonico a traves de espresion regular
-const validateNumeroTelefono = (telefono) => {
+const validateNumeroTelefono = (numTelefono) => {
     const numeroTExpReg = /^\d{10}$/;
-    return numeroTExpReg.test(telefono);
+    return numeroTExpReg.test(numTelefono);
 };
 
 // Validación de codigo postal a traves de expresion regular
@@ -256,8 +275,20 @@ const validateNSS = (NSS) => {
 
 // Validación de la fecha de vigencia de la licencia
 const validateLicenseExpiryDate = (vigenciaLicencia) => {
-    // Verificar que el campo sea una instancia de Date
+    // Verificar que el campo no sea null o undefined
+    if (vigenciaLicencia === null || vigenciaLicencia === undefined) {
+        return false;
+    }
+    // Convertir cadenas de texto a Date si es necesario
+    if (typeof vigenciaLicencia === 'string' || vigenciaLicencia instanceof String) {
+        vigenciaLicencia = new Date(vigenciaLicencia);
+    }
+    // Verificar que el valor sea una instancia de Date
     if (!(vigenciaLicencia instanceof Date)) {
+        return false;
+    }
+    // Verificar que la fecha sea válida
+    if (isNaN(vigenciaLicencia.getTime())) {
         return false;
     }
     // Verificar que la fecha de vigencia no esté en el pasado
@@ -270,9 +301,16 @@ const validateLicenseExpiryDate = (vigenciaLicencia) => {
 
 // Validación de la fecha de vigencia de la licencia
 const validateINE = (vigenciaINE) => {
-    // Verificar que la fecha de vigencia no esté en el pasado
-    const currentDate = new Date();
-    if (vigenciaINE < currentDate) {
+    // Verificar que el campo no esté vacío
+    if (!vigenciaINE) {
+        return false;
+    }
+
+    // Obtener el año actual
+    const currentYear = new Date().getFullYear();
+
+    // Verificar que el año de vigencia no esté en el pasado
+    if (parseInt(vigenciaINE) < currentYear) {
         return false;
     }
     return true;
@@ -294,37 +332,38 @@ const validateDateField = (dateValue) => {
     if (dateValue === null || dateValue === undefined) {
         return false;
     }
-
+    // Convertir cadenas de texto a Date si es necesario
+    if (typeof dateValue === 'string' || dateValue instanceof String) {
+        dateValue = new Date(dateValue);
+    }
     // Verificar que el valor sea una instancia de Date
     if (!(dateValue instanceof Date)) {
         return false;
     }
-
     // Verificar que la fecha sea válida
     if (isNaN(dateValue.getTime())) {
         return false;
     }
-
     return true;
 };
 
 const save = async () => {
     // Validación de los campos del formulario principal
-    nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre';
-    apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido Paterno';
-    apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido Materno';
+    nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre(s)';
+    apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
+    apellidoMError.value = validateStringNotEmpty(form.apellidoM) ? '' : 'Ingrese el apellido materno';
     tipoOperadorError.value = validateSelect(form.tipoOperador) ? '' : 'Seleccione el tipo de operador';
     fechaNError.value = validateFechaNacimiento(form.fechaNacimiento) ? '' : 'Fecha de nacimiento no válido';
     edadError.value = validateIntegerField(form.edad) ? '' : 'Edad no válido';
     CURPError.value = validateCURP(form.CURP) ? '' : 'CURP no válido';
     RFCError.value = validateRFC(form.RFC) ? '' : 'RFC no válido';
-    telErrror.value = validateNumeroTelefono(form.telefono) ? '' : 'Número de telefono no válido';
+    telError.value = validateNumeroTelefono(form.numTelefono) ? '' : 'Número de telefono no válido';
     NSSError.value = validateNSS(form.NSS) ? '' : 'NSS no válido';
     NLicenciaError.value = validateStringNotEmpty(form.numLicencia) ? '' : 'Número de licencia no válido';
     VigenciaLError.value = validateLicenseExpiryDate(form.vigenciaLicencia) ? '' : 'Vigencia no válido';
     NumINEError.value = validateNumINE(form.numINE) ? '' : 'Número de INE no válido';
     UltimoConError.value = validateDateField(form.ultimoContrato) ? '' : 'Fecha de último contrato no válido';
-    AntiguedadError.value = validateIntegerField(form.antiguedad) ? '' : 'Ingrese el año de antiguedad';
+    AntiguedadError.value = validateIntegerField(form.antiguedad) ? '' : 'Ingrese los años de antiguedad';
     FechaAltaError.value = validateDateField(form.fechaAlta) ? '' : 'Fecha de alta no válido';
     EmpresaError.value = validateSelect(form.empresaa) ? '' : 'Seleccione la empresa';
     convenioPagoError.value = validateSelect(form.convenioPa) ? '' : 'Seleccione el convenio de pago';
@@ -334,18 +373,24 @@ const save = async () => {
     numeroCError.value = validateIntegerField(form.numero) ? '' : 'Número de casa no válido';
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
     vigenciaINEError.value = validateINE(form.vigenciaINE) ? '' : 'Vigencia de INE no válido';
+
     // Validación adicional para los campos de incapacidad si el estado es Incapacidad
     if (form.estado === 3) { // idEstado para Incapacidad
         motivoError.value = validateStringNotEmpty(form.motivo) ? '' : 'Ingrese el motivo de la incapacidad';
         numDiasError.value = validateIntegerField(form.numeroDias) ? '' : 'Ingrese el número de días de incapacidad';
         fechaInicioError.value = validateDateField(form.fechaInicio) ? '' : 'Ingrese la fecha de inicio de incapacidad';
         fechaFinError.value = validateDateField(form.fechaFin) ? '' : 'Ingrese la fecha de fin de incapacidad';
-
-        if (
-            motivoError.value || numDiasError.value || fechaInicioError.value || fechaFinError.value
-        ) {
-            return;
-        }
+    }
+    // Verificar si hay algún error antes de enviar el formulario
+    if (
+        nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value ||
+        fechaNError.value || edadError.value || CURPError.value || RFCError.value || telError.value ||
+        NSSError.value || NLicenciaError.value || VigenciaLError.value || NumINEError.value || UltimoConError.value ||
+        AntiguedadError.value || FechaAltaError.value || EmpresaError.value || convenioPagoError.value ||
+        codigoPError.value || calleError.value || estadoError.value || numeroCError.value || directivoError.value ||
+        vigenciaINEError.value || (form.estado === 3 && (motivoError.value || numDiasError.value || fechaInicioError.value || fechaFinError.value))
+    ) {
+        return;
     }
 
     // Si no hay errores, enviar el formulario
@@ -363,15 +408,45 @@ const save = async () => {
             tipoOperadorError.value = '';
             estadoError.value = '';
             directivoError.value = '';
+            motivoError.value = '';
+            numDiasError.value = '';
+            fechaInicioError.value = '';
+            fechaFinError.value = '';
+            /*           form.nombre = '';
+                      form.apellidoP = '';
+                      form.apellidoM = ''; */
+            //form.tipoOperador = '';
+            fechaNError.value = '';
+            edadError.value = '';
+            CURPError.value = '';
+            RFCError.value = '';
+            telError.value = '';
+            NSSError.value = '';
+            NLicenciaError.value = '';
+            VigenciaLError.value = '';
+            NumINEError.value = '';
+            UltimoConError.value = '';
+            AntiguedadError.value = '';
+            FechaAltaError.value = '';
+            EmpresaError.value = '';
+            convenioPagoError.value = '';
+            codigoPError.value = '';
+            calleError.value = '';
+            /* estadoError.value = ''; */
+            numeroCError.value = '';
+            directivoError.value = '';
+            vigenciaINEError.value = '';
+            /* form.estado = ''; */
+            motivoError.value = '';
+            numDiasError.value = '';
+            fechaInicioError.value = '';
+            fechaFinError.value = '';
             incapacidad.value = {
                 motivo: '',
                 numeroDias: '',
                 fechaInicio: '',
                 fechaFin: '',
             }; // Limpia los campos de incapacidad
-        },
-        onError: () => {
-            // Maneja errores de la solicitud si es necesario
         }
     });
 };
@@ -569,19 +644,20 @@ const calcularEdad = () => {
                                 <div class="mt-2">
                                     <input type="text" name="RFC" :id="'RFC' + op" v-model="form.RFC"
                                         placeholder="Ingrese la RFC"
-                                        class="block w-28 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        class="block w-44 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
                                 <div v-if="RFCError != ''" class="text-red-500 text-xs mt-1">{{ RFCError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="telefono" class="block text-sm font-medium leading-6 text-gray-900">Teléfono
+                                <label for="numTelefono"
+                                    class="block text-sm font-medium leading-6 text-gray-900">Teléfono
                                     <span class="text-red-500">*</span></label>
                                 <div class="mt-2">
-                                    <input type="text" name="telefono" :id="'telefono' + op" v-model="form.telefono"
-                                        placeholder="Ingrese número de telefono"
+                                    <input type="text" name="numTelefono" :id="'numTelefono' + op"
+                                        v-model="form.numTelefono" placeholder="Ingrese número de telefono"
                                         class="block w-28 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
-                                <div v-if="telErrror != ''" class="text-red-500 text-xs mt-1">{{ telErrror }}</div>
+                                <div v-if="telError != ''" class="text-red-500 text-xs mt-1">{{ telError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="NSS" class="block text-sm font-medium leading-6 text-gray-900">NSS <span
@@ -589,7 +665,7 @@ const calcularEdad = () => {
                                 <div class="mt-2">
                                     <input type="text" name="NSS" :id="'NSS' + op" v-model="form.NSS"
                                         placeholder="Ingrese el NSS"
-                                        class="block w-34 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        class="block w-44 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
                                 <div v-if="NSSError != ''" class="text-red-500 text-xs mt-1">{{ NSSError }}</div>
                             </div>
@@ -639,12 +715,24 @@ const calcularEdad = () => {
                                 <div class="p-3 border-b border-gray-300">
                                     <h3 class="text-md font-semibold mb-1">Información de Incapacidad</h3>
                                     <div class="flex flex-wrap mt-4">
+                                        <div class="md:col-span-2">
+                                            <div class="sm:col-span-2" hidden>
+                                                <!-- Definir el tamaño del cuadro de texto -->
+                                                <label for="idIncapacidad"
+                                                    class="block text-sm font-medium leading-6 text-gray-900">idIncapacidad</label>
+                                                <div class="mt-1">
+                                                    <input type="number" name="idIncapacidad" v-model="form.idIncapacidad"
+                                                        placeholder="Ingrese id de la incapacidad" :id="'idIncapacidad' + op"
+                                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="sm:col-span-2 px-2">
                                             <label for="motivo"
                                                 class="block text-sm font-medium leading-6 text-gray-900">Motivo
                                                 <span class="text-red-500">*</span></label>
                                             <div class="mt-2">
-                                                <input type="text" name="motivo" v-model="incapacidad.motivo"
+                                                <input type="text" name="motivo" v-model="form.motivo"
                                                     placeholder="Ingrese el motivo de la incapacidad"
                                                     class="block w-64 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             </div>
@@ -658,7 +746,7 @@ const calcularEdad = () => {
                                                 class="block text-sm font-medium leading-6 text-gray-900">Número
                                                 de Días <span class="text-red-500">*</span></label>
                                             <div class="mt-2">
-                                                <input type="number" name="numeroDias" v-model="incapacidad.numeroDias"
+                                                <input type="number" name="numeroDias" v-model="form.numeroDias"
                                                     placeholder="Ingrese el número de días"
                                                     class="block w-32 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             </div>
@@ -672,7 +760,7 @@ const calcularEdad = () => {
                                                 class="block text-sm font-medium leading-6 text-gray-900">Fecha
                                                 de Inicio <span class="text-red-500">*</span></label>
                                             <div class="mt-2">
-                                                <input type="date" name="fechaInicio" v-model="incapacidad.fechaInicio"
+                                                <input type="date" name="fechaInicio" v-model="form.fechaInicio"
                                                     placeholder="Ingrese la fecha de inicio"
                                                     class="block w-48 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             </div>
@@ -684,7 +772,7 @@ const calcularEdad = () => {
                                                 class="block text-sm font-medium leading-6 text-gray-900">Fecha de
                                                 Fin <span class="text-red-500">*</span></label>
                                             <div class="mt-2">
-                                                <input type="date" name="fechaFin" v-model="incapacidad.fechaFin"
+                                                <input type="date" name="fechaFin" v-model="form.fechaFin"
                                                     placeholder="Ingrese la fecha de fin"
                                                     class="block w-48 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             </div>
@@ -971,12 +1059,12 @@ const calcularEdad = () => {
                         <div class="flex flex-wrap"><!-- Div que ordena los campos -->
                             <div class="sm:col-span-2 px-2">
                                 <label for="ultimoContrato"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Último
+                                    class="block text-sm font-medium leading-6 text-gray-900">Fecha de Último
                                     Contrato <span class="text-red-500">*</span></label>
                                 <div class="mt-2">
                                     <input type="date" name="ultimoContrato" :id="'ultimoContrato' + op"
                                         v-model="form.ultimoContrato" placeholder=" "
-                                        class="block w-38 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        class="block w-48 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
                                 <div v-if="UltimoConError != ''" class="text-red-500 text-xs mt-1">{{
                                     UltimoConError }}</div>

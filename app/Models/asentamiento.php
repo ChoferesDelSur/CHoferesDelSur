@@ -22,7 +22,7 @@ class asentamiento extends Model
         'idCodigoPostal'
     ];
 
-    public function municipios(): BelongsTo
+    public function municipio(): BelongsTo
     {
         return $this->belongsTo(municipio::class, 'idMunicipio', 'idMunicipio');
     }
@@ -32,8 +32,8 @@ class asentamiento extends Model
         return $this->belongsTo(codigoPostal::class, 'idCodigoPostal', 'idCodigoPostal');
     }
 
-    public function direcciones(): BelongsToMany
+    public function direcciones(): HasMany
     {
-        return $this->belongsToMany(direccion::class, 'idAsentamiento', 'idAsentamiento');
+        return $this->hasMany(direccion::class, 'idAsentamiento', 'idAsentamiento');
     }
 }

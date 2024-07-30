@@ -29,7 +29,7 @@ class municipio extends Model
 
     public function codigoPostal(): BelongsToMany
     {
-        return $this->belongsToMany(codigoPostal::class, 'idMunicipio', 'idMunicipio');
+        return $this->belongsToMany(codigoPostal::class, 'idCodigoPostal', 'idCodigoPostal');
     }
 
     protected function municipio(): Attribute

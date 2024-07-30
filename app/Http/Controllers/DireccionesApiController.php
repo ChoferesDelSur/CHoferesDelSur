@@ -120,7 +120,7 @@ class DireccionesApiController extends Controller
             $asentamiento = $codigoPostalModel->asentamientos->first();            
             if ($asentamiento) {
                 // Acceder al municipio a través de la relación en el modelo asentamiento
-                $municipio = $asentamiento->municipios;
+                $municipio = $asentamiento->municipio;
                 $datos['municipio'] = $municipio;
                 if ($municipio) {
                     // Acceder al entidad a través de la relación en el modelo municipio

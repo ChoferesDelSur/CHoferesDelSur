@@ -1,4 +1,5 @@
 <script setup>
+import $ from 'jquery';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -27,6 +28,9 @@ const props = defineProps({
     incapacidad: { type: Object },
     empresa: { type: Object },
     convenioPago: { type: Object },
+    direccion: { type: Object },
+    /* direccionDireccion: { type: Object },
+    operadorDireccion: { type: Object }, */
 });
 
 const botonesPersonalizados = [
@@ -73,12 +77,6 @@ const columnas = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return "";
-        }
-    },
-    {
-        data: null,
-        render: function (data, type, row, meta) {
             return `<input type="checkbox" class="operador-checkboxes" data-id="${row.idOperador}" ">`;
         }
     },
@@ -88,6 +86,31 @@ const columnas = [
     { data: 'apellidoP' },
     { data: 'apellidoM' },
     { data: 'nombre' },
+    {
+        data: 'fechaNacimiento',
+        render: function (data, type, row, meta) {
+            // Verifica si el dato es válido
+            if (data) {
+                // Asume que la fecha está en formato yyyy-mm-dd
+                const parts = data.split('-'); // Divide la fecha en partes
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}-${month}-${year}`;
+            }
+            return '';
+        }
+    },
+    {
+        data: 'edad',
+        render: function (data, type, row, meta) {
+            return data + ' años';
+        }
+    },
+    { data: 'CURP' },
+    { data: 'RFC' },
+    { data: 'numTelefono' },
+    { data: 'NSS' },
     {
         data: 'idTipoOperador',
         render: function (data, type, row, meta) {
@@ -102,6 +125,154 @@ const columnas = [
             // Modificación para mostrar la descripción del ciclo
             const estad = props.estado.find(estad => estad.idEstado === data);
             return estad ? estad.estado : '';
+        }
+    },
+    {
+        data: 'fechaAlta',
+        render: function (data, type, row, meta) {
+            // Verifica si el dato es válido
+            if (data) {
+                // Asume que la fecha está en formato yyyy-mm-dd
+                const parts = data.split('-'); // Divide la fecha en partes
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}-${month}-${year}`;
+            }
+            return '';
+        }
+    },
+    {
+        data: 'fechaBaja',
+        render: function (data, type, row, meta) {
+            // Verifica si el dato es válido
+            if (data) {
+                // Asume que la fecha está en formato yyyy-mm-dd
+                const parts = data.split('-'); // Divide la fecha en partes
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}-${month}-${year}`;
+            }
+            return '';
+        }
+    },
+    {
+        data: 'idEmpresa',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const emp = props.empresa.find(emp => emp.idEmpresa === data);
+            return emp ? emp.empresa : '';
+        }
+    },
+    {
+        data: 'idConvenioPago',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const convenio = props.convenioPago.find(convenio => convenio.idConvenioPago === data);
+            return convenio ? convenio.convenioPago : '';
+        }
+    },
+    {
+        data: 'antiguedad',
+        render: function (data, type, row, meta) {
+            return data + ' años';
+        }
+    },
+    {
+        data: 'idDireccion',
+        render: function (data, type, row, meta) {
+            // Encuentra la dirección correspondiente en la lista de direcciones
+            const dir = props.direccion.find(dir => dir.idDireccion === data);
+            if (dir) {
+                // Accede al asentamiento y municipio relacionados
+                const asentamiento = dir.asentamiento || {};
+                const municipio = asentamiento.municipio || {};
+                const entidad = municipio.estados || {};
+            
+                return `${dir.calle} ${dir.numero}, ${asentamiento.tipo ? `${asentamiento.tipo} ` : ''}${asentamiento.asentamiento || ''}, ${asentamiento.municipio.municipio || ''}, ${entidad.entidad || ''}, C.P. ${asentamiento.codigo_postal.codigoPostal}`;
+            }
+            return '';
+        }
+    },
+    { data: 'numLicencia' },
+    {
+        data: 'vigenciaLicencia',
+        render: function (data, type, row, meta) {
+            if (data) {
+                const parts = data.split('-');
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                const formattedDate = `${day}-${month}-${year}`;
+
+                const fechaActual = new Date();
+                const fechaVencimiento = new Date(year, month - 1, day);
+                const diasRestantes = Math.ceil((fechaVencimiento - fechaActual) / (1000 * 60 * 60 * 24));
+                let backgroundColor = 'transparent';
+
+                if (fechaVencimiento < fechaActual) {
+                    backgroundColor = '#f56565'; // Rojo para vencido
+                } else if (diasRestantes <= 5) {
+                    backgroundColor = '#ff9800'; // Naranja para advertencia
+                }
+
+                return `<div style="background-color: ${backgroundColor}; color: ${backgroundColor === '#f56565' ? '#ffffff' : 'inherit'}; width: 100%; height: 100%; box-sizing: border-box;">${formattedDate}</div>`;
+            }
+            return '';
+        }
+    },
+    { data: 'numINE' },
+    {
+        data: 'vigenciaINE',
+        render: function (data, type, row, meta) {
+            if (data) {
+                const anioActual = new Date().getFullYear();
+                const estaVencido = data < anioActual;
+
+                // Aplica el color de fondo en el div para no afectar el tamaño de la celda
+                return `<div style="background-color: ${estaVencido ? '#f56565' : 'transparent'}; color: ${estaVencido ? '#ffffff' : 'inherit'}; width: 100%; height: 100%; box-sizing: border-box;">${data}</div>`;
+            }
+            return '';
+        }
+    },
+    {
+        data: 'constanciaSF',
+        render: function (data, type, row, meta) {
+            return data ? 'SI' : 'NO';
+        }
+    },
+    {
+        data: 'cursoSemovi',
+        render: function (data, type, row, meta) {
+            return data ? 'SI' : 'NO';
+        }
+    },
+    {
+        data: 'constanciaSemovi',
+        render: function (data, type, row, meta) {
+            return data ? 'SI' : 'NO';
+        }
+    },
+    {
+        data: 'cursoPsicologico',
+        render: function (data, type, row, meta) {
+            return data ? 'SI' : 'NO';
+        }
+    },
+    {
+        data: 'ultimoContrato',
+        render: function (data, type, row, meta) {
+            // Verifica si el dato es válido
+            if (data) {
+                // Asume que la fecha está en formato yyyy-mm-dd
+                const parts = data.split('-'); // Divide la fecha en partes
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}-${month}-${year}`;
+            }
+            return '';
         }
     },
     {
@@ -259,10 +430,10 @@ const eliminarOperadores = () => {
                 </button>
             </div>
 
-            <div>
+            <div class="overflow-x-auto">
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
                     id="operadoresTablaId" name="operadoresTablaId" :columns="columnas" :data="operador" :options="{
-                        responsive: true, autoWidth: false, dom: 'Bftrip', language: {
+                        responsive: false, autoWidth: false, dom: 'Bftrip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
                             infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
@@ -273,39 +444,140 @@ const eliminarOperadores = () => {
                         /* pageLength: -1 */ // Esto elimina el límite de registros por página
                     }">
                     <thead>
+                        <tr class="text-sm leading-normal border-b border-gray-300">
+                            <th
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                            </th>
+                            <th class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                                colspan="9">INFORMACIÓN PERSONAL</th>
+                            <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                                colspan="7">INFORMACIÓN LABORAL</th>
+                            <th
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                                INFORMACIÓN DE DOMICILIO
+                            </th>
+                            <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                                colspan="8">INFORMACIÓN DE DOCUMENTACIÓN</th>
+                            <th class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                                colspan="2">INFORMACIÓN ADICIONAL</th>
+                        </tr>
                         <tr class="text-sm leading-normal">
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 ID
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Paterno
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Materno
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Nombre
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha de Nacimiento
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Edad
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                CURP
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                RFC
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Teléfono
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                NSS
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Tipo de operador
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Estado
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha Alta
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha Baja
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Empresa
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Convenio de Pago
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Antiguedad
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Dirección
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Número de Licencia
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Vigencia de Licencia
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Número de INE
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Vigencia de INE
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Constancia de Situación Fiscal
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Curso SEMOVI
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Constancia SEMOVI
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Curso Psicologico
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha de Último Contrato
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Jefe
                             </th>
                         </tr>
@@ -326,8 +598,28 @@ const eliminarOperadores = () => {
 </template>
 
 <style>
+/* Estilo personalizado para centrar el texto en las celdas de la tabla */
+#operadoresTablaId th {
+    text-align: center !important;
+}
+
 .jump-icon:hover i {
     transition: transform 0.2s ease-in-out;
     transform: translateY(-3px);
+}
+
+.expired-row {
+    background-color: red !important;
+    color: white;
+    /* Opcional, para mejorar la legibilidad del texto */
+}
+
+.bg-red-500 {
+    background-color: #f56565;
+    /* rojo claro en Tailwind CSS */
+}
+
+.text-white {
+    color: #ffffff;
 }
 </style>

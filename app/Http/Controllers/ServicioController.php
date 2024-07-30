@@ -33,8 +33,6 @@ class ServicioController extends Controller
     public function obtenerUsuario()
     {
         return auth()->user();
-        Log::info('Usuario servicio:', ['user' => $user]);
-        
     }
 
     public function obtenerTipoUsuario($idTipoUsuario)
@@ -47,7 +45,7 @@ class ServicioController extends Controller
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuario::find($idUsuario);
         $usuario->tipoUsuario2 = $usuario->tipoUsuario->tipoUsuario;
-        Log::info('Información del Usuario:', ['usuario' => $usuario]);
+
         return $usuario;
     }
 

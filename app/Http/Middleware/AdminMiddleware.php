@@ -17,7 +17,6 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info('Estoy en AdminMiddleware');
         if(auth()->check()){
             $usuario = usuario::where('idUsuario', auth()->user()->idUsuario)->with(['tipoUsuario'])->get();
             $tipoUsuario = $usuario[0]->tipoUsuario->tipoUsuario;
@@ -25,7 +24,6 @@ class AdminMiddleware
                 return $next($request);
             }
         }
-        Log::info('Redirigiendo a inicioSesion desde AdminMiddleware');
         return redirect()->route('inicioSesion');
     }
 }

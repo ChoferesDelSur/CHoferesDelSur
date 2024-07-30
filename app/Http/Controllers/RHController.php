@@ -16,6 +16,7 @@ use App\Models\usuario;
 use App\Models\incapacidad;
 use App\Models\tipoUsuario;
 use App\Models\convenioPago;
+use App\Models\codigoPostal;
 use App\Models\entrada;
 use App\Models\empresa;
 use App\Models\direccion;
@@ -48,7 +49,7 @@ class RHController extends Controller
         $idUsuario = auth()->user()->idUsuario;
         $usuario = usuario::find($idUsuario);
         $usuario->tipoUsuario3 = $usuario->tipoUsuario->tipoUsuario;
-        Log::info('Información del Usuario:', ['usuario' => $usuario]);
+
         return $usuario;
     }
 
@@ -113,12 +114,13 @@ class RHController extends Controller
     }
 
     public function operadores(){
-        $operador = operador::all(); 
+        $operador = operador::with('direccion.asentamiento.municipio.estados','direccion.asentamiento.codigoPostal')->get();
         $tipoOperador = tipooperador::all();
         $estado = estado::all();
         $directivo = directivo::all();
         $incapacidad = incapacidad::all();
-        $direccion = direccion::all();
+        $codigoPostal = codigoPostal::all();
+        $direccion = direccion::with('asentamiento.municipio.estados', 'asentamiento.codigoPostal')->get();
         $empresa = empresa::all();
         $convenioPago = convenioPago::all();
         $usuario = $this->obtenerInfoUsuario();
@@ -131,6 +133,7 @@ class RHController extends Controller
             'directivo' => $directivo,
             'empresa' => $empresa,
             'convenioPago' => $convenioPago,
+            'codigoPostal' => $codigoPostal,
             'direccion' => $direccion,
             'message' => session('message'),
             'color' => session('color'),
@@ -144,36 +147,108 @@ class RHController extends Controller
                 'nombre'=> 'required',
                 'apellidoP'=> 'required',
                 'apellidoM' => 'required',
+                'fechaNacimiento' => 'required',
+                'edad' => 'required',
+                'CURP' => 'required',
+                'RFC' => 'required',
+                'numTelefono' => 'required',
+                'NSS' => 'required',
                 'tipoOperador' => 'required',
                 'estado' => 'required',
+                'fechaAlta' => 'required',
+                'fechaBaja' => 'nullable',
+                'empresaa' => 'required',
+                'convenioPa'=> 'required',
+                'antiguedad' => 'required',
+                'numLicencia' => 'required',
+                'vigenciaLicencia' => 'required',
+                'numINE' => 'required',
+                'vigenciaINE' => 'required',
+                'constanciaSF' => 'nullable|boolean',
+                'cursoSEMOVI' => 'nullable|boolean',
+                'constanciaSEMOVI' => 'nullable|boolean',
+                'cursoPsicologico' => 'nullable|boolean',
+                'ultimoContrato' => 'required',
                 'directivo' => 'required',
+                // Validación de campos de incapacidad
+                'motivo' => 'nullable|required_if:estado,3',
+                'numeroDias' => 'nullable|required_if:estado,3|integer',
+                'fechaInicio' => 'nullable|required_if:estado,3|date',
+                'fechaFin' => 'nullable|required_if:estado,3|date',
             ]);
+            /* dd($request->all()); */
+            Log::info('Datos del Request después de la validación:', $request->all());
             // Verificar si el operador ya existe
-            $existingOperador = Operador::where('nombre', $request->nombre)
-            ->where('apellidoP', $request->apellidoP)
-            ->where('apellidoM', $request->apellidoM)
-            ->where('idDirectivo', $request->directivo)
-            ->first();
+            $existingOperador = operador::where('CURP', $request->CURP)->first();
 
             if($existingOperador){
             // Operador ya existe, puedes devolver una respuesta indicando el error
-            return redirect()->route('rh.operadores')->with(['message' => "El operador ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, "color" => "yellow", 'type' => 'info']);
+            return redirect()->route('rh.operadores')->with(['message' => "El operador ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, " con CURP:" . $request->CURP, "color" => "yellow", 'type' => 'info']);
             }
+
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+
+            //Se guarda el domicilio del profesor
+            $domicilio = new direccion();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+            Log::info('Datos después de guardar el domicilio:', ['request' => $request->all(), 'domicilio' => $domicilio]);
     
             $operador = new operador();
             $operador->nombre = $request->nombre;
             $operador->apellidoP = $request->apellidoP;
             $operador->apellidoM = $request->apellidoM;
+            $operador->fechaNacimiento = $request->fechaNacimiento;
+            $operador->edad = $request->edad;
+            $operador->CURP = $request->CURP;               
+            $operador->RFC = $request->RFC;
+            $operador->numTelefono = $request->numTelefono;
+            $operador->NSS = $request->NSS;
+
             $operador->idTipoOperador = $request->tipoOperador;
             $operador->idEstado = $request->estado;
+            $operador->fechaAlta = $request->fechaAlta;
+            $operador->fechaBaja = $request->fechaBaja;
+            $operador->idEmpresa = $request->empresaa;//le puse empresaa como esta en mi formulario
+            $operador->idConvenioPago = $request->convenioPa;
+            $operador->antiguedad = $request->antiguedad;
+
+            $operador->idDireccion = $domicilio->idDireccion;
+
+            $operador->numLicencia = $request->numLicencia;
+            $operador->vigenciaLicencia = $request->vigenciaLicencia;
+            $operador->numINE = $request->numINE;
+            $operador->vigenciaINE = $request->vigenciaINE;
+            $operador->constanciaSF = $request->constanciaSF ?? false;
+            $operador->cursoSemovi = $request->cursoSemovi ?? false;
+            $operador->constanciaSemovi = $request->constanciaSemovi ?? false;
+            $operador->cursoPsicologico = $request->cursoPsicologico ?? false;
+
+            $operador->ultimoContrato = $request->ultimoContrato;
             $operador->idDirectivo = $request->directivo;
 
             $nombreCompleto = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
             $operador->nombre_completo = $nombreCompleto;
 
             $operador->save();
+
+            // Si el estado es "Incapacidad", registrar la incapacidad
+        if ($request->estado == 3) {
+            $incapacidad = new incapacidad();
+            $incapacidad->motivo = $request->motivo;
+            $incapacidad->numeroDias = $request->numeroDias;
+            $incapacidad->fechaInicio = $request->fechaInicio;
+            $incapacidad->fechaFin = $request->fechaFin;
+            $incapacidad->idOperador = $operador->idOperador;
+            $incapacidad->save();
+        }
+            
             return redirect()->route('rh.operadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
+            Log::error('Error al agregar al operador:', ['error' => $e->getMessage()]);
             return redirect()->route('rh.operadores')->with(['message' => "Error al agregar al operador", "color" => "red", 'type' => 'error']);
         }
     }
@@ -314,5 +389,18 @@ class RHController extends Controller
         }catch(Exception $e){
             return redirect()->route('rh.sociosPrestadores')->with(['message' => "No se pudo eliminar al directivo", "color" => "red"]);
         }
+    }
+    public function incapacidades(){
+        $incapacidad = incapacidad::all();
+        $operador = operador::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('RH/Incapacidades',[
+            'incapacidad' => $incapacidad,
+            'usuario' => $usuario,
+            'operador' => $operador,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
     }
 }

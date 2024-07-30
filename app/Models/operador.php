@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\softDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class operador extends Model
 {
@@ -22,7 +23,7 @@ class operador extends Model
         'edad',
         'CURP',
         'RFC',
-        'telefono',
+        'numTelefono',
         'NSS',
         'idEstado',
         'idTipoOperador',
@@ -47,7 +48,7 @@ class operador extends Model
     return $this->hasOne(Unidad::class, 'idOperador');
 }
 
-public function direcciones(): HasOne
+public function direccion(): HasOne
     {
         return $this->hasOne(direccion::class, 'idDireccion', 'idDireccion');
     }

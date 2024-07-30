@@ -167,7 +167,7 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::put('/RecursosHumanos/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('rh.actualizarContrasenia');
 
     Route::get('/RecursosHumanos/operadores', 'operadores')->name('rh.operadores');
-    Route::post('/RecursosHumanos/operadores', 'addOperador')->name('rh.addOperador');
+    Route::post('/RecursosHumanos/operadores/agregar', 'addOperador')->name('rh.addOperador');
     Route::put('/RecursosHumanos/operadores/{idOperador}/edit', 'actualizarOperador')->name('rh.actualizarOperador');
     Route::delete('/RecursosHumanos/operadores/{operadoresIds}', 'eliminarOperador')->name('rh.eliminarOperador');
 
@@ -175,6 +175,8 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::post('/RecursosHumanos/sociosPrestadores', 'addDirectivo')->name('rh.addDirectivo');
     Route::put('/RecursosHumanos/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('rh.actualizarDirectivo');
     Route::delete('/RecursosHumanos/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('rh.eliminarDirectivo');
+
+    Route::get('/RecursosHumanos/incapacidades', 'incapacidades')->name('rh.incapacidades');
 
     });
 });

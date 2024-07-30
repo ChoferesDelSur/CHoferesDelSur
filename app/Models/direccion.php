@@ -26,7 +26,7 @@ class direccion extends Model
         return $this->belongsToMany(operador::class, 'idDireccion', 'idDireccion');
     }
 
-    public function asentamientos(): HasOne
+    public function asentamiento(): HasOne
     {
         return $this->hasOne(asentamiento::class, 'idAsentamiento', 'idAsentamiento');
     }
