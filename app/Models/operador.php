@@ -53,4 +53,9 @@ public function direccion(): HasOne
         return $this->hasOne(direccion::class, 'idDireccion', 'idDireccion');
     }
 
+    public function estado()
+    {
+        return $this->belongsTo(estado::class, 'idEstado', 'idEstado');
+    }
+
 }

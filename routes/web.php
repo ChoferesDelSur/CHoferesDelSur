@@ -177,6 +177,10 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::delete('/RecursosHumanos/sociosPrestadores/{directivosIds}', 'eliminarDirectivo')->name('rh.eliminarDirectivo');
 
     Route::get('/RecursosHumanos/incapacidades', 'incapacidades')->name('rh.incapacidades');
+    Route::post('/RecursosHumanos/incapacidades', 'addIncapacidad')->name('rh.addIncapacidad');
+    Route::put('/RecursosHumanos/incapacidades/{idIncapacidad}/edit', 'actualizarIncapacidad')->name('rh.actualizarIncapacidad');
+    Route::delete('/RecursosHumanos/incapacidades/{incapacidadesIds}', 'eliminarIncapacidad')->name('rh.eliminarIncapacidad');
+    Route::put('/RecursosHumanos/incapacidades/reincorporar', 'reincorporarOperador')->name('rh.reincorporar');
 
     });
 });

@@ -16,6 +16,7 @@ class incapacidad extends Model
 
     protected $fillable = [
         'motivo',
+        'numeroDias',
         'fechaInicio',
         'fechaFin',
         'idOperador',

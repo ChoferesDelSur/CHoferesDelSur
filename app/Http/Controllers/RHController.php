@@ -114,13 +114,26 @@ class RHController extends Controller
     }
 
     public function operadores(){
-        $operador = operador::with('direccion.asentamiento.municipio.estados','direccion.asentamiento.codigoPostal')->get();
+        $operador = operador::all();
+        //$operador = operador::with('direccion.asentamiento.municipio.estados','direccion.asentamiento.codigoPostal')->get();
         $tipoOperador = tipooperador::all();
         $estado = estado::all();
         $directivo = directivo::all();
         $incapacidad = incapacidad::all();
         $codigoPostal = codigoPostal::all();
-        $direccion = direccion::with('asentamiento.municipio.estados', 'asentamiento.codigoPostal')->get();
+        $direccion = direccion::all();
+        //$direccion = direccion::with('asentamiento.municipio.estados', 'asentamiento.codigoPostal')->get();
+        // Aquí se ajusta el operadorDireccion a cada operador y agrega propiedades al operador
+        $operador->each(function($operador) use ($direccion) {
+            $domicilio = $direccion->where('idDireccion', $operador->idDireccion)->first();
+            $operador->domicilio = $domicilio ? $domicilio->calle . " #" . $domicilio->numero . ", " . $domicilio->asentamiento->asentamiento . ", " . $domicilio->asentamiento->municipio->municipio . ", " . $domicilio->asentamiento->municipio->estados->entidad . ", " . $domicilio->asentamiento->codigoPostal->codigoPostal : null;
+            $operador->calle = $domicilio ? $domicilio->calle : null;
+            $operador->numero = $domicilio ? $domicilio->numero : null;
+            $operador->codigoPostal = $domicilio ? $domicilio->asentamiento->codigoPostal->codigoPostal : null;
+            $operador->idAsentamiento = $domicilio ? $domicilio->asentamiento->idAsentamiento : null;
+            $operador->idMunicipio = $domicilio ? $domicilio->asentamiento->municipio->idMunicipio : null;
+            $operador->idEntidad = $domicilio ? $domicilio->asentamiento->municipio->estados->idEntidad : null;
+        });
         $empresa = empresa::all();
         $convenioPago = convenioPago::all();
         $usuario = $this->obtenerInfoUsuario();
@@ -176,26 +189,20 @@ class RHController extends Controller
                 'fechaInicio' => 'nullable|required_if:estado,3|date',
                 'fechaFin' => 'nullable|required_if:estado,3|date',
             ]);
-            /* dd($request->all()); */
-            Log::info('Datos del Request después de la validación:', $request->all());
             // Verificar si el operador ya existe
             $existingOperador = operador::where('CURP', $request->CURP)->first();
-
             if($existingOperador){
             // Operador ya existe, puedes devolver una respuesta indicando el error
             return redirect()->route('rh.operadores')->with(['message' => "El operador ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, " con CURP:" . $request->CURP, "color" => "yellow", 'type' => 'info']);
             }
-
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
-
             //Se guarda el domicilio del profesor
             $domicilio = new direccion();
             $domicilio->calle = $request->calle;
             $domicilio->numero = $request->numero;
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
-            Log::info('Datos después de guardar el domicilio:', ['request' => $request->all(), 'domicilio' => $domicilio]);
     
             $operador = new operador();
             $operador->nombre = $request->nombre;
@@ -234,7 +241,6 @@ class RHController extends Controller
             $operador->nombre_completo = $nombreCompleto;
 
             $operador->save();
-
             // Si el estado es "Incapacidad", registrar la incapacidad
         if ($request->estado == 3) {
             $incapacidad = new incapacidad();
@@ -255,30 +261,91 @@ class RHController extends Controller
 
     public function actualizarOperador(Request $request, $idOperador)
     {
-        try{
+        try {
+            // Validaciones básicas
             $request->validate([
-                'nombre'=> 'required',
-                'apellidoP'=> 'required',
+                'nombre' => 'required',
+                'apellidoP' => 'required',
                 'apellidoM' => 'required',
                 'tipoOperador' => 'required',
                 'estado' => 'required',
                 'directivo' => 'required',
+                'fechaNacimiento' => 'required',
+                'edad' => 'required',
+                'CURP' => 'required',
+                'RFC' => 'required',
+                'numTelefono' => 'required',
+                'NSS' => 'required',
+                'fechaAlta' => 'required',
+                'fechaBaja' => 'nullable',
+                'empresaa' => 'required',
+                'convenioPa' => 'required',
+                'antiguedad' => 'required',
+                'numLicencia' => 'required',
+                'vigenciaLicencia' => 'required',
+                'vigenciaINE' => 'required',
+                'constanciaSF' => 'nullable|boolean',
+                'cursoSemovi' => 'nullable|boolean',
+                'constanciaSemovi' => 'nullable|boolean',
+                'cursoPsicologico' => 'nullable|boolean',
+                'ultimoContrato' => 'required',
             ]);
+            // Encontrar el operador
             $operador = operador::find($idOperador);
+            // Actualizar la dirección si es necesario
+            if ($request->has('calle') || $request->has('numero') || $request->has('asentamiento')) {
+                $domicilio = direccion::find($operador->idDireccion);
+                if ($domicilio) {
+                    $domicilio->calle = $request->calle ?? $domicilio->calle;
+                    $domicilio->numero = $request->numero ?? $domicilio->numero;
+                    $domicilio->idAsentamiento = $request->asentamiento ?? $domicilio->idAsentamiento;
+                    $domicilio->save();
+                }
+            }
+            // Determinar la fecha actual
+            $fechaActual = now();
+            // Lógica para actualizar fechas según el estado
+            if ($request->estado == 1) { // Estado 'Alta'
+                $operador->fechaAlta = $fechaActual;
+                /* $operador->fechaBaja = null; */ // Limpiar fechaBaja si se cambia a Alta
+            } elseif ($request->estado == 2) { // Estado 'Baja'
+                $operador->fechaBaja = $fechaActual;
+            }
+            // Actualizar el operador
             $operador->nombre = $request->nombre;
             $operador->apellidoP = $request->apellidoP;
             $operador->apellidoM = $request->apellidoM;
             $operador->idTipoOperador = $request->tipoOperador;
             $operador->idEstado = $request->estado;
             $operador->idDirectivo = $request->directivo;
-
-            $nombreCompleto = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
-            $operador->nombre_completo = $nombreCompleto;
-            
+            // Campos adicionales
+            $operador->fechaNacimiento = $request->fechaNacimiento ?? $operador->fechaNacimiento;
+            $operador->edad = $request->edad ?? $operador->edad;
+            $operador->CURP = $request->CURP ?? $operador->CURP;
+            $operador->RFC = $request->RFC ?? $operador->RFC;
+            $operador->numTelefono = $request->numTelefono ?? $operador->numTelefono;
+            $operador->NSS = $request->NSS ?? $operador->NSS;
+            $operador->idEmpresa = $request->empresaa ?? $operador->idEmpresa;
+            $operador->idConvenioPago = $request->convenioPa ?? $operador->idConvenioPago;
+            $operador->antiguedad = $request->antiguedad ?? $operador->antiguedad;
+            $operador->numLicencia = $request->numLicencia ?? $operador->numLicencia;
+            $operador->vigenciaLicencia = $request->vigenciaLicencia ?? $operador->vigenciaLicencia;
+            $operador->numINE = $request->numINE ?? $operador->numINE;
+            $operador->vigenciaINE = $request->vigenciaINE ?? $operador->vigenciaINE;
+            $operador->constanciaSF = $request->constanciaSF ?? $operador->constanciaSF;
+            $operador->cursoSemovi = $request->cursoSemovi ?? $operador->cursoSemovi;
+            $operador->constanciaSemovi = $request->constanciaSemovi ?? $operador->constanciaSemovi;
+            $operador->cursoPsicologico = $request->cursoPsicologico ?? $operador->cursoPsicologico;
+            $operador->ultimoContrato = $request->ultimoContrato ?? $operador->ultimoContrato;
+            // Actualizar el nombre completo
+            $operador->nombre_completo = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
+    
             $operador->save();
+    
             return redirect()->route('rh.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green"]);
-        }catch(Exception $e){
-            return redirect()->route('rh.operadores')->with(['message' => "El operador no se actualizó correctamente: " . $requests->nombre, "color" => "reed"]);
+        } catch (Exception $e) {
+            Log::error('Error al actualizar al operador:', ['error' => $e->getMessage()]);
+            return redirect()->route('rh.operadores')->with(['message' => "Error al actualizar al operador", "color" => "red"]);
         }
     }
 
@@ -286,10 +353,8 @@ class RHController extends Controller
         try{
             // Convierte la cadena de IDs en un array
             $operadoresIdsArray = explode(',', $operadoresIds);
-
             // Limpia los IDs para evitar posibles problemas de seguridad
             $operadoresIdsArray = array_map('intval', $operadoresIdsArray);
-
             // Elimina las materias
             operador::whereIn('idOperador', $operadoresIdsArray)->delete();
             // Redirige a la página deseada después de la eliminación
@@ -323,16 +388,13 @@ class RHController extends Controller
                 'apellidoM' => 'required',
                 'tipDirectivo' => 'required',
             ]);
-
             // Verificar si ya existe un directivo con el mismo nombre completo
             $nombreCompleto = $request->apellidoP . ' ' . $request->apellidoM . ' ' . $request->nombre;
             $directivoExistente = directivo::where('nombre_completo', $nombreCompleto)->first();
-            
             if($directivoExistente) {
                 // Si ya existe un directivo con el mismo nombre completo, retornar un mensaje de error o realizar la acción correspondiente
                 return redirect()->route('rh.sociosPrestadores')->with(['message' => "El directivo ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, "color" => "yellow", 'type' => 'info']);
             }
-    
             $directivo = new directivo();
             $directivo->nombre = $request->nombre;
             $directivo->apellidoP = $request->apellidoP;
@@ -357,7 +419,6 @@ class RHController extends Controller
                 'apellidoM' => 'required',
                 'tipDirectivo' => 'required',
             ]);
-
             $directivo = directivo::find($idDirectivo);
             $directivo->nombre = $request->nombre;
             $directivo->apellidoP = $request->apellidoP;
@@ -378,10 +439,8 @@ class RHController extends Controller
         try{
             // Convierte la cadena de IDs en un array
             $directivosIdsArray = explode(',', $directivosIds);
-
             // Limpia los IDs para evitar posibles problemas de seguridad
             $directivosIdsArray = array_map('intval', $directivosIdsArray);
-
             // Elimina las materias
             directivo::whereIn('idDirectivo', $directivosIdsArray)->delete();
             // Redirige a la página deseada después de la eliminación
@@ -390,17 +449,127 @@ class RHController extends Controller
             return redirect()->route('rh.sociosPrestadores')->with(['message' => "No se pudo eliminar al directivo", "color" => "red"]);
         }
     }
+
     public function incapacidades(){
         $incapacidad = incapacidad::all();
         $operador = operador::all();
+        $operadoresAlta = operador::where('idEstado', 1)->get();
+        $operadoresIncapacidad = operador::where('idEstado', 3)->get();
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('RH/Incapacidades',[
             'incapacidad' => $incapacidad,
             'usuario' => $usuario,
             'operador' => $operador,
+            'operadoresAlta' => $operadoresAlta,
+            'operadoresIncapacidad' => $operadoresIncapacidad,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
         ]);
+    }
+
+    public function addIncapacidad(Request $request){
+        try{
+            $request->validate([
+                'motivo' => 'required',
+                'numeroDias' => 'required',
+                'fechaInicio' => 'required',
+                'fechaFin' => 'required',
+                'chofer' => 'required|exists:operador,idOperador', // Verifica que el operador exista
+            ]);
+            // Crear un nuevo registro de incapacidad
+            incapacidad::create([
+                'motivo' => $request->input('motivo'),
+                'numeroDias' => $request->input('numeroDias'),
+                'fechaInicio' => $request->input('fechaInicio'),
+                'fechaFin' => $request->input('fechaFin'),
+                'idOperador' => $request->input('chofer'),
+            ]);
+            // Recuperar el operador relacionado con la incapacidad
+            $operador = operador::find($request->input('chofer'));
+            if ($operador) {
+                // Actualizar el estado del operador a 'incapacidad' (idEstado = 3)
+                $operador->update(['idEstado' => 3]);
+                $nombreCompleto = $operador->nombre_completo;
+            } else {
+                $nombreCompleto = 'desconocido';
+            }    
+            // Redirigir con un mensaje de éxito que incluye el nombre completo del operador
+            return redirect()->route('rh.incapacidades')->with([
+                'message' => 'Incapacidad registrado correctamente del operador: ' . $nombreCompleto,
+                'color' => 'green',
+                'type' => 'success'
+            ]);
+        }catch(Exception $e){
+            return redirect()->route('rh.incapacidades')->with(['message' => "Error al agregar la incapacidad", "color" => "red", 'type' => 'error']);
+        }
+    }
+
+    public function actualizarIncapacidad(Request $request, $idIncapacidad)
+    {
+        try{
+            $request->validate([
+                'motivo'=> 'required',
+                'numeroDias'=> 'required',
+                'fechaInicio' => 'required',
+                'fechaFin' => 'required',
+            ]);
+            $directivo = directivo::find($idDirectivo);
+            $directivo->nombre = $request->nombre;
+            $directivo->apellidoP = $request->apellidoP;
+            $directivo->apellidoM = $request->apellidoM;
+            $directivo->idTipoDirectivo = $request->tipDirectivo;
+            $nombreCompleto =$directivo->apellidoP . ' ' . $directivo->apellidoM. ' ' . $directivo->nombre;
+            $directivo->nombre_completo = $nombreCompleto;
+
+            $directivo->save();
+
+            return redirect()->route('rh.sociosPrestadores')->with(['message' => "Directivo actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('rh.sociosPrestadores')->with(['message' => "El directivo no se actualizó correctamente: " . $nombreCompleto, "color" => "reed"]);
+        }
+    }
+
+    public function eliminarIncapacidad($directivosIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $directivosIdsArray = explode(',', $directivosIds);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $directivosIdsArray = array_map('intval', $directivosIdsArray);
+            // Elimina las materias
+            directivo::whereIn('idDirectivo', $directivosIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('rh.sociosPrestadores')->with(['message' => "Directivo eliminada correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('rh.sociosPrestadores')->with(['message' => "No se pudo eliminar al directivo", "color" => "red"]);
+        }
+    }
+
+    public function reincorporarOperador(Request $request){
+        try {
+            // Validar la solicitud
+            $request->validate([
+                'chofer' => 'required|exists:operador,idOperador', // Verifica que el operador exista
+            ]);
+            // Recuperar el operador
+            $operador = operador::find($request->input('chofer'));
+            if ($operador) {
+                // Actualizar el estado del operador a 'Alta' (idEstado = 1)
+                $operador->update(['idEstado' => 1]);
+                // Recuperar el nombre completo del operador
+                $nombreCompleto = $operador->nombre_completo;
+                // Redirigir con un mensaje de éxito que incluye el nombre completo del operador
+                return redirect()->route('rh.incapacidades')->with(['message' => 'Operador ' . $nombreCompleto . ' reincorporado correctamente','color' => 'green','type' => 'success'
+                ]);
+            } else {
+                // Si el operador no se encuentra
+                return redirect()->route('rh.incapacidades')->with(['message' => 'Operador no encontrado','color' => 'red','type' => 'error'
+                ]);
+            }
+        } catch (Exception $e) {
+            // Capturar cualquier excepción y redirigir con un mensaje de error
+            return redirect()->route('rh.incapacidades')->with(['message' => 'Error al reincorporar operador','color' => 'red','type' => 'error'
+            ]);
+        }   
     }
 }

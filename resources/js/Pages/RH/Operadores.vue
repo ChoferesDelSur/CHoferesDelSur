@@ -29,8 +29,6 @@ const props = defineProps({
     empresa: { type: Object },
     convenioPago: { type: Object },
     direccion: { type: Object },
-    /* direccionDireccion: { type: Object },
-    operadorDireccion: { type: Object }, */
 });
 
 const botonesPersonalizados = [
@@ -180,19 +178,9 @@ const columnas = [
         }
     },
     {
-        data: 'idDireccion',
+        data: 'domicilio', // Cambiar 'direccion' a 'domicilio'
         render: function (data, type, row, meta) {
-            // Encuentra la dirección correspondiente en la lista de direcciones
-            const dir = props.direccion.find(dir => dir.idDireccion === data);
-            if (dir) {
-                // Accede al asentamiento y municipio relacionados
-                const asentamiento = dir.asentamiento || {};
-                const municipio = asentamiento.municipio || {};
-                const entidad = municipio.estados || {};
-            
-                return `${dir.calle} ${dir.numero}, ${asentamiento.tipo ? `${asentamiento.tipo} ` : ''}${asentamiento.asentamiento || ''}, ${asentamiento.municipio.municipio || ''}, ${entidad.entidad || ''}, C.P. ${asentamiento.codigo_postal.codigoPostal}`;
-            }
-            return '';
+            return data ? data : '';
         }
     },
     { data: 'numLicencia' },
@@ -438,10 +426,8 @@ const eliminarOperadores = () => {
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
                             infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
                             infoFiltered: '(filtrado de un total de _MAX_ registros)',
-                            lengthMenu: 'Mostrar _MENU_ registros',
-                            paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
                         }, buttons: [botonesPersonalizados],
-                        /* pageLength: -1 */ // Esto elimina el límite de registros por página
+                        paging: false,// Esto es para quitar la paginacion
                     }">
                     <thead>
                         <tr class="text-sm leading-normal border-b border-gray-300">
@@ -463,6 +449,9 @@ const eliminarOperadores = () => {
                                 colspan="8">INFORMACIÓN DE DOCUMENTACIÓN</th>
                             <th class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
                                 colspan="2">INFORMACIÓN ADICIONAL</th>
+                            <th
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                            </th>
                         </tr>
                         <tr class="text-sm leading-normal">
                             <th
@@ -580,6 +569,10 @@ const eliminarOperadores = () => {
                                 class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Jefe
                             </th>
+                            <th
+                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+
+                            </th>
                         </tr>
                     </thead>
                 </DataTable>
@@ -593,7 +586,7 @@ const eliminarOperadores = () => {
         <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
             @close="cerrarModalE" :title="'Editar Operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
             :estado="props.estado" :directivo="props.directivo" :operador="operadorE" :empresa="props.empresa"
-            :convenioPago="props.convenioPago"></FormularioActualizarOperadores>
+            :convenioPago="props.convenioPago" :direccion="props.direccion"></FormularioActualizarOperadores>
     </RHLayout>
 </template>
 

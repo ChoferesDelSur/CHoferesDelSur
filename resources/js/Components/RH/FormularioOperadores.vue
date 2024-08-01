@@ -94,7 +94,7 @@ const form = useForm({
     ultimoContrato: props.operador.ultimoContrato,
     antiguedad: props.operador.antiguedad,
     fechaAlta: props.operador.fechaAlta,
-    fechaBaja: props.operadorfechaBaja,
+    fechaBaja: props.operador.fechaBaja,
     empresaa: props.operador.idEmpresa,
     constanciaSF: props.operador.constanciaSF,
     convenioPa: props.operador.idConvenioPago,

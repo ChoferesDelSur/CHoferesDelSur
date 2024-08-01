@@ -10,8 +10,9 @@ import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';
 import RHLayout from '../../Layouts/RHLayout.vue';
-import FormularioSP from '../../Components/RH/FormularioSP.vue';
-import FormularioActualizarSP from '../../Components/RH/FormularioActualizarSP.vue';
+import FormularioIncapacidad from '../../Components/RH/FormularioIncapacidad.vue';
+import FormularioActualizarIncapacidad from '../../Components/RH/FormularioActualizarIncapacidad.vue';
+import FormularioReincorporar from '../../Components/RH/FormularioReincorporar.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -22,7 +23,9 @@ const props = defineProps({
     operador: { type: Object },
     incapacidad: { type: Object },
     directivo: { type: Object },
-    usuario: { type: Object},
+    usuario: { type: Object },
+    operadoresAlta: { type: Object },
+    operadoresIncapacidad: {type: Object},
 });
 
 const botonesPersonalizados = [
@@ -50,7 +53,7 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-            columns: [2,3,4,5,6]
+            columns: [2, 3, 4, 5, 6]
         }
     },
     {
@@ -59,8 +62,8 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-        columns: [2,3,4,5,6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
-    }
+            columns: [2, 3, 4, 5, 6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+        }
     }
 ];
 
@@ -95,6 +98,7 @@ const columnas = [
 
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
+const mostrarModalReincor = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
@@ -102,13 +106,24 @@ const form = useForm({
     _method: 'DELETE',
 });
 
-const directivosSeleccionados = ref([]);
+const incapacidadesSeleccionados = ref([]);
 
-var directivoE = ({});
-const abrirE = ($directivoss) => {
-    directivoE = $directivoss;
+var incapacidadE = ({});
+var operadorE = ({});
+const abrirE = ($incapacidadess) => {
+    incapacidadE = $incapacidadess;
     mostrarModalE.value = true;
 }
+
+const abrirReincor = ($operador) => {
+    operadorE = $operador;
+    mostrarModalReincor.value = true;
+}
+
+const cerrarModalR = () => {
+    mostrarModalReincor.value = false;
+};
+
 
 const cerrarModal = () => {
     mostrarModal.value = false;
@@ -118,18 +133,18 @@ const cerrarModalE = () => {
     mostrarModalE.value = false;
 };
 
-const toggleDirectivoSelection = (directivo) => {
-    if (directivosSeleccionados.value.includes(directivo)) {
+const toggleIncapacidadSelection = (incapacidad) => {
+    if (incapacidadesSeleccionados.value.includes(incapacidad)) {
         // Si el alumno ya está seleccionado, la eliminamos del array
-        directivosSeleccionados.value = directivosSeleccionados.value.filter((d) => d !== directivo);
+        incapacidadesSeleccionados.value = incapacidadesSeleccionados.value.filter((i) => i !== incapacidad);
     } else {
         // Si el alumno no está seleccionado, la agregamos al array
-        directivosSeleccionados.value.push(directivo);
+        incapacidadesSeleccionados.value.push(incapacidad);
     }
     // Llamado del botón de eliminar para cambiar su estado deshabilitado
     const botonEliminar = document.getElementById("eliminarABtn");
     // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
-    if (directivosSeleccionados.value.length > 0) {
+    if (incapacidadesSeleccionados.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
     } else {
         botonEliminar.setAttribute("disabled", "");
@@ -138,26 +153,26 @@ const toggleDirectivoSelection = (directivo) => {
 
 onMounted(() => {
     // Agrega un escuchador de eventos fuera de la lógica de Vue
-    document.getElementById('directivosTablaId').addEventListener('click', (event) => {
+    document.getElementById('incapacidadesTablaId').addEventListener('click', (event) => {
         const checkbox = event.target;
-        if (checkbox.classList.contains('directivos-checkboxes')) {
-            const directivoId = parseInt(checkbox.getAttribute('data-id'));
-            if (props.directivo) {
-                const dir = props.directivo.find(dir => dir.idDirectivo === directivoId);
-                if (dir) {
-                    toggleDirectivoSelection(dir);
+        if (checkbox.classList.contains('incapacidades-checkboxes')) {
+            const incapacidadId = parseInt(checkbox.getAttribute('data-id'));
+            if (props.incapacidad) {
+                const inc = props.incapacidad.find(inc => inc.idIncapacidad === incapacidadId);
+                if (inc) {
+                    toggleIncapacidadSelection(inc);
                 } else {
-                    console.log("No se tiene directivo");
+                    console.log("No se tiene incapacidad");
                 }
             }
         }
     });
 
     // Manejar clic en el botón de editar
-    $('#directivosTablaId').on('click', '.editar-button', function () {
-        const directivoId = $(this).data('id');
-        const dir = props.directivo.find(d => d.idDirectivo === directivoId);
-        abrirE(dir);
+    $('#incapacidadesTablaId').on('click', '.editar-button', function () {
+        const incapacidadId = $(this).data('id');
+        const inc = props.incapacidad.find(i => i.idIncapacidad === incapacidadId);
+        abrirE(inc);
     });
 });
 
@@ -219,7 +234,7 @@ const eliminarDirectivos = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <Mensaje/>
+            <Mensaje />
 
             <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
                 <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
@@ -231,10 +246,14 @@ const eliminarDirectivos = () => {
                     @click="eliminarDirectivos">
                     <i class="fa fa-trash mr-2"></i>Borrar Incapacidad
                 </button>
+                <button class="bg-sky-500 hover:bg-sky-500 text-white font-semibold py-2 px-4 rounded"
+                    @click="mostrarModalReincor = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+                    <i class="fa fa-refresh" aria-hidden="true"></i> Reincorporar Operador
+                </button>
             </div>
             <div>
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-                    id="directivosTablaId" name="directivosTablaId" :columns="columnas" :data="incapacidad" :options="{
+                    id="incapacidadesTablaId" name="incapacidadesTablaId" :columns="columnas" :data="incapacidad" :options="{
                         responsive: true, autoWidth: false, dom: 'Bftrip', language: {
                             search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
                             info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
@@ -278,12 +297,15 @@ const eliminarDirectivos = () => {
                 </DataTable>
             </div>
         </div>
-        <FormularioSP :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-            :title="'Añadir directivo'" :op="'1'" :modal="'modalCreate'" :tipDirectivo="props.tipDirectivo"
-            :directivo="props.directivo"></FormularioSP>
-        <FormularioActualizarSP :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar directivo'" :op="'2'" :modal="'modalEdit'" :tipDirectivo="props.tipDirectivo"
-            :directivo="directivoE"></FormularioActualizarSP>
+        <FormularioIncapacidad :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+            :title="'Añadir incapacidad'" :op="'1'" :modal="'modalCreate'" :operador="props.operador"
+            :operadoresAlta="props.operadoresAlta"></FormularioIncapacidad>
+        <FormularioActualizarIncapacidad :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalE" :title="'Editar Incapacidad'" :modal="'modalEdit'" :operador="props.operador" :incapacidad="incapacidadE">
+        </FormularioActualizarIncapacidad>
+        <FormularioReincorporar :show="mostrarModalReincor" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalR" :title="'Reincorporar Operador'" :modal="'modalEdit'" :operador="props.operador" :operadoresIncapacidad="props.operadoresIncapacidad">
+        </FormularioReincorporar>
     </RHLayout>
 </template>
 
