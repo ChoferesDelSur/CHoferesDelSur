@@ -290,6 +290,11 @@ class RHController extends Controller
                 'cursoPsicologico' => 'nullable|boolean',
                 'ultimoContrato' => 'required',
             ]);
+
+            // Verificar si el estado es 'Incapacidad'
+            if ($request->estado == 3) {
+                return redirect()->route('rh.operadores')->with(['message' => 'Para cambiar el estado del operador a Incapacidad, dirígese a la opción Incapacidades de su menú de opciones y poder registrar una incapacidad para el operador.', 'color' => 'yellow', 'type' => 'info']);
+            }
             // Encontrar el operador
             $operador = operador::find($idOperador);
             // Actualizar la dirección si es necesario
@@ -342,10 +347,10 @@ class RHController extends Controller
     
             $operador->save();
     
-            return redirect()->route('rh.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green"]);
+            return redirect()->route('rh.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green", 'type' => 'success']);
         } catch (Exception $e) {
             Log::error('Error al actualizar al operador:', ['error' => $e->getMessage()]);
-            return redirect()->route('rh.operadores')->with(['message' => "Error al actualizar al operador", "color" => "red"]);
+            return redirect()->route('rh.operadores')->with(['message' => "Error al actualizar al operador", "color" => "red", 'type' => 'error']);
         }
     }
 
@@ -507,41 +512,53 @@ class RHController extends Controller
 
     public function actualizarIncapacidad(Request $request, $idIncapacidad)
     {
-        try{
+        try {
+            // Validar los campos del request
             $request->validate([
-                'motivo'=> 'required',
-                'numeroDias'=> 'required',
+                'motivo' => 'required',
+                'numeroDias' => 'required',
                 'fechaInicio' => 'required',
                 'fechaFin' => 'required',
             ]);
-            $directivo = directivo::find($idDirectivo);
-            $directivo->nombre = $request->nombre;
-            $directivo->apellidoP = $request->apellidoP;
-            $directivo->apellidoM = $request->apellidoM;
-            $directivo->idTipoDirectivo = $request->tipDirectivo;
-            $nombreCompleto =$directivo->apellidoP . ' ' . $directivo->apellidoM. ' ' . $directivo->nombre;
-            $directivo->nombre_completo = $nombreCompleto;
+            // Buscar la incapacidad por su id
+            $incapacidad = Incapacidad::find($idIncapacidad);
+            // Verificar si la incapacidad existe
+            if (!$incapacidad) {
+                return redirect()->route('rh.incapacidades')->with(['message' => "Incapacidad no encontrada", "color" => "red"]);
+            }
+            // Actualizar los campos de la incapacidad
+            $incapacidad->motivo = $request->motivo;
+            $incapacidad->numeroDias = $request->numeroDias;
+            $incapacidad->fechaInicio = $request->fechaInicio;
+            $incapacidad->fechaFin = $request->fechaFin;
+            // Guardar los cambios
+            $incapacidad->save();
 
-            $directivo->save();
-
-            return redirect()->route('rh.sociosPrestadores')->with(['message' => "Directivo actualizado correctamente: " . $nombreCompleto, "color" => "green"]);
-        }catch(Exception $e){
-            return redirect()->route('rh.sociosPrestadores')->with(['message' => "El directivo no se actualizó correctamente: " . $nombreCompleto, "color" => "reed"]);
+            // Crear el mensaje con la información actualizada
+            $message = "Incapacidad actualizada correctamente. Motivo: " . $incapacidad->motivo . 
+            ", Número de días: " . $incapacidad->numeroDias . 
+            ", Fecha de inicio: " . $incapacidad->fechaInicio . 
+            ", Fecha de fin: " . $incapacidad->fechaFin;
+    
+            return redirect()->route('rh.incapacidades')->with(['message' => $message, "color" => "green"]);
+        } catch (Exception $e) {
+            // Capturar cualquier excepción y redirigir con un mensaje de error
+            return redirect()->route('rh.incapacidades')->with(['message' => "Error al actualizar la incapacidad", "color" => "red"]);
         }
     }
 
-    public function eliminarIncapacidad($directivosIds){
+    public function eliminarIncapacidad($incapacidadesIds){
         try{
             // Convierte la cadena de IDs en un array
-            $directivosIdsArray = explode(',', $directivosIds);
+            $incapacidadesIdsArray = explode(',', $incapacidadesIds);
             // Limpia los IDs para evitar posibles problemas de seguridad
-            $directivosIdsArray = array_map('intval', $directivosIdsArray);
+            $incapacidadesIdsArray = array_map('intval', $incapacidadesIdsArray);
             // Elimina las materias
-            directivo::whereIn('idDirectivo', $directivosIdsArray)->delete();
+            incapacidad::whereIn('idIncapacidad', $incapacidadesIdsArray)->delete();
             // Redirige a la página deseada después de la eliminación
-            return redirect()->route('rh.sociosPrestadores')->with(['message' => "Directivo eliminada correctamente", "color" => "green"]);
+            return redirect()->route('rh.incapacidades')->with(['message' => "Incapacidad eliminada correctamente", "color" => "green"]);
         }catch(Exception $e){
-            return redirect()->route('rh.sociosPrestadores')->with(['message' => "No se pudo eliminar al directivo", "color" => "red"]);
+            return redirect()->route('rh.incapacidades')->with(['message' => "No se pudo eliminar la incapacidad", "color" => "red"]);
         }
     }
 
@@ -571,5 +588,23 @@ class RHController extends Controller
             return redirect()->route('rh.incapacidades')->with(['message' => 'Error al reincorporar operador','color' => 'red','type' => 'error'
             ]);
         }   
+    }
+
+    public function personalAdministrativo(){
+        $incapacidad = incapacidad::all();
+        $operador = operador::all();
+        $operadoresAlta = operador::where('idEstado', 1)->get();
+        $operadoresIncapacidad = operador::where('idEstado', 3)->get();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('RH/PersonalAdministrativo',[
+            'incapacidad' => $incapacidad,
+            'usuario' => $usuario,
+            'operador' => $operador,
+            'operadoresAlta' => $operadoresAlta,
+            'operadoresIncapacidad' => $operadoresIncapacidad,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
     }
 }

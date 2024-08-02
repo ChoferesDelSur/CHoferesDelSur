@@ -354,7 +354,7 @@ const eliminarOperadores = () => {
 
     swal.fire({
         title: '¿Estas seguro que deseas eliminar al operador seleccionado?',
-        html: `Operadores seleccionados: ${nombresOperadoores}`,
+        html: `Operador seleccionado: ${nombresOperadoores}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',

@@ -475,6 +475,18 @@ const calcularEdad = () => {
 
     form.edad = edad;
 };
+
+function handleEstadoChange(event) {
+    const selectedEstado = event.target.value;
+    if (selectedEstado == 3) {
+        Swal.fire({
+            title: 'Registrar Incapacidad',
+            text: 'Para registrar una incapacidad, dirígese a la opción Incapacidad para realizar esa acción.',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    }
+}
 </script>
 
 <template>
@@ -622,7 +634,7 @@ const calcularEdad = () => {
                                 </div>
                                 <div v-if="tipoOperadorError != ''" class="text-red-500 text-xs mt-1">{{
                                     tipoOperadorError
-                                }}
+                                    }}
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">
@@ -630,7 +642,7 @@ const calcularEdad = () => {
                                     Operador <span class="text-red-500">*</span></label>
                                 <div class="mt-2">
                                     <select name="estado" :id="'estado' + op" v-model="form.estado"
-                                        placeholder="Seleccione el tipo de estado"
+                                        @change="handleEstadoChange" placeholder="Seleccione el tipo de estado"
                                         class="block rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                         <option value="" disabled selected>Seleccione estado</option>
                                         <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
@@ -698,7 +710,7 @@ const calcularEdad = () => {
                                 </div>
                                 <div v-if="convenioPagoError != ''" class="text-red-500 text-xs mt-1">{{
                                     convenioPagoError
-                                    }}
+                                }}
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">

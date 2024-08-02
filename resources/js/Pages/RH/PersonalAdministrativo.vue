@@ -64,12 +64,12 @@ const botonesPersonalizados = [
 ];
 
 const columnas = [
-/*     {
+    {
         data: null,
         render: function (data, type, row, meta) {
             return "";
         }
-    }, */
+    },
     {
         data: null,
         render: function (data, type, row, meta) {
@@ -88,18 +88,6 @@ const columnas = [
             // Modificación para mostrar la descripción del ciclo
             const tDirectivo = props.tipDirectivo.find(tDirectivo => tDirectivo.idTipoDirectivo === data);
             return tDirectivo ? tDirectivo.tipoDirectivo : '';
-        }
-    },
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return "";
-        }
-    },
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return "";
         }
     },
     {
@@ -231,7 +219,7 @@ const eliminarDirectivos = () => {
 <template>
     <RHLayout title="Directivos" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
-            <h2 class="font-bold text-center text-xl pt-0">Directivos</h2>
+            <h2 class="font-bold text-center text-xl pt-0">Personal Administrativo</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
@@ -267,6 +255,9 @@ const eliminarDirectivos = () => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 ID
                             </th>
                             <th
@@ -279,19 +270,11 @@ const eliminarDirectivos = () => {
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre(s)
+                                Nombre
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo De Directivo
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Numero de Unidades
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Numero de Operadores
+                                Tipo Directivo
                             </th>
                         </tr>
                     </thead>

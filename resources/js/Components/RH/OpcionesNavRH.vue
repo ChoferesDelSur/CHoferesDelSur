@@ -17,12 +17,24 @@ defineProps
       <i class="fa fa-id-card" aria-hidden="true"></i> Operadores
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('rh.incapacidades')">
+      <i class="fa fa-heartbeat" aria-hidden="true"></i> Incapacidades
+    </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('rh.personalAdministrativo')">
+      <i class="fa fa-users" aria-hidden="true"></i> Personal Administrativo
+    </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
       :href="route('rh.sociosPrestadores')">
       <i class="fa fa-briefcase" aria-hidden="true"></i> Socios y Prestadores
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-      :href="route('rh.incapacidades')">
-      <i class="fa fa-heartbeat" aria-hidden="true"></i> Incapacidades
+      :href="route('rh.inicio')">
+      <i class="fa fa-plane" aria-hidden="true"></i> Vacaciones
+    </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('rh.inicio')">
+      <i class="fa fa-folder-open" aria-hidden="true"></i> Reportes
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
       :href="route('rh.perfil')">

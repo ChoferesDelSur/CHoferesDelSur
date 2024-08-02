@@ -71,7 +71,7 @@ const columnas = [
     {
         data: null,
         render: function (data, type, row, meta) {
-            return `<input type="checkbox" class="directivos-checkboxes" data-id="${row.idIncapacidad}" ">`;
+            return `<input type="checkbox" class="incapacidades-checkboxes" data-id="${row.idIncapacidad}" ">`;
         }
     },
     {
@@ -109,15 +109,9 @@ const form = useForm({
 const incapacidadesSeleccionados = ref([]);
 
 var incapacidadE = ({});
-var operadorE = ({});
 const abrirE = ($incapacidadess) => {
     incapacidadE = $incapacidadess;
     mostrarModalE.value = true;
-}
-
-const abrirReincor = ($operador) => {
-    operadorE = $operador;
-    mostrarModalReincor.value = true;
 }
 
 const cerrarModalR = () => {
@@ -176,48 +170,51 @@ onMounted(() => {
     });
 });
 
-const eliminarDirectivos = () => {
+const eliminarIncapacidades = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
-    // Obtener los nombres de las rutas seleccionadas
-    const nombreDirectivos = directivosSeleccionados.value.map((directivo) => directivo.nombre_completo).join(', ');
+
+    // Recoger los nombres de los operadores seleccionados
+    const nombresOperadores = incapacidadesSeleccionados.value.map((incapacidad) => {
+        const operador = props.operador.find(o => o.idOperador === incapacidad.idOperador);
+        return operador ? operador.nombre_completo : '';
+    }).filter(nombre => nombre !== '').join(', ');
 
     swal.fire({
-        title: '¿Estas seguro que deseas eliminar al directivo seleccionado?',
-        html: `Directivo seleccionado: ${nombreDirectivos}`,
-        icon: 'warning',
+        title: '¿Esta seguro que desea eliminar la(s) incapacidad(es) del(los) operador(es) seleccionado(s)?',
+        html: `Operador(es) seleccionado(s): ${nombresOperadores}`,
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
         cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const directivoE = directivosSeleccionados.value.map((directivo) => directivo.idDirectivo);
-                const $directivosIds = directivoE.join(',');
-                await form.post(route('rh.eliminarDirectivo', $directivosIds));
-                directivosSeleccionados.value = [];
+                const incapacidadE = incapacidadesSeleccionados.value.map((incapacidad) => incapacidad.idIncapacidad);
+                const $incapacidadesIds = incapacidadE.join(',');
+                await form.post(route('rh.eliminarIncapacidad', $incapacidadesIds));
+                incapacidadesSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
-                if (directivosSeleccionados.value.length > 0) {
+                if (incapacidadesSeleccionados.value.length > 0) {
                     botonEliminar.removeAttribute("disabled");
                 } else {
                     botonEliminar.setAttribute("disabled", "");
                 }
                 // Mostrar mensaje de éxito
                 Swal.fire({
-                    title: 'Directivo eliminado correctamente',
+                    title: 'Incapacidad eliminado correctamente',
                     icon: 'success'
                 });
 
                 // Almacenar el mensaje en la sesión flash de Laravel
-                window.flash = { message: 'Directivo eliminado correctamente', color: 'green' };
+                window.flash = { message: 'Incapacidad eliminado correctamente', color: 'green' };
 
             } catch (error) {
-                console.log("Error al eliminar varias directivos: " + error);
+                console.log("Error al eliminar varias incapacidades: " + error);
                 // Mostrar mensaje de error si es necesario
                 Swal.fire({
                     title: 'Error',
-                    text: 'Hubo un error al eliminar al directivo. Por favor, inténtalo de nuevo más tarde.',
+                    text: 'Hubo un error al eliminar la incapacidad. Por favor, inténtalo de nuevo más tarde.',
                     icon: 'error'
                 });
             }
@@ -243,7 +240,7 @@ const eliminarDirectivos = () => {
                 </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarDirectivos">
+                    @click="eliminarIncapacidades">
                     <i class="fa fa-trash mr-2"></i>Borrar Incapacidad
                 </button>
                 <button class="bg-sky-500 hover:bg-sky-500 text-white font-semibold py-2 px-4 rounded"

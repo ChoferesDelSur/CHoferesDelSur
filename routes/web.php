@@ -182,5 +182,7 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::delete('/RecursosHumanos/incapacidades/{incapacidadesIds}', 'eliminarIncapacidad')->name('rh.eliminarIncapacidad');
     Route::put('/RecursosHumanos/incapacidades/reincorporar', 'reincorporarOperador')->name('rh.reincorporar');
 
+    Route::get('/RecursosHumanos/personalAdministrativo', 'personalAdministrativo')->name('rh.personalAdministrativo');
+
     });
 });

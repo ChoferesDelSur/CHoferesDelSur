@@ -138,7 +138,6 @@ const save = async () => {
 </template>
 <style>
 @import "vue-select/dist/vue-select.css";
-
 hr {
     border: 1px solid #e5e7eb;
     /* Ajuste del color de la línea divisoria */
