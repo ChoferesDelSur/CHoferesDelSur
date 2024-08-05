@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('calificacion', function (Blueprint $table) {
-            $table->id(column:'idCalificacion');
-            $table->integer(column:'calificacion');
+        Schema::create('tipoMovimiento', function (Blueprint $table) {
+            $table->id(column:'idTipoMovimiento');
+            $table->string(column: 'tipoMovimiento')->unique()->nullable(false);
+            $table->foreignId(column:'idEstado')->references('idEstado')->on('estado');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('calificacion');
+        Schema::dropIfExists('tipoMovimiento');
     }
 };

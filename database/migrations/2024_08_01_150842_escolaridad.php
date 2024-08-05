@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asistencia', function (Blueprint $table) {
-            $table->id(column:'idAsistencia');
-            $table->string(column:"asistencia")->unique(true);
-            $table->foreignId(column:'idCalificacion')->references('idCalificacion')->on('calificacion');
+        Schema::create('escolaridad', function (Blueprint $table) {
+            $table->id(column:'idEscolaridad');
+            $table->string(column: 'escolaridad')->unique()->nullable(false);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('asistencia');
+        Schema::dropIfExists('escolaridad');
     }
 };

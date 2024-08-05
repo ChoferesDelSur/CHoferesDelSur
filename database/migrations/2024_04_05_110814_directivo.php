@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string(column: 'apellidoP')->nullable(false);
             $table->string(column: 'apellidoM')->nullable(false);
             $table->foreignId(column:'idTipoDirectivo')->references('idTipoDirectivo')->on('tipoDirectivo');
+            $table->integer('numUnidades')->nullable(true);
+            $table->integer('numOperadores')->nullable(true);
             $table->text('nombre_completo')->nullable()->fulltext();
             $table->softDeletes();
             $table->timestamps();
