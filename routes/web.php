@@ -183,6 +183,11 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::put('/RecursosHumanos/incapacidades/reincorporar', 'reincorporarOperador')->name('rh.reincorporar');
 
     Route::get('/RecursosHumanos/personalAdministrativo', 'personalAdministrativo')->name('rh.personalAdministrativo');
+    Route::post('/RecursosHumanos/personalAdministrativo/agregar', 'addPersonal')->name('rh.addPersonal');
+
+    Route::get('/RecursosHumanos/movimientos', 'movimientos')->name('rh.movimientos');
+    Route::post('/RecursosHumanos/agregarMovimiento', 'addMovimiento')->name('rh.addMovimiento');
+    Route::delete('/RecursosHumanos/movimientos/{movimientosIds}', 'eliminarMovimiento')->name('rh.eliminarMovimiento');
 
     });
 });

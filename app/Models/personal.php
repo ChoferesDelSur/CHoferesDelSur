@@ -39,4 +39,9 @@ class personal extends Model
         'diasVacRestantes',
         'nombre_completo'
     ];
+
+    public function direccion(): HasOne
+    {
+        return $this->hasOne(direccion::class, 'idDireccion', 'idDireccion');
+    }
 }

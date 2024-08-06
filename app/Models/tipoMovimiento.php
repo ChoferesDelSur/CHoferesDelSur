@@ -15,4 +15,9 @@ class tipoMovimiento extends Model
         'tipoMovimiento',
         'idEstado'
     ];
+
+    public function estado()
+    {
+        return $this->belongsTo(estado::class, 'idEstado');
+    }
 }

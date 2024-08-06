@@ -14,4 +14,9 @@ class estado extends Model
     protected $fillable = [
         'estado'
     ];
+
+    public function tipoMovimientos()
+    {
+        return $this->hasMany(tipoMovimiento::class, 'idEstado');
+    }
 }

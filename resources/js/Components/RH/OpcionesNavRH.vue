@@ -33,6 +33,10 @@ defineProps
       <i class="fa fa-plane" aria-hidden="true"></i> Vacaciones
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
+      :href="route('rh.movimientos')">
+      <i class="fa fa-exchange" aria-hidden="true"></i> Movimientos
+    </a>
+    <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
       :href="route('rh.inicio')">
       <i class="fa fa-folder-open" aria-hidden="true"></i> Reportes
     </a>

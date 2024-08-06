@@ -16,9 +16,13 @@ use App\Models\usuario;
 use App\Models\incapacidad;
 use App\Models\tipoUsuario;
 use App\Models\convenioPago;
+use App\Models\movimiento;
 use App\Models\codigoPostal;
 use App\Models\entrada;
 use App\Models\empresa;
+use App\Models\personal;
+use App\Models\escolaridad;
+use App\Models\tipoMovimiento;
 use App\Models\direccion;
 use App\Models\rolServicio;
 use App\Models\ultimaCorrida;
@@ -591,20 +595,204 @@ class RHController extends Controller
     }
 
     public function personalAdministrativo(){
-        $incapacidad = incapacidad::all();
-        $operador = operador::all();
-        $operadoresAlta = operador::where('idEstado', 1)->get();
-        $operadoresIncapacidad = operador::where('idEstado', 3)->get();
+        //$operador = operador::with('direccion.asentamiento.municipio.estados','direccion.asentamiento.codigoPostal')->get();
+        $codigoPostal = codigoPostal::all();
+        $direccion = direccion::all();
+        $escolaridad = escolaridad::all();
+        $personal = personal::all();
+        //$direccion = direccion::with('asentamiento.municipio.estados', 'asentamiento.codigoPostal')->get();
+        // Aquí se ajusta el operadorDireccion a cada operador y agrega propiedades al operador
+        $personal->each(function($personal) use ($direccion) {
+            $domicilio = $direccion->where('idDireccion', $personal->idDireccion)->first();
+            $personal->domicilio = $domicilio ? $domicilio->calle . " #" . $domicilio->numero . ", " . $domicilio->asentamiento->asentamiento . ", " . $domicilio->asentamiento->municipio->municipio . ", " . $domicilio->asentamiento->municipio->estados->entidad . ", " . $domicilio->asentamiento->codigoPostal->codigoPostal : null;
+            $personal->calle = $domicilio ? $domicilio->calle : null;
+            $personal->numero = $domicilio ? $domicilio->numero : null;
+            $personal->codigoPostal = $domicilio ? $domicilio->asentamiento->codigoPostal->codigoPostal : null;
+            $personal->idAsentamiento = $domicilio ? $domicilio->asentamiento->idAsentamiento : null;
+            $personal->idMunicipio = $domicilio ? $domicilio->asentamiento->municipio->idMunicipio : null;
+            $personal->idEntidad = $domicilio ? $domicilio->asentamiento->municipio->estados->idEntidad : null;
+        });
+        $empresa = empresa::all();
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('RH/PersonalAdministrativo',[
-            'incapacidad' => $incapacidad,
             'usuario' => $usuario,
-            'operador' => $operador,
-            'operadoresAlta' => $operadoresAlta,
-            'operadoresIncapacidad' => $operadoresIncapacidad,
+            'empresa' => $empresa,
+            'escolaridad' => $escolaridad,
+            'codigoPostal' => $codigoPostal,
+            'direccion' => $direccion,
+            'personal' => $personal,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),
         ]);
     }
+
+    public function addPersonal(Request $request){
+        dd($request->all());
+        try{
+            $request->validate([
+                'nombre'=> 'required',
+                'apellidoP'=> 'required',
+                'apellidoM' => 'required',
+                'fechaNacimiento' => 'required',
+                'edad' => 'required',
+                'CURP' => 'required',
+                'RFC' => 'required',
+                'numTelefono' => 'required',
+                'telEmergencia' => 'nullable',
+                'NSS' => 'required',
+                'escolaridadd' => 'required',
+                'fechaAlta' => 'required',
+                'fechaBaja' => 'nullable',
+                'empresaa' => 'required',
+                'antiguedad' => 'required',
+                'numINE' => 'required',
+                'vigenciaINE' => 'required',
+                'constanciaSF' => 'nullable|boolean',
+                'totalDiasVac' => 'required',
+                'diasVacRestantes' => 'required',
+            ]);
+            dd($request->all());
+            // Verificar si el operador ya existe
+            $existingPersonal = personal::where('CURP', $request->CURP)->first();
+            if($existingPersonal){
+            // Operador ya existe, puedes devolver una respuesta indicando el error
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "El personal ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, " con CURP:" . $request->CURP, "color" => "yellow", 'type' => 'info']);
+            }
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Se guarda el domicilio del profesor
+            $domicilio = new direccion();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+    
+            $personal = new personal();
+            $personal->nombre = $request->nombre;
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->edad = $request->edad;
+            $personal->CURP = $request->CURP;               
+            $personal->RFC = $request->RFC;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->telEmergencia = $request->telEmergencia;
+            $personal->NSS = $request->NSS;
+            $personal->idEscolaridad = $request->escolaridadd;
+
+            $personal->fechaAlta = $request->fechaAlta;
+            $personal->fechaBaja = $request->fechaBaja;
+            $personal->idEmpresa = $request->empresaa;//le puse empresaa como esta en mi formulario
+            $personal->antiguedad = $request->antiguedad;
+
+            $personal->idDireccion = $domicilio->idDireccion;
+
+            $personal->numINE = $request->numINE;
+            $personal->vigenciaINE = $request->vigenciaINE;
+            $personal->constanciaSF = $request->constanciaSF ?? false;
+
+            $personal->totalDiasVac = $request->totalDiasVac;
+            $personal->diasVacRestantes = $request->diasVacRestantes;
+
+            $nombreCompleto = $personal->apellidoP . ' ' . $personal->apellidoM . ' ' . $personal->nombre;
+            $personal->nombre_completo = $nombreCompleto;
+
+            $personal->save();
+            
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "Personal agregado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
+        }catch(Exception $e){
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "Error al agregar al personal", "color" => "red", 'type' => 'error']);
+        }
+    }
+
+    public function movimientos(){
+        $operador = operador::all();
+        $operadoresAlta = operador::where('idEstado', 1)->get();
+        $operadoresBaja = operador::where('idEstado',2)->get();
+        $operadoresIncapacidad = operador::where('idEstado', 3)->get();
+        $movimiento = movimiento::all();
+        $tipoMovimiento = tipoMovimiento::all();
+        $estado = estado::all();
+        $directivo = directivo::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('RH/Movimientos',[
+            'usuario' => $usuario,
+            'estado' => $estado,
+            'operador' => $operador,
+            'directivo' => $directivo,
+            'operadoresAlta' => $operadoresAlta,
+            'operadoresBaja' => $operadoresBaja,
+            'operadoresIncapacidad' => $operadoresIncapacidad,
+            'tipoMovimiento' => $tipoMovimiento,
+            'movimiento' => $movimiento,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
+    public function addMovimiento(Request $request){
+        /* dd("Datos del formulario:",$request->all()); */
+        try {
+            // Validar datos del formulario
+            $request->validate([
+                'fechaMovimiento'=> 'required',
+                'estado'=> 'required',
+                'operador' => 'required',
+                'directivo' => 'required',
+                'tipoMovimiento' => 'required',
+            ]);
+            // Obtener datos del formulario
+            $fechaMovimiento = $request->input('fechaMovimiento');
+            $estado = $request->input('estado');
+            $operadorId = $request->input('operador');
+            $directivoId = $request->input('directivo');
+            $tipoMovimiento = $request->input('tipoMovimiento');
+            // Obtener el operador seleccionado
+            $operador = Operador::find($operadorId);
+            if (!$operador) {
+                return redirect()->route('rh.movimientos')->with(['message' => "Operador no encontrado", "color" => "red", 'type' => 'error']);
+            }
+            // Actualizar el estado y la fecha según el tipo de movimiento
+            if ($estado == 1) { // Alta
+                $operador->idEstado = 1; // Estado de Alta
+                $operador->fechaAlta = $fechaMovimiento; // Actualizar fechaAlta
+            } elseif ($estado == 2) { // Baja
+                $operador->idEstado = 2; // Estado de Baja
+                $operador->fechaBaja = $fechaMovimiento; // Actualizar fechaBaja
+            } else {
+                return redirect()->route('rh.movimientos')->with(['message' => "Estado no válido", "color" => "red", 'type' => 'error']);
+            }
+            // Guardar cambios en el operador
+            $operador->save();
+            // Crear el registro del movimiento
+            movimiento::create([
+                'fechaMovimiento' => $fechaMovimiento,
+                'idEstado' => $estado,
+                'idOperador' => $operadorId,
+                'idDirectivo' => $directivoId,
+                'idTipoMovimiento' => $tipoMovimiento,
+            ]);
+            return redirect()->route('rh.movimientos')->with(['message' => "Movimiento realizado correctamente", "color" => "green", 'type' => 'success']);
+        } catch (Exception $e) {
+            return redirect()->route('rh.movimientos')->with(['message' => "Error al realizar movimiento", "color" => "red", 'type' => 'error']);
+        }
+    }
+    
+    public function eliminarMovimiento($movimientosIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $movimientosIdsArray = explode(',', $movimientosIds);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $movimientosIdsArray = array_map('intval', $movimientosIdsArray);
+            // Elimina las materias
+            movimiento::whereIn('idMovimiento', $movimientosIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('rh.movimientos')->with(['message' => "Movimiento eliminado correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('rh.movimientos')->with(['message' => "No se pudo eliminar el movimiento", "color" => "red"]);
+        }
+    }
+
 }
