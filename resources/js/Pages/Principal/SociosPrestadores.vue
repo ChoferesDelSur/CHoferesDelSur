@@ -90,6 +90,8 @@ const columnas = [
             return tDirectivo ? tDirectivo.tipoDirectivo : '';
         }
     },
+    { data: 'numUnidades' },
+    { data: 'numOperadores' },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idDirectivo}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
@@ -275,6 +277,14 @@ const eliminarDirectivos = () => {
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Tipo Directivo
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Numero de Unidades
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Numero de Operadores
                             </th>
                         </tr>
                     </thead>

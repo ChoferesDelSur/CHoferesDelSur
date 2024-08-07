@@ -70,7 +70,7 @@ const form = useForm({
     NSS: props.operador.NSS,
     direccion: props.operador.idDireccion,
     tipoOperador: props.operador.idTipoOperador,
-    estado: props.operador.idEstado,
+    /* estado: props.operador.idEstado, */
     directivo: props.operador.idDirectivo,
     codigoPostal: props.operador.codigoPos,
     entidad: props.operador.idEntidad,
@@ -151,7 +151,7 @@ const nombreError = ref('');
 const apellidoPError = ref('');
 const apellidoMError = ref('');
 const tipoOperadorError = ref('');
-const estadoError = ref('');
+/* const estadoError = ref(''); */
 const directivoError = ref('');
 const fechaNError = ref('');
 const edadError = ref('');
@@ -336,7 +336,7 @@ const update = async () => {
     convenioPagoError.value = validateSelect(form.convenioPa) ? '' : 'Seleccione el convenio de pago';
     codigoPError.value = validateCodigoPostal(form.codigoPostal) ? '' : 'Ingrese el codigo postal';
     calleError.value = validateStringNotEmpty(form.calle) ? '' : 'Ingrese el nombre de la calle';
-    estadoError.value = validateSelect(form.estado) ? '' : 'Seleccione el estado';
+    /* estadoError.value = validateSelect(form.estado) ? '' : 'Seleccione el estado'; */
     /* numeroCError.value = validateIntegerField(form.numero) ? '' : 'Número de casa no válido'; */
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
     vigenciaINEError.value = validateINE(form.vigenciaINE) ? '' : 'Vigencia de INE no válido';
@@ -346,7 +346,7 @@ const update = async () => {
         fechaNError.value || edadError.value || CURPError.value || RFCError.value || telError.value ||
         NSSError.value || NLicenciaError.value || VigenciaLError.value || NumINEError.value || UltimoConError.value ||
         AntiguedadError.value || FechaAltaError.value || EmpresaError.value || convenioPagoError.value ||
-        codigoPError.value || calleError.value || estadoError.value /* || numeroCError.value */ || directivoError.value ||
+        codigoPError.value || calleError.value /* || estadoError.value */ /* || numeroCError.value */ || directivoError.value ||
         vigenciaINEError.value
     ) {
         return;
@@ -360,7 +360,7 @@ const update = async () => {
             apellidoPError.value = '';
             apellidoMError.value = '';
             tipoOperadorError.value = '';
-            estadoError.value = '';
+            /* estadoError.value = ''; */
             directivoError.value = '';
             fechaNError.value = '';
             edadError.value = '';
@@ -495,8 +495,8 @@ function handleEstadoChange(event) {
             <form @submit.prevent="update">
                 <div class="pb-0">
                     <h1 class="text-2xl font-semibold leading-7 text-gray-900">{{ title }}</h1>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar a un
-                        nuevo operador. Los campos con <span class="text-red-500">*</span> son obligatorios.
+                    <p class="mt-1 text-sm leading-6 text-gray-600"> Modifique el dato que desea y presione Guardar para
+                        aplicar los cambios.
                     </p>
                     <div class="p-3 border-b border-gray-300">
                         <!-- Linea que divide la seccion de informacion personal -->
@@ -516,7 +516,7 @@ function handleEstadoChange(event) {
                             <div class="md:col-span-2 px-2"> <!-- Definir el tamaño del cuadro de texto -->
                                 <label for="apellidoP"
                                     class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                    Paterno <span class="text-red-500">*</span></label>
+                                    Paterno </label>
                                 <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                                     <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                         placeholder="Ingrese el apellido paterno"
@@ -528,7 +528,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="apellidoM"
                                     class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                    Materno <span class="text-red-500">*</span></label>
+                                    Materno </label>
                                 <div class="mt-2">
                                     <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
                                         placeholder="Ingrese el apellido materno"
@@ -539,7 +539,7 @@ function handleEstadoChange(event) {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombre(s)
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                         placeholder="Ingrese el nombre"
@@ -550,7 +550,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="fechaNacimiento"
                                     class="block text-sm font-medium leading-6 text-gray-900">Fecha
-                                    de Nacimiento <span class="text-red-500">*</span></label>
+                                    de Nacimiento</label>
                                 <div class="mt-2">
                                     <input type="date" name="fechaNacimiento" :id="'fechaNacimiento' + op"
                                         v-model="form.fechaNacimiento" @change="calcularEdad"
@@ -561,8 +561,8 @@ function handleEstadoChange(event) {
                                     fechaNError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="edad" class="block text-sm font-medium leading-6 text-gray-900">Edad <span
-                                        class="text-red-500">*</span></label>
+                                <label for="edad" class="block text-sm font-medium leading-6 text-gray-900">Edad
+                                </label>
                                 <div class="mt-2">
                                     <input type="number" name="edad" :id="'edad' + op" v-model="form.edad"
                                         placeholder="Años "
@@ -571,8 +571,8 @@ function handleEstadoChange(event) {
                                 <div v-if="edadError != ''" class="text-red-500 text-xs mt-1">{{ edadError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="CURP" class="block text-sm font-medium leading-6 text-gray-900">CURP <span
-                                        class="text-red-500">*</span></label>
+                                <label for="CURP" class="block text-sm font-medium leading-6 text-gray-900">CURP
+                                </label>
                                 <div class="mt-2">
                                     <input type="text" name="CURP" :id="'CURP' + op" v-model="form.CURP"
                                         placeholder="Ingrese la CURP"
@@ -581,8 +581,7 @@ function handleEstadoChange(event) {
                                 <div v-if="CURPError != ''" class="text-red-500 text-xs mt-1">{{ CURPError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="RFC" class="block text-sm font-medium leading-6 text-gray-900">RFC <span
-                                        class="text-red-500">*</span></label>
+                                <label for="RFC" class="block text-sm font-medium leading-6 text-gray-900">RFC </label>
                                 <div class="mt-2">
                                     <input type="text" name="RFC" :id="'RFC' + op" v-model="form.RFC"
                                         placeholder="Ingrese la RFC"
@@ -593,7 +592,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="numTelefono"
                                     class="block text-sm font-medium leading-6 text-gray-900">Teléfono
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <input type="text" name="numTelefono" :id="'numTelefono' + op"
                                         v-model="form.numTelefono" placeholder="Ingrese número de telefono"
@@ -602,8 +601,7 @@ function handleEstadoChange(event) {
                                 <div v-if="telError != ''" class="text-red-500 text-xs mt-1">{{ telError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="NSS" class="block text-sm font-medium leading-6 text-gray-900">NSS <span
-                                        class="text-red-500">*</span></label>
+                                <label for="NSS" class="block text-sm font-medium leading-6 text-gray-900">NSS</label>
                                 <div class="mt-2">
                                     <input type="text" name="NSS" :id="'NSS' + op" v-model="form.NSS"
                                         placeholder="Ingrese el NSS"
@@ -620,7 +618,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="tipoOperador" class="block text-sm font-medium leading-6 text-gray-900">Tipo
                                     de
-                                    operador <span class="text-red-500">*</span></label>
+                                    operador </label>
                                 <div class="mt-2">
                                     <select name="tipoOperador" :id="'tipoOperador' + op" v-model="form.tipoOperador"
                                         placeholder="Seleccione el tipo de operador"
@@ -639,24 +637,25 @@ function handleEstadoChange(event) {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="estado" class="block text-sm font-medium leading-6 text-gray-900">Estado del
-                                    Operador <span class="text-red-500">*</span></label>
+                                    Operador</label>
                                 <div class="mt-2">
                                     <select name="estado" :id="'estado' + op" v-model="form.estado"
                                         @change="handleEstadoChange" placeholder="Seleccione el tipo de estado"
-                                        class="block rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                        <option value="" disabled selected>Seleccione estado</option>
+                                        class="block rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        disabled>
+                                        <option value="" selected>Seleccione estado</option>
                                         <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
                                             {{ est.estado }}
                                         </option>
                                     </select>
                                 </div>
-                                <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
+                                <!-- <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div> -->
                             </div>
 
                             <div class="sm:col-span-2 px-2">
                                 <label for="fechaAlta" class="block text-sm font-medium leading-6 text-gray-900">Fecha
                                     de
-                                    Alta <span class="text-red-500">*</span></label>
+                                    Alta </label>
                                 <div class="mt-2">
                                     <input type="date" name="fechaAlta" :id="'fechaAlta' + op" v-model="form.fechaAlta"
                                         placeholder=" "
@@ -677,7 +676,7 @@ function handleEstadoChange(event) {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="empresa" class="block text-sm font-medium leading-6 text-gray-900">Empresa
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <select name="empresa" :id="'empresa' + op" v-model="form.empresaa"
                                         placeholder="Seleccione la empresa a la que pertenece"
@@ -696,7 +695,7 @@ function handleEstadoChange(event) {
                                 <label for="convenioPago"
                                     class="block text-sm font-medium leading-6 text-gray-900">Convenio
                                     de
-                                    Pago <span class="text-red-500">*</span></label>
+                                    Pago</label>
                                 <div class="mt-2">
                                     <select name="convenioPago" :id="'convenioPago' + op" v-model="form.convenioPa"
                                         placeholder="Seleccione el convenio de pago"
@@ -716,7 +715,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="antiguedad"
                                     class="block text-sm font-medium leading-6 text-gray-900">Antiguedad
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <input type="number" name="antiguedad" :id="'antiguedad' + op"
                                         v-model="form.antiguedad" placeholder="Años "
@@ -736,7 +735,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="codigoPostal"
                                     class="block text-sm font-medium leading-6 text-gray-900">Código
-                                    Postal <span class="text-red-500">*</span></label>
+                                    Postal </label>
                                 <div class="mt-2">
                                     <input type="number" name="codigoPostal" :id="'codigoPostal' + op"
                                         v-model="form.codigoPostal" placeholder="Ingrese el CP"
@@ -748,7 +747,7 @@ function handleEstadoChange(event) {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="entidad" class="block text-sm font-medium leading-6 text-gray-900">Estado
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <select name="entidad" :id="'entidad' + op" v-model="form.entidad"
                                         @change="cargarMunicipios"
@@ -764,7 +763,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="municipio"
                                     class="block text-sm font-medium leading-6 text-gray-900">Municipio
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <select name="municipio" :id="'municipio' + op" v-model="form.municipio"
                                         @change="cargarAsentamientos"
@@ -780,7 +779,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="asentamiento"
                                     class="block text-sm font-medium leading-6 text-gray-900">Asentamiento
-                                    / Localidad <span class="text-red-500">*</span></label>
+                                    / Localidad </label>
                                 <div class="mt-2">
                                     <select name="asentamiento" :id="'asentamiento' + op" v-model="form.asentamiento"
                                         class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -793,8 +792,8 @@ function handleEstadoChange(event) {
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle <span
-                                        class="text-red-500">*</span></label>
+                                <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle
+                                </label>
                                 <div class="mt-2">
                                     <input type="text" name="calle" :id="'calle' + op" v-model="form.calle"
                                         placeholder="Ingrese el nombre de la calle"
@@ -805,7 +804,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="numero" class="block text-sm font-medium leading-6 text-gray-900">Número de
                                     Casa
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <input type="number" name="numero" :id="'numero' + op" v-model="form.numero"
                                         placeholder=" Núm. casa"
@@ -832,7 +831,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="numLicencia"
                                     class="block text-sm font-medium leading-6 text-gray-900">Número de
-                                    Licencia <span class="text-red-500">*</span></label>
+                                    Licencia </label>
                                 <div class="mt-2">
                                     <input type="text" name="numLicencia" :id="'numLicencia' + op"
                                         v-model="form.numLicencia" placeholder="Número de licencia"
@@ -843,8 +842,8 @@ function handleEstadoChange(event) {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="vigenciaLicencia"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Vigencia de Licencia <span
-                                        class="text-red-500">*</span></label>
+                                    class="block text-sm font-medium leading-6 text-gray-900">Vigencia de Licencia
+                                </label>
                                 <div class="mt-2">
                                     <input type="date" name="vigenciaLicencia" :id="'vigenciaLicencia' + op"
                                         v-model="form.vigenciaLicencia" placeholder="Seleccione la vigencia"
@@ -856,7 +855,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="numINE" class="block text-sm font-medium leading-6 text-gray-900">Número de
                                     INE
-                                    <span class="text-red-500">*</span></label>
+                                </label>
                                 <div class="mt-2">
                                     <input type="text" name="numINE" :id="'numINE' + op" v-model="form.numINE"
                                         placeholder="Ingrese el número del INE"
@@ -867,7 +866,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="vigenciaINE"
                                     class="block text-sm font-medium leading-6 text-gray-900">Vigencia
-                                    del INE <span class="text-red-500">*</span></label>
+                                    del INE </label>
                                 <div class="mt-2">
                                     <select name="vigenciaINE" :id="'vigenciaINE' + op" v-model="form.vigenciaINE"
                                         class="block w-44 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -930,7 +929,7 @@ function handleEstadoChange(event) {
                             <div class="sm:col-span-2 px-2">
                                 <label for="ultimoContrato"
                                     class="block text-sm font-medium leading-6 text-gray-900">Fecha de Último
-                                    Contrato <span class="text-red-500">*</span></label>
+                                    Contrato </label>
                                 <div class="mt-2">
                                     <input type="date" name="ultimoContrato" :id="'ultimoContrato' + op"
                                         v-model="form.ultimoContrato" placeholder=" "
@@ -941,8 +940,7 @@ function handleEstadoChange(event) {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="directivo"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Jefe<span
-                                        class="text-red-500">*</span></label>
+                                    class="block text-sm font-medium leading-6 text-gray-900">Jefe</label>
                                 <div class="mt-2">
                                     <select name="directivo" :id="'directivo' + op" v-model="form.directivo"
                                         placeholder="Seleccione a un socio/prestador"

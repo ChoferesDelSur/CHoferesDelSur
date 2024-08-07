@@ -57,14 +57,6 @@ const anios = ref([]);
 
 const emit = defineEmits(['close']);
 
-// Inicialización de `incapacidad`
-const incapacidad = ref({
-    motivo: '',
-    numeroDias: '',
-    fechaInicio: '',
-    fechaFin: '',
-});
-
 const form = useForm({
     idOperador: props.operador.idOperador,
     nombre: props.operador.nombre,
@@ -78,7 +70,7 @@ const form = useForm({
     NSS: props.operador.NSS,
     direccion: props.operador.idDireccion,
     tipoOperador: props.operador.idTipoOperador,
-    estado: props.operador.idEstado,
+    estado: 1,//Se establece estado en 1 == Alta
     directivo: props.operador.idDirectivo,
     codigoPostal: props.operador.codigoPos,
     entidad: props.operador.idEntidad,
@@ -101,14 +93,9 @@ const form = useForm({
     cursoSemovi: props.operador.cursoSemovi,
     cursoPsicologico: props.operador.cursoPsicologico,
     constanciaSemovi: props.operador.constanciaSemovi,
-    idIncapacidad: props.incapacidad.idIncapacidad,
-    motivo: props.incapacidad.motivo,
-    numeroDias: props.incapacidad.numeroDias,
-    fechaInicio: props.incapacidad.fechaInicio,
-    fechaFin: props.incapacidad.fechaFin,
 });
 
-watch(() => props.operador, async (newVal) => {
+/* watch(() => props.operador, async (newVal) => {
     form.idOperador = newVal.idOperador;
     form.nombre = newVal.nombre;
     form.apellidoP = newVal.apellidoP;
@@ -135,7 +122,7 @@ watch(() => props.operador, async (newVal) => {
         };
     }
 }, { deep: true }
-);
+); */
 
 // Watcher para numeroDias y fechaInicio
 watch([() => form.numeroDias, () => form.fechaInicio], ([newNumeroDias, newFechaInicio]) => {
@@ -172,10 +159,6 @@ const convenioPagoError = ref('');
 const codigoPError = ref('');
 const calleError = ref('');
 const numeroCError = ref('');
-const motivoError = ref('');
-const numDiasError = ref('');
-const fechaInicioError = ref('');
-const fechaFinError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -373,14 +356,6 @@ const save = async () => {
     numeroCError.value = validateIntegerField(form.numero) ? '' : 'Número de casa no válido';
     directivoError.value = validateSelect(form.directivo) ? '' : 'Seleccione para que socio trabaja';
     vigenciaINEError.value = validateINE(form.vigenciaINE) ? '' : 'Vigencia de INE no válido';
-
-    // Validación adicional para los campos de incapacidad si el estado es Incapacidad
-    if (form.estado === 3) { // idEstado para Incapacidad
-        motivoError.value = validateStringNotEmpty(form.motivo) ? '' : 'Ingrese el motivo de la incapacidad';
-        numDiasError.value = validateIntegerField(form.numeroDias) ? '' : 'Ingrese el número de días de incapacidad';
-        fechaInicioError.value = validateDateField(form.fechaInicio) ? '' : 'Ingrese la fecha de inicio de incapacidad';
-        fechaFinError.value = validateDateField(form.fechaFin) ? '' : 'Ingrese la fecha de fin de incapacidad';
-    }
     // Verificar si hay algún error antes de enviar el formulario
     if (
         nombreError.value || apellidoPError.value || apellidoMError.value || tipoOperadorError.value ||
@@ -388,17 +363,13 @@ const save = async () => {
         NSSError.value || NLicenciaError.value || VigenciaLError.value || NumINEError.value || UltimoConError.value ||
         AntiguedadError.value || FechaAltaError.value || EmpresaError.value || convenioPagoError.value ||
         codigoPError.value || calleError.value || estadoError.value || numeroCError.value || directivoError.value ||
-        vigenciaINEError.value || (form.estado === 3 && (motivoError.value || numDiasError.value || fechaInicioError.value || fechaFinError.value))
+        vigenciaINEError.value
     ) {
         return;
     }
 
     // Si no hay errores, enviar el formulario
     form.post(route('rh.addOperador'), {
-        data: {
-            ...form.data,
-            ...(form.estado === 3 ? { incapacidad: incapacidad.value } : {}), // Incluye datos de incapacidad si aplica
-        },
         onSuccess: () => {
             close();
             // Limpia los errores y campos si es necesario
@@ -408,14 +379,6 @@ const save = async () => {
             tipoOperadorError.value = '';
             estadoError.value = '';
             directivoError.value = '';
-            motivoError.value = '';
-            numDiasError.value = '';
-            fechaInicioError.value = '';
-            fechaFinError.value = '';
-            /*           form.nombre = '';
-                      form.apellidoP = '';
-                      form.apellidoM = ''; */
-            //form.tipoOperador = '';
             fechaNError.value = '';
             edadError.value = '';
             CURPError.value = '';
@@ -437,16 +400,6 @@ const save = async () => {
             directivoError.value = '';
             vigenciaINEError.value = '';
             /* form.estado = ''; */
-            motivoError.value = '';
-            numDiasError.value = '';
-            fechaInicioError.value = '';
-            fechaFinError.value = '';
-            incapacidad.value = {
-                motivo: '',
-                numeroDias: '',
-                fechaInicio: '',
-                fechaFin: '',
-            }; // Limpia los campos de incapacidad
         }
     });
 };
@@ -544,7 +497,6 @@ const calcularEdad = () => {
 
     form.edad = edad;
 };
-
 </script>
 
 <template>
@@ -701,88 +653,12 @@ const calcularEdad = () => {
                                 <div class="mt-2">
                                     <select name="estado" :id="'estado' + op" v-model="form.estado"
                                         placeholder="Seleccione el tipo de estado"
-                                        class="block rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                        <option value="" disabled selected>Seleccione estado</option>
-                                        <option v-for="est in estado" :key="est.idEstado" :value="est.idEstado">
-                                            {{ est.estado }}
-                                        </option>
+                                        class="block w-32 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        <option value="1">Alta</option>
                                     </select>
                                 </div>
                                 <div v-if="estadoError != ''" class="text-red-500 text-xs mt-1">{{ estadoError }}</div>
                             </div>
-                            <!-- Campos adicionales para Incapacidad -->
-                            <div v-if="form.estado == 3" class="mb-2">
-                                <div class="p-3 border-b border-gray-300">
-                                    <h3 class="text-md font-semibold mb-1">Información de Incapacidad</h3>
-                                    <div class="flex flex-wrap mt-4">
-                                        <div class="md:col-span-2">
-                                            <div class="sm:col-span-2" hidden>
-                                                <!-- Definir el tamaño del cuadro de texto -->
-                                                <label for="idIncapacidad"
-                                                    class="block text-sm font-medium leading-6 text-gray-900">idIncapacidad</label>
-                                                <div class="mt-1">
-                                                    <input type="number" name="idIncapacidad" v-model="form.idIncapacidad"
-                                                        placeholder="Ingrese id de la incapacidad" :id="'idIncapacidad' + op"
-                                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-2 px-2">
-                                            <label for="motivo"
-                                                class="block text-sm font-medium leading-6 text-gray-900">Motivo
-                                                <span class="text-red-500">*</span></label>
-                                            <div class="mt-2">
-                                                <input type="text" name="motivo" v-model="form.motivo"
-                                                    placeholder="Ingrese el motivo de la incapacidad"
-                                                    class="block w-64 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            </div>
-                                            <div v-if="motivoError != ''" class="text-red-500 text-xs mt-1">{{
-                                                motivoError
-                                            }}
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-2 px-2">
-                                            <label for="numeroDias"
-                                                class="block text-sm font-medium leading-6 text-gray-900">Número
-                                                de Días <span class="text-red-500">*</span></label>
-                                            <div class="mt-2">
-                                                <input type="number" name="numeroDias" v-model="form.numeroDias"
-                                                    placeholder="Ingrese el número de días"
-                                                    class="block w-32 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            </div>
-                                            <div v-if="numDiasError != ''" class="text-red-500 text-xs mt-1">{{
-                                                numDiasError
-                                            }}
-                                            </div>
-                                        </div>
-                                        <div class="sm:col-span-2 px-2">
-                                            <label for="fechaInicio"
-                                                class="block text-sm font-medium leading-6 text-gray-900">Fecha
-                                                de Inicio <span class="text-red-500">*</span></label>
-                                            <div class="mt-2">
-                                                <input type="date" name="fechaInicio" v-model="form.fechaInicio"
-                                                    placeholder="Ingrese la fecha de inicio"
-                                                    class="block w-48 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            </div>
-                                            <div v-if="fechaInicioError != ''" class="text-red-500 text-xs mt-1">{{
-                                                fechaInicioError }}</div>
-                                        </div>
-                                        <div class="sm:col-span-2 px-2">
-                                            <label for="fechaFin"
-                                                class="block text-sm font-medium leading-6 text-gray-900">Fecha de
-                                                Fin <span class="text-red-500">*</span></label>
-                                            <div class="mt-2">
-                                                <input type="date" name="fechaFin" v-model="form.fechaFin"
-                                                    placeholder="Ingrese la fecha de fin"
-                                                    class="block w-48 rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            </div>
-                                            <div v-if="fechaFinError != ''" class="text-red-500 text-xs mt-1">{{
-                                                fechaFinError
-                                            }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- Div de incapacidad -->
                             <div class="sm:col-span-2 px-2">
                                 <label for="fechaAlta" class="block text-sm font-medium leading-6 text-gray-900">Fecha
                                     de

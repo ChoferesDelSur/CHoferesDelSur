@@ -187,17 +187,32 @@ class RHController extends Controller
                 'cursoPsicologico' => 'nullable|boolean',
                 'ultimoContrato' => 'required',
                 'directivo' => 'required',
-                // Validación de campos de incapacidad
-                'motivo' => 'nullable|required_if:estado,3',
-                'numeroDias' => 'nullable|required_if:estado,3|integer',
-                'fechaInicio' => 'nullable|required_if:estado,3|date',
-                'fechaFin' => 'nullable|required_if:estado,3|date',
             ]);
             // Verificar si el operador ya existe
             $existingOperador = operador::where('CURP', $request->CURP)->first();
             if($existingOperador){
             // Operador ya existe, puedes devolver una respuesta indicando el error
             return redirect()->route('rh.operadores')->with(['message' => "El operador ya está registrado: " .$request->nombre ." " .$request->apellidoP ." " .$request->apellidoM, " con CURP:" . $request->CURP, "color" => "yellow", 'type' => 'info']);
+            }
+            // Obtener el directivo correspondiente
+            $directivo = directivo::find($request->directivo);
+            if (!$directivo) {
+                return redirect()->route('rh.operadores')->with(['message' => "Socio/Prestador no encontrado", "color" => "red", 'type' => 'error']);
+            }
+
+            // Función para calcular el número máximo de operadores permitidos
+            function maxOperadoresPermitidos($numUnidades) {
+                return ceil($numUnidades * 1.2); // Para cada unidad, el máximo de operadores permitido es 1.2 veces el número de unidades
+            }
+
+            // Verificar si el número de operadores excede el límite permitido
+            $maxOperadores = maxOperadoresPermitidos($directivo->numUnidades);
+            if ($directivo->numOperadores >= $maxOperadores) {
+                return redirect()->route('rh.operadores')->with([
+                    'message' => "El Socio/Prestador ha alcanzado el límite de operadores permitido para su número de unidades. Unidades: {$directivo->numUnidades}, Operadores: {$directivo->numOperadores}.",
+                    "color" => "red",
+                    'type' => 'error'
+                ]);
             }
             //fechaFormateada
             $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
@@ -245,20 +260,22 @@ class RHController extends Controller
             $operador->nombre_completo = $nombreCompleto;
 
             $operador->save();
-            // Si el estado es "Incapacidad", registrar la incapacidad
-        if ($request->estado == 3) {
-            $incapacidad = new incapacidad();
-            $incapacidad->motivo = $request->motivo;
-            $incapacidad->numeroDias = $request->numeroDias;
-            $incapacidad->fechaInicio = $request->fechaInicio;
-            $incapacidad->fechaFin = $request->fechaFin;
-            $incapacidad->idOperador = $operador->idOperador;
-            $incapacidad->save();
-        }
+
+            // Aumentar el número de operadores del directivo
+            $directivo->numOperadores += 1;
+            $directivo->save();
+
+            // Registrar el movimiento
+            $movimiento = new movimiento();
+            $movimiento->fechaMovimiento = $request->fechaAlta;
+            $movimiento->idEstado = 1; // Alta
+            $movimiento->idTipoMovimiento = 1; // Nuevo Ingreso
+            $movimiento->idDirectivo = $request->directivo;
+            $movimiento->idOperador = $operador->idOperador; // Asegúrate de que el ID del operador se establezca correctamente
+            $movimiento->save();
             
             return redirect()->route('rh.operadores')->with(['message' => "Operador agregado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
-            Log::error('Error al agregar al operador:', ['error' => $e->getMessage()]);
             return redirect()->route('rh.operadores')->with(['message' => "Error al agregar al operador", "color" => "red", 'type' => 'error']);
         }
     }
@@ -272,7 +289,6 @@ class RHController extends Controller
                 'apellidoP' => 'required',
                 'apellidoM' => 'required',
                 'tipoOperador' => 'required',
-                'estado' => 'required',
                 'directivo' => 'required',
                 'fechaNacimiento' => 'required',
                 'edad' => 'required',
@@ -295,10 +311,6 @@ class RHController extends Controller
                 'ultimoContrato' => 'required',
             ]);
 
-            // Verificar si el estado es 'Incapacidad'
-            if ($request->estado == 3) {
-                return redirect()->route('rh.operadores')->with(['message' => 'Para cambiar el estado del operador a Incapacidad, dirígese a la opción Incapacidades de su menú de opciones y poder registrar una incapacidad para el operador.', 'color' => 'yellow', 'type' => 'info']);
-            }
             // Encontrar el operador
             $operador = operador::find($idOperador);
             // Actualizar la dirección si es necesario
@@ -325,7 +337,6 @@ class RHController extends Controller
             $operador->apellidoP = $request->apellidoP;
             $operador->apellidoM = $request->apellidoM;
             $operador->idTipoOperador = $request->tipoOperador;
-            $operador->idEstado = $request->estado;
             $operador->idDirectivo = $request->directivo;
             // Campos adicionales
             $operador->fechaNacimiento = $request->fechaNacimiento ?? $operador->fechaNacimiento;
@@ -732,13 +743,12 @@ class RHController extends Controller
         ]);
     }
 
-    public function addMovimiento(Request $request){
-        /* dd("Datos del formulario:",$request->all()); */
+    public function addMovimiento(Request $request) {
         try {
             // Validar datos del formulario
             $request->validate([
-                'fechaMovimiento'=> 'required',
-                'estado'=> 'required',
+                'fechaMovimiento' => 'required',
+                'estado' => 'required',
                 'operador' => 'required',
                 'directivo' => 'required',
                 'tipoMovimiento' => 'required',
@@ -749,23 +759,55 @@ class RHController extends Controller
             $operadorId = $request->input('operador');
             $directivoId = $request->input('directivo');
             $tipoMovimiento = $request->input('tipoMovimiento');
+    
             // Obtener el operador seleccionado
-            $operador = Operador::find($operadorId);
+            $operador = operador::find($operadorId);
             if (!$operador) {
                 return redirect()->route('rh.movimientos')->with(['message' => "Operador no encontrado", "color" => "red", 'type' => 'error']);
             }
-            // Actualizar el estado y la fecha según el tipo de movimiento
-            if ($estado == 1) { // Alta
-                $operador->idEstado = 1; // Estado de Alta
-                $operador->fechaAlta = $fechaMovimiento; // Actualizar fechaAlta
-            } elseif ($estado == 2) { // Baja
-                $operador->idEstado = 2; // Estado de Baja
-                $operador->fechaBaja = $fechaMovimiento; // Actualizar fechaBaja
-            } else {
-                return redirect()->route('rh.movimientos')->with(['message' => "Estado no válido", "color" => "red", 'type' => 'error']);
+
+            // Obtener el directivo correspondiente
+            $directivo = directivo::find($directivoId);
+            if (!$directivo) {
+                return redirect()->route('rh.movimientos')->with(['message' => "Socio/Prestador no encontrado", "color" => "red", 'type' => 'error']);
             }
+    
+            // Función para calcular el número máximo de operadores permitidos
+            function maxOperadoresPermitidos($numUnidades) {
+                return ceil($numUnidades * 1.2); // Para cada 5 unidades, 6 operadores
+            }
+    
+            // Actualizar el estado y la fecha según el tipo de movimiento
+            switch ($estado) {
+                case 1: // Alta
+                    // Verificar si se puede agregar un operador según las reglas
+                    $maxOperadores = maxOperadoresPermitidos($directivo->numUnidades);
+                    if ($directivo->numOperadores >= $maxOperadores) {
+                        return redirect()->route('rh.movimientos')->with(['message' => "El Socio/Prestador ha alcanzado el límite de operadores permitido para su número de unidades. Unidades: {$directivo->numUnidades}, Operadores: {$directivo->numOperadores}.", "color" => "red", 'type' => 'error']);
+                    }
+                    $operador->idEstado = 1; // Estado de Alta
+                    $operador->fechaAlta = $fechaMovimiento; // Actualizar fechaAlta
+                    $directivo->numOperadores += 1; // Aumentar numOperadores
+                    $directivo->save(); // Guardar cambios en el directivo
+                    break;
+                case 2: // Baja
+                    $operador->idEstado = 2; // Estado de Baja
+                    $operador->fechaBaja = $fechaMovimiento; // Actualizar fechaBaja
+                    // Restar 1 de numOperadores
+                    if ($directivo->numOperadores > 0) {
+                        $directivo->numOperadores -= 1; // Evitar números negativos
+                        $directivo->save(); // Guardar cambios en el directivo
+                    }
+                    break;
+                default:
+                    return redirect()->route('rh.movimientos')->with(['message' => "Estado no válido", "color" => "red", 'type' => 'error']);
+            }
+    
+            // Asignar el directivo al operador
+            $operador->idDirectivo = $directivoId;
             // Guardar cambios en el operador
             $operador->save();
+    
             // Crear el registro del movimiento
             movimiento::create([
                 'fechaMovimiento' => $fechaMovimiento,
@@ -774,11 +816,12 @@ class RHController extends Controller
                 'idDirectivo' => $directivoId,
                 'idTipoMovimiento' => $tipoMovimiento,
             ]);
+    
             return redirect()->route('rh.movimientos')->with(['message' => "Movimiento realizado correctamente", "color" => "green", 'type' => 'success']);
         } catch (Exception $e) {
             return redirect()->route('rh.movimientos')->with(['message' => "Error al realizar movimiento", "color" => "red", 'type' => 'error']);
         }
-    }
+    }    
     
     public function eliminarMovimiento($movimientosIds){
         try{

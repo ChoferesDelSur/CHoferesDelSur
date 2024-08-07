@@ -649,7 +649,6 @@ class PrincipalController extends Controller
         ]);
     }
     
-
     public function addUnidad(Request $request){
         try{
             $request->validate([
@@ -657,46 +656,43 @@ class PrincipalController extends Controller
                 'ruta' => 'required',
                 'directivo' => 'required',
             ]);
-    
             // Verificar si la unidad ya existe
             $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
                 ->where('idRuta', $request->ruta)
                 ->where('idDirectivo', $request->directivo)
                 ->first();
+            // Obtener el nombre completo del directivo y el nombre de la ruta
+            $directivo = directivo::find($request->directivo);
+            $nombredirectivo = $directivo ? $directivo->nombre_completo : 'Desconocido';
 
-        // Obtener el nombre completo del directivo y el nombre de la ruta
-        $nombredirectivo = directivo::find($request->directivo)->nombre_completo;
-        $nombreruta = ruta::find($request->ruta)->nombreRuta;
-    
+            $ruta = ruta::find($request->ruta);
+            $nombreruta = $ruta ? $ruta->nombreRuta : 'Desconocida';
+
             if($existingUnidad){
                 // Unidad ya existe, puedes devolver una respuesta indicando el error
                 return redirect()->route('principal.unidades')->with(['message' => "La unidad ya está registrada: " .$request->numeroUnidad ." - " .$nombreruta ." - " .$nombredirectivo, "color" => "yellow", 'type' => 'info']);
             }
-
             $existingNumero = unidad::where('numeroUnidad', $request->numeroUnidad)
             ->first();
-
         if($existingNumero){
             // Unidad ya existe con un número igual pero diferentes ruta y directivo
             return redirect()->route('principal.unidades')->with(['message' => "Ya existe una unidad con el número proporcionado, pero con una ruta y directivo diferente: " .$request->numeroUnidad, "color" => "yellow", 'type' => 'info']);
         }
-        
             $unidad = new unidad();
             $unidad->numeroUnidad = $request->numeroUnidad;
             $unidad->idRuta = $request->ruta;
             $unidad->idDirectivo = $request->directivo;
-    
             // Verifica si se proporcionó un operador antes de asignarlo a la unidad
             if ($request->has('operador')) {
                 $unidad->idOperador = $request->operador;
             }
-            
+
             $unidad->save();
-    
-            // Ahora, registra la misma unidad en la tabla "formacionUnidades"
-            /* $formacionUnidad = new formacionunidades();
-            $formacionUnidad->idUnidad = $unidad->idUnidad; // Utilizamos el idUnidad de la unidad recién creada
-            $formacionUnidad->save(); */
+
+            if ($directivo) {
+                $directivo->numUnidades += 1;
+                $directivo->save();
+            }
             
             return redirect()->route('principal.unidades')->with(['message' => "Unidad agregada correctamente: " . $request->numeroUnidad, "color" => "green", 'type' => 'success']);
         } catch(Exception $e){

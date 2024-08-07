@@ -90,18 +90,8 @@ const columnas = [
             return tDirectivo ? tDirectivo.tipoDirectivo : '';
         }
     },
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return "";
-        }
-    },
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return "";
-        }
-    },
+    { data: 'numUnidades' },
+    { data: 'numOperadores' },
     {
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idDirectivo}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;

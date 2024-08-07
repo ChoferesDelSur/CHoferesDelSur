@@ -20,6 +20,8 @@ class directivo extends Model
         'apellidoM',
         'idTipoDirectivo',
         'idOperador',
+        'numUnidades',
+        'numOperadores',
         'nombre_completo',
     ];
 }
