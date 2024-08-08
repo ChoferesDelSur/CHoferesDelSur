@@ -480,13 +480,24 @@ class ServicioController extends Controller
 
     public function eliminarUnidad($unidadesIds){
         try{
-            // Convierte la cadena de IDs en un array
+                    // Convierte la cadena de IDs en un array
             $unidadesIdsArray = explode(',', $unidadesIds);
 
             // Limpia los IDs para evitar posibles problemas de seguridad
             $unidadesIdsArray = array_map('intval', $unidadesIdsArray);
 
-            // Elimina las materias
+            // Obtén las unidades a eliminar
+            $unidades = unidad::whereIn('idUnidad', $unidadesIdsArray)->get();
+
+            // Actualiza el numUnidades de los Directivos relacionados
+            foreach ($unidades as $unidad) {
+                if ($unidad->directivo) {
+                    // Resta 1 al campo numUnidades del Directivo
+                    $unidad->directivo->decrement('numUnidades');
+                }
+            }
+
+            // Elimina las unidades
             unidad::whereIn('idUnidad', $unidadesIdsArray)->delete();
             // Redirige a la página deseada después de la eliminación
             return redirect()->route('servicio.unidades')->with(['message' => "Unidad eliminado correctamente", "color" => "green"]);

@@ -3,19 +3,9 @@
 import { Head} from '@inertiajs/inertia-vue3';
 import TopContent from '../Components/Principal/TopContent.vue';
 import OpcionesNav from '../Components/Principal/OpcionesNav.vue';
-import pdfMake from 'pdfmake/build/pdfmake';
-import RobotoBold from '../../fonts/Roboto-Bold.ttf';
-import RobotoNormal from '../../fonts/Roboto-Regular.ttf';
-import jsZip from 'jszip';
-
-window.JSZip = jsZip;
-
-pdfMake.fonts = {
-    Roboto: {
-        normal: RobotoNormal,
-        bold: RobotoBold,
-    },
-};
+import $ from 'jquery';
+window.$ = $;
+window.jQuery = $;
 
 const props = defineProps({
   title: String,
@@ -23,7 +13,6 @@ const props = defineProps({
 });
 
 </script>
-
 
 <template>
   <div class="flex flex-col h-screen bg-gray-100"><!-- Es lo que está de fondo fondo -->

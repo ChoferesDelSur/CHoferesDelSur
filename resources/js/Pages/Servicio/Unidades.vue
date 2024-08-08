@@ -292,6 +292,7 @@ const eliminarUnidades = () => {
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
                         }, buttons: [botonesPersonalizados],
+                        pageLength: 20
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
@@ -331,7 +332,8 @@ const eliminarUnidades = () => {
             :operadoresDisp="props.operadoresDisp" :directivo="props.directivo"></FormularioUnidades>
         <FormularioActualizarUnidades :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
             @close="cerrarModalE" :title="'Editar unidad'" :op="'2'" :modal="'modalEdit'" :unidad="unidadE"
-            :ruta="props.ruta" :operador="props.operador" :operadoresDisp="props.operadoresDisp" :directivo="props.directivo">
+            :ruta="props.ruta" :operador="props.operador" :operadoresDisp="props.operadoresDisp"
+            :directivo="props.directivo">
         </FormularioActualizarUnidades>
         <FormularioAsignarOperador :show="mostrarModalAsigOper" :max-width="maxWidth" :closeable="closeable"
             @close="cerrarModalAsigOper" :title="'Asignar operador'" :op="'1'" :modal="'modalCreate'"

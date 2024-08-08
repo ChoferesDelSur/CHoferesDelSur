@@ -838,4 +838,34 @@ class RHController extends Controller
         }
     }
 
+    public function formarUnidades(){
+        $directivo = directivo::all();
+        $unidad = unidad::all();
+        $operador = operador::all();
+        $ruta = ruta::all();
+        $castigo = castigo::all();
+        $corte = corte::all();
+        $entrada = entrada::all();
+        $rolServicio = rolServicio::all();
+        $ultimaCorrida = ultimaCorrida::all();
+        $tipoUltimaCorrida = tipoUltimaCorrida::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('RH/FormarUnidades',[
+            'usuario' => $usuario,
+            'directivo' => $directivo,
+            'unidad' => $unidad,
+            'operador' => $operador,
+            'ruta' => $ruta,
+            'castigo' => $castigo,
+            'corte' => $corte,
+            'entrada' => $entrada,
+            'rolServicio' => $rolServicio,
+            'ultimaCorrida' => $ultimaCorrida,
+            'tipoUltimaCorrida' => $tipoUltimaCorrida,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
 }

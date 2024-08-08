@@ -6,7 +6,7 @@ import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import Swal from 'sweetalert2';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import FormularioUnidades from '../../Components/Principal/FormularioUnidades.vue';
@@ -14,6 +14,9 @@ import FormularioAsignarOperador from '../../Components/Principal/FormularioAsig
 import Mensaje from '../../Components/Mensaje.vue';
 import FormularioQuitarOperador from '../../Components/Principal/FormularioQuitarOperador.vue';
 import FormularioActualizarUnidades from '../../Components/Principal/FormularioActualizarUnidades.vue';
+import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
+import 'jspdf-autotable';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -31,6 +34,72 @@ const props = defineProps({
     usuario: { type: Object },
 });
 
+const exportarPDF = (titulo = 'Documento') => {
+    const doc = new jsPDF('landscape');
+    // Título del documento
+    doc.setFontSize(12);
+    doc.text(titulo, 14, 22); // Posiciona el título en la parte superior izquierda
+    // Fecha de generación del documento
+    const fecha = new Date().toLocaleDateString();
+    doc.setFontSize(8);
+    doc.text(`Fecha: ${fecha}`, 260, 22); // Posiciona la fecha en la parte superior derecha
+    // Definir las columnas de la tabla
+    const columnas = [
+        "ID",
+        "Número De Unidad",
+        "Operador",
+        "Ruta",
+        "Dueño De La Uniad",
+    ];
+    // Extraer los datos filtrados y visibles de la tabla
+    const filas = [];
+    nextTick(() => {
+        const table = $('#unidadesTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+        data.each((row) => {
+            filas.push([
+                row.idUnidad,
+                row.numeroUnidad,
+                props.operador.find(chofer => chofer.idOperador === row.idOperador)?.nombre_completo || '',
+                props.ruta.find(rut => rut.idRuta === row.idRuta)?.nombreRuta || '',
+                props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || ''
+            ]);
+        });
+        // Generar la tabla en el PDF
+        doc.autoTable({
+            head: [columnas],
+            body: filas,
+            startY: 24 // Ajusta el inicio de la tabla debajo del título y la fecha
+        });
+        // Guardar el documento con el título como nombre del archivo
+        doc.save(`${titulo}.pdf`);
+    });
+};
+const exportarExcel = () => {
+    nextTick(() => {
+        // Obtener la instancia de DataTable
+        const table = $('#unidadesTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+
+        // Convertir los datos a formato JSON
+        const jsonData = data.toArray().map(row => ({
+            ID: row.idUnidad,
+            'Número De Unidad': row.numeroUnidad,
+            'Operador': props.operador.find(chofer => chofer.idOperador === row.idOperador)?.nombre_completo || '',
+            'Ruta': props.ruta.find(rut => rut.idRuta === row.idRuta)?.nombreRuta || '',
+            'Dueño De La Unidad': props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || ''
+        }));
+
+        // Crear la hoja de Excel
+        const ws = XLSX.utils.json_to_sheet(jsonData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Operadores Registrados');
+
+        // Guardar el archivo Excel
+        XLSX.writeFile(wb, 'Operadores Registrados.xlsx');
+    });
+};
+
 const botonesPersonalizados = [
     {
         extend: 'copyHtml5',
@@ -42,26 +111,20 @@ const botonesPersonalizados = [
         button: true
     },
     {
-        title: 'Unidades registradas',
-        extend: 'excelHtml5',
+        title: 'Unidades Registradas',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6]
-        }
+        action: () => exportarExcel() // Usa la función de exportar a Excel
     },
     {
-        title: 'Unidades registradas',
-        extend: 'pdfHtml5',
+        title: 'Unidades Registradas',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         orientation: 'landscape', // Configurar la orientación horizontal
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6]
-        }
+        action: () => exportarPDF(props.title || 'Unidades Registradas')
     },
     {
-        title: 'Unidades registradas',
+        title: 'Unidades Registradas',
         extend: 'print',
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo

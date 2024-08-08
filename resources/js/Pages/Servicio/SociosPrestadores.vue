@@ -212,20 +212,6 @@ const eliminarDirectivos = () => {
             <h2 class="font-bold text-center text-xl pt-0">Directivos</h2>
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
-
-            <!-- <Mensaje/> -->
-
-            <!-- <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar Socio/Prestador
-                </button>
-                <button id="eliminarABtn" disabled
-                    class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarDirectivos">
-                    <i class="fa fa-trash mr-2"></i>Borrar Socio/Prestador
-                </button>
-            </div> -->
             <div>
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
                     id="directivosTablaId" name="directivosTablaId" :columns="columnas" :data="directivo" :options="{
@@ -237,6 +223,7 @@ const eliminarDirectivos = () => {
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
                         }, buttons: [botonesPersonalizados],
+                        pageLength: 20
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">

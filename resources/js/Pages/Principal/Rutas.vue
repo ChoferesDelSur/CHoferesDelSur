@@ -5,43 +5,90 @@ import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
-/* import jsZip from 'jszip'; */
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import Swal from 'sweetalert2';
 import FormularioRuta from '../../Components/Principal/FormularioRuta.vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import Mensaje from '../../Components/Mensaje.vue';
 import FormularioActualizarRuta from '../../Components/Principal/FormularioActualizarRuta.vue';
-/* import RobotoBold from '../../../fonts/Roboto-Bold.ttf';
-import RobotoNormal from '../../../fonts/Roboto-Regular.ttf';
-import RobotoItalic from '../../../fonts/Roboto-Italic.ttf';
-import RobotoBoldItalic from '../../../fonts/Roboto-BoldItalic.ttf'; */
+import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
+import 'jspdf-autotable';
 
-// Variables e inicializaciones necesarias para el datatable y el uso de generacion de 
-// documentos
-/* window.JSZip = jsZip; */
-
-/* pdfMake.fonts = {
-    Roboto: {
-        normal: RobotoNormal,
-        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: RobotoBold,
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italic: RobotoItalic,
-        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalic: RobotoBoldItalic,
-        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-};
- */
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
 const props = defineProps({
     ruta: { type: Object },
     usuario: { type: Object },
 });
+
+const exportarPDF = (titulo = 'Documento') => {
+    const doc = new jsPDF('portrait'); // Cambiado a vertical (portrait)
+
+    // Título del documento
+    doc.setFontSize(12);
+    doc.text(titulo, 14, 22); // Posiciona el título en la parte superior izquierda
+
+    // Fecha de generación del documento
+    const fecha = new Date().toLocaleDateString();
+    doc.setFontSize(8);
+
+    // Ajusta la posición de la fecha
+    const margenDerecho = 175; // Ajusta este valor según sea necesario
+    doc.text(`Fecha: ${fecha}`, margenDerecho, 22); // Posiciona la fecha en la parte superior derecha
+
+    // Definir las columnas de la tabla
+    const columnas = [
+        "ID",
+        "Ruta",
+    ];
+
+    // Extraer los datos filtrados y visibles de la tabla
+    const filas = [];
+    nextTick(() => {
+        const table = $('#rutasTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+        data.each((row) => {
+            filas.push([
+                row.idRuta,
+                row.nombreRuta,
+            ]);
+        });
+
+        // Generar la tabla en el PDF
+        doc.autoTable({
+            head: [columnas],
+            body: filas,
+            startY: 24 // Ajusta el inicio de la tabla debajo del título y la fecha
+        });
+
+        // Guardar el documento con el título como nombre del archivo
+        doc.save(`${titulo}.pdf`);
+    });
+};
+
+const exportarExcel = () => {
+    nextTick(() => {
+        // Obtener la instancia de DataTable
+        const table = $('#rutasTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+
+        // Convertir los datos a formato JSON
+        const jsonData = data.toArray().map(row => ({
+            ID: row.idRuta,
+            'Ruta': row.nombreRuta,
+        }));
+
+        // Crear la hoja de Excel
+        const ws = XLSX.utils.json_to_sheet(jsonData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Rutas Registradas');
+
+        // Guardar el archivo Excel
+        XLSX.writeFile(wb, 'Rutas Registradas.xlsx');
+    });
+};
 
 const botonesPersonalizados = [
     {
@@ -54,22 +101,16 @@ const botonesPersonalizados = [
         button: true
     },
     {
-        title: 'Rutas registradas',
-        extend: 'excelHtml5',
+        title: 'Rutas Registradas',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
-        exportOptions: {
-            columns: [1, 2]
-        }
+        action: () => exportarExcel() // Usa la función de exportar a Excel
     },
     {
         title: 'Rutas registradas',
-        extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
-        exportOptions: {
-            columns: [1, 2]
-        },
+        action: () => exportarPDF(props.title || 'Rutas Registradas')
     },
     {
         title: 'Rutas registradas',

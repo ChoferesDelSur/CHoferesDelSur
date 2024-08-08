@@ -1,24 +1,14 @@
 <script setup>
-import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
+import RHLayout from '../../Layouts/RHLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
-import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
-import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
-import FormularioCastigo from '../../Components/Principal/FormularioCastigo.vue';
-import FormularioRegUC from '../../Components/Principal/FormularioRegUC.vue';
-import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.vue';
-import FormularioDomingo from '../../Components/Principal/FormularioDomingo.vue';
 import Mensaje from '../../Components/Mensaje.vue';
-import { jsPDF } from 'jspdf';
-import * as XLSX from 'xlsx';
-import 'jspdf-autotable';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -36,10 +26,9 @@ const props = defineProps({
   corte: { type: Object },
   ultimaCorrida: { type: Object },
   tipoUltimaCorrida: { type: Object },
-  usuario: { type: Object },
+  usuario: { type: Object},
 });
-console.log("Ultima Corrida",props.ultimaCorrida);
-console.log("Tipo UC",props.tipoUltimaCorrida);
+
 // Dentro del bloque <script setup>
 const fechaActual = new Date().toLocaleDateString(); // Obtiene la fecha actual en formato de cadena
 const diaSemana = obtenerDiaSemana(new Date().getDay()); // Obtiene el día de la semana actual
@@ -58,58 +47,6 @@ const registrosFiltrados = computed(() => {
   });
 });
 
-const exportarExcel = () => {
-  nextTick(() => {
-    // Obtener la instancia de DataTable
-    const table = $('#formacionTablaId').DataTable();
-    const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
-    
-    // Función para formatear la hora a "HH:MM"
-    const formatoHoraMinuto = (time) => {
-      if (!time) return ''; // Si la hora es null o undefined, retorna una cadena vacía
-      const [hour, minute] = time.split(':'); // Separa la hora y minuto
-      return `${hour}:${minute}`; // Retorna el formato "HH:MM"
-    };
-
-    // Convertir los datos a formato JSON
-    const jsonData = data.toArray().map(row => {
-      // Encuentra la última corrida y el tipo asociado
-      const ultimaCorrida = props.ultimaCorrida.find(uc => uc.idUnidad === row.idUnidad);
-      const tipoUltimaCorrida = props.tipoUltimaCorrida.find(tipo => tipo.idTipoUltimaCorrida === ultimaCorrida?.idTipoUltimaCorrida);
-
-      return {
-        ID: row.idUnidad,
-        'Ruta': props.ruta.find(r => r.idRuta === row.idRuta)?.nombreRuta,
-        'Trab. Domingo': props.rolServicio.find(rol => rol.idRolServicio === row.idUnidad)?.trabajaDomingo,
-        'Unidad': props.unidad.find(u => u.idUnidad === row.idUnidad)?.numeroUnidad,
-        'Socio/Prestador': props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || '',
-        'Hr. Entrada': formatoHoraMinuto(props.entrada.find(en => en.idUnidad === row.idUnidad)?.horaEntrada),
-        'Tipo Entrada': props.entrada.find(e => e.idUnidad === row.idUnidad)?.tipoEntrada,
-        'Extremo': props.entrada.find(ent => ent.idUnidad === row.idUnidad)?.extremo,
-        'Hr. Corte': formatoHoraMinuto(props.corte.find(c => c.idUnidad === row.idUnidad)?.horaCorte),
-        'Causa': props.corte.find(c => c.idUnidad === row.idUnidad)?.causa,
-        'Hr. Regreso': formatoHoraMinuto(props.corte.find(c => c.idUnidad === row.idUnidad)?.horaRegreso),
-        'Tipo De Corrida': tipoUltimaCorrida?.tipoUltimaCorrida, // Mostrar el nombre en lugar del ID
-        'Hr. Inicio UC': formatoHoraMinuto(ultimaCorrida?.horaInicioUC),
-        'Hr. Regreso UC': formatoHoraMinuto(ultimaCorrida?.horaFinUC),
-        'Hr. Inicio': formatoHoraMinuto(props.castigo.find(cas => cas.idUnidad === row.idUnidad)?.horaInicio),
-        'Hr. Finaliza': formatoHoraMinuto(props.castigo.find(cas => cas.idUnidad === row.idUnidad)?.horaFin),
-        'Motivo': props.castigo.find(cas => cas.idUnidad === row.idUnidad)?.castigo,
-        'Otras Observaciones': props.castigo.find(cas => cas.idUnidad === row.idUnidad)?.observaciones,
-        'Operador': props.operador.find(chofer => chofer.idOperador === row.idOperador)?.nombre_completo
-      };
-    });
-
-    // Crear la hoja de Excel
-    const ws = XLSX.utils.json_to_sheet(jsonData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Formación De Unidades');
-
-    // Guardar el archivo Excel
-    XLSX.writeFile(wb, 'Formación De Unidades.xlsx');
-  });
-};
-
 const botonesPersonalizados = [
   {
     extend: 'copyHtml5',
@@ -121,13 +58,26 @@ const botonesPersonalizados = [
     button: true
   },
   {
-    title: 'Formación De Unidades',
+    title: 'Formación de unidades',
+    extend: 'excelHtml5',
     text: '<i class="fa-solid fa-file-excel"></i> Excel',
     className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
-    action: () => exportarExcel() // Usa la función de exportar a Excel
+    exportOptions: {
+      columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    }
   },
   {
-    title: 'Formación De Unidades',
+    title: 'Formación de unidades',
+    extend: 'pdfHtml5',
+    text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
+    className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
+    orientation: 'landscape', // Configurar la orientación horizontal
+    exportOptions: {
+      columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    },
+  },
+  {
+    title: 'Formación de unidades',
     extend: 'print',
     text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
     className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
@@ -574,99 +524,17 @@ const mostrarModalRegreso = ref(false);
 const mostrarModalRegUC = ref(false);
 const mostrarModalRegresoUC = ref(false);
 const mostrarModalDomingo = ref(false);
-const mostrarModalE = ref(false);
-const maxWidth = 'xl';
-const closeable = true;
 
 const form = useForm({});
-
-var formacionE = ({});
-const abrirE = ($formacioness) => {
-  formacionE = $formacioness;
-  mostrarModalE.value = true;
-}
-
-const cerrarModal = () => {
-  mostrarModal.value = false;
-};
-
-const cerrarModalCorte = () => {
-  mostrarModalCorte.value = false;
-};
-
-const cerrarModalCastigo = () => {
-  mostrarModalCastigo.value = false;
-};
-
-const cerrarModalRegreso = () => {
-  mostrarModalRegreso.value = false;
-};
-
-const cerrarModalUC = () => {
-  mostrarModalRegUC.value = false;
-};
-
-const cerrarModalRegresoUC = () => {
-  mostrarModalRegresoUC.value = false;
-};
-
-const cerrarModalDomingo = () => {
-  mostrarModalDomingo.value = false;
-};
-
-const cerrarModalE = () => {
-  mostrarModalE.value = false;
-};
-
 </script>
 
 <template>
-  <PrincipalLayout title="Formar Unidades" :usuario="props.usuario">
+  <RHLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
-      <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
+      <h2 class="font-bold text-center text-xl pt-0"> Formación de Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
-      <Mensaje />
-
-      <div class="py-0 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
-        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
-        </button>
-        <button class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalCorte = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-scissors" aria-hidden="true"></i> Registrar Corte
-        </button>
-
-        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalRegreso = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-history" aria-hidden="true"></i> Registrar Regreso
-        </button>
-
-        <button class="bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar castigo
-        </button>
-
-        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalRegUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
-        </button>
-      </div>
-
-      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
-
-        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalRegresoUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
-        </button>
-
-        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalDomingo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-calendar" aria-hidden="true"></i> Rol domingo
-        </button>
-
-      </div>
+      <!-- <Mensaje /> -->
 
       <div class="overflow-x-auto">
         <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
@@ -773,36 +641,7 @@ const cerrarModalE = () => {
         </DataTable>
       </div>
     </div>
-    <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
-      :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :entrada="props.entrada"
-      :unidad="props.unidad">
-    </FormularioRegHoraEntrada>
-    <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
-      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad">
-    </FormularioRegCorte>
-    <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
-      @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
-      :unidad="props.unidad">
-    </FormularioRegRegreso>
-    <FormularioCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
-      @close="cerrarModalCastigo" :title="'Registrar un castigo'" :op="'1'" :modal="'modalCreate'"
-      :unidad="props.unidad" :castigo="props.castigo">
-    </FormularioCastigo>
-    <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
-      :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida"
-      :tipoUltimaCorrida="props.tipoUltimaCorrida" :unidad="props.unidad">
-    </FormularioRegUC>
-    <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable"
-      @close="cerrarModalRegresoUC" :title="'Registrar hora de regreso de última corrida'" :op="'1'"
-      :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida" :unidad="props.unidad">
-    </FormularioRegresoUC>
-    <FormularioDomingo :show="mostrarModalDomingo" :max-width="maxWidth" :closeable="closeable"
-      @close="cerrarModalDomingo" :title="'Registrar las unidades que trabajaran domingo'" :op="'1'"
-      :modal="'modalCreate'" :rolServicio="props.rolServicio" :unidad="props.unidad">
-    </FormularioDomingo>
-
-
-  </PrincipalLayout>
+  </RHLayout>
 </template>
 <style>
 /* Estilo personalizado para centrar el texto en las celdas de la tabla */

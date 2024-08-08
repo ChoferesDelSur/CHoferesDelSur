@@ -171,6 +171,8 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::put('/RecursosHumanos/operadores/{idOperador}/edit', 'actualizarOperador')->name('rh.actualizarOperador');
     Route::delete('/RecursosHumanos/operadores/{operadoresIds}', 'eliminarOperador')->name('rh.eliminarOperador');
 
+    Route::get('/RecursosHumanos/formUnidades', 'formarUnidades')->name('rh.formarUnidades');
+
     Route::get('/RecursosHumanos/sociosPrestadores', 'sociosPrestadores')->name('rh.sociosPrestadores');
     Route::post('/RecursosHumanos/sociosPrestadores', 'addDirectivo')->name('rh.addDirectivo');
     Route::put('/RecursosHumanos/sociosPrestadores/{idDirectivo}/edit', 'actualizarDirectivo')->name('rh.actualizarDirectivo');

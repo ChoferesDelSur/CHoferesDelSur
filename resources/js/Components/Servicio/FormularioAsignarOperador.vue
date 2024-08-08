@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/inertia-vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import Modal from '../Modal.vue';
 
 const props = defineProps({
@@ -53,15 +53,31 @@ watch(() => props.unidad, async (newVal) => {
 const unidadError = ref('');
 const operadorError = ref('');
 
+// Propiedad computada para obtener el idDirectivo de la unidad seleccionada
+const idDirectivo = computed(() => {
+    const unidad = props.unidadesDisp.find(u => u.idUnidad === form.unidad);
+    return unidad ? unidad.idDirectivo : null;
+});
+
+// Filtrar operadores según el idDirectivo de la unidad seleccionada y ordenarlos alfabéticamente
+const filtroOperadores = computed(() => {
+    const directivo = idDirectivo.value;
+    if (!directivo) return [];
+    return props.operadoresDisp
+        .filter(operador => operador.idDirectivo === directivo)
+        .sort((a, b) => a.nombre_completo.localeCompare(b.nombre_completo));
+});
+
+watch(() => form.unidad, (newUnidad) => {
+    // Cuando cambie la unidad, actualiza la lista de operadores filtrados
+    form.operador = ''; // Limpiar el operador seleccionado
+    operadorError.value = '';
+}, { deep: true });
+
 //Funcion para cerrar el formulario
 const close = async () => {
     emit('close');
     form.reset();
-}
-
-// Validación de cadenas no vacias
-const validateStringNotEmpty = (value) => {
-    return typeof value === 'string' && value.trim() !== '';
 }
 
 // Validación de los select 
@@ -147,7 +163,7 @@ const update = async () => {
                                     placeholder="Seleccione al operador"
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Seleccione al operador para esta unidad</option>
-                                    <option v-for="chofer in operadoresDisp" :key="chofer.idOperador"
+                                    <option v-for="chofer in filtroOperadores" :key="chofer.idOperador"
                                         :value="chofer.idOperador">
                                         {{ chofer.nombre_completo }}
                                     </option>

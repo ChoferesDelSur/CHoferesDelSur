@@ -242,20 +242,6 @@ const eliminarOperadores = () => {
             <div class="my-1"></div> <!-- Espacio de separación -->
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-6"></div>
 
-            <!-- <Mensaje/> -->
-
-            <!-- <div class="py-3 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0">
-                <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-plus mr-2"></i>Agregar Operador
-                </button>
-                <button id="eliminarABtn" disabled
-                    class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarOperadores">
-                    <i class="fa fa-trash mr-2"></i> Eliminar Operador
-                </button>
-            </div> -->
-
             <div>
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
                     id="operadoresTablaId" name="operadoresTablaId" :columns="columnas" :data="operador" :options="{
@@ -267,7 +253,7 @@ const eliminarOperadores = () => {
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
                         }, buttons: [botonesPersonalizados],
-                        /* pageLength: -1 */ // Esto elimina el límite de registros por página
+                        pageLength: 23
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
