@@ -1,6 +1,6 @@
 <script setup>
 import Swal from 'sweetalert2';
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import jsPDF from 'jspdf';
@@ -19,23 +19,37 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    directivo: {
+        type: Object,
+        default: () => ({}),
+    },
+    movimiento: {
+        type: Object,
+        default: () => ({}),
+    },
+    tipoMovimiento: {
+        type: Object,
+        default: () => ({}),
+    },
 });
-
+console.log("Movimiento:", props.movimiento);
+console.log("Tipo movimiento:",props.tipoMovimiento);
 const form = reactive({
-    unidad: null, // Puedes inicializarlo con algún valor predeterminado si lo deseas
-    operador: null
+    directivo: null,
+    movimiento: null,
 });
 
-const fetchEntradas = async (idUnidad, periodo) => {
+const fetchMovimientos = async (idDirectivo, periodo) => {
     let url = '';
     if (periodo.tipo === 'semana') {
-        url = route('reportes.entradasTardesSemana', { idUnidad: idUnidad, semana: periodo.valor });
+        url = route('reportes.castigosSemana', { idDirectivo: idDirectivo, semana: periodo.valor });
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
-        url = route('reportes.entradasTardesMes', { idUnidad: idUnidad, mes: periodo.valor });
+        url = route('reportes.castigosMes', { idDirectivo: idDirectivo, mes: periodo.valor });
     } else if (periodo.tipo === 'anio') {
-        url = route('reportes.entradasTardesAnio', { idUnidad: idUnidad, anio: periodo.valor });
+        url = route('reportes.MovAnio', { idDirectivo: idDirectivo, anio: periodo.valor });
+    } else if (periodo.tipo === 'dia') {
+        url = route('reportes.castigosDia', { idDirectivo: idDirectivo, dia: periodo.valor });
     }
-
     try {
         const response = await axios.get(url);
         entradas.value = response.data;
@@ -50,9 +64,9 @@ const fetchEntradas = async (idUnidad, periodo) => {
     }
 };
 
-const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) => {
+const generarArchivo = async (reporte, formato, idDirectivo, periodoSeleccionado) => {
     // Validar que se haya seleccionado la unidad y el periodo
-    if (!idUnidad || !periodoSeleccionado.tipo || !periodoSeleccionado.valor) {
+    if (!idDirectivo || !periodoSeleccionado.tipo || !periodoSeleccionado.valor) {
         Swal.fire({
             title: 'Error',
             text: 'Por favor seleccione los parámetros para poder generar el archivo.',
@@ -61,7 +75,6 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
         });
         return;
     }
-
     let periodo = { tipo: reporte.periodoSeleccionado, valor: '' };
     if (reporte.periodoSeleccionado === 'semana') {
         periodo.valor = semanaSeleccionada;
@@ -69,15 +82,18 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
         periodo.valor = mesSeleccionado;
     } else if (reporte.periodoSeleccionado === 'anio') {
         periodo.valor = anioSeleccionado;
+    } else if (reporte.periodoSeleccionado === 'dia') {
+        periodo.valor = diaSeleccionado;
     }
-
     try {
-        await fetchEntradas(idUnidad, periodo);
-        if (reporte.titulo === 'Entradas Tardes') {
+        await fetchMovimientos(idDirectivo, periodo);
+        if (reporte.titulo === 'Movimientos') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
                 generarExcel(reporte.titulo, periodo);
+            } else if (formato === 'imprimir') {
+                imprimirReporte(reporte.titulo, periodo);
             }
         } else {
             Swal.fire({
@@ -99,9 +115,9 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 };
 
 const generarPDF = (tipo, periodoSeleccionado) => {
-    const doc = new jsPDF('landscape'); // Crear un documento en orientación horizontal
+    const doc = new jsPDF({ orientation: 'landscape' });
 
-    // Ajustar el texto del periodo según el tipo
+    // Ajusta el texto del periodo según el tipo
     let periodoTexto;
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;
@@ -109,63 +125,58 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         periodoTexto = months[periodoSeleccionado.valor - 1];
     } else if (periodoSeleccionado.tipo === 'anio') {
         periodoTexto = periodoSeleccionado.valor;
+    } else if (periodoSeleccionado.tipo === 'dia') {
+        periodoTexto = new Date(periodoSeleccionado.valor).toLocaleDateString();
     } else {
-        periodoTexto = periodoSeleccionado.valor; // Caso por defecto
+        periodoTexto = periodoSeleccionado.valor;
     }
-
-    // Agregar título al documento
+    // Añadir título al PDF
     doc.setFontSize(12);
     doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
 
     // Crear el contenido de la tabla
-    const bodyContent = entradas.value.map(entry => {
-        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
-        const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
-        const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
-        const tipoEntrada = entry.tipoEntrada;
-        const extremo = entry.extremo || 'N/A';
-        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-
-        return [ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador];
-    });
-
-    // Agregar encabezados a la tabla
-    const headers = [
-        "Ruta", "Fecha", "Numero Unidad", "Socio/Prestador", "Hora Entrada", "Tipo Entrada", "Extremo", "Operador"
+    const tableColumn = [
+        'Fecha', 'Movimiento', 'Operador', 'Socio/Prestador', 'Tipo De Movimiento'
     ];
 
-    // Configurar la tabla en jsPDF
+    const tableRows = entradas.value.map(entry => {
+        // Formatear la fecha usando fechaMovimiento
+        const fecha = entry.fechaMovimiento || 'N/A';
+        const movimiento = entry.estado ? entry.estado.estado : 'N/A';
+        // Obtener el nombre completo del operador
+        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
+        // Obtener el nombre completo del directivo
+        const directivo = entry.directivo?.nombre_completo || 'N/A';
+        // Usar el nombre del tipo de movimiento para 'Tipo De Movimiento'
+        const tipoMovimiento = entry.tipo_movimiento?.tipoMovimiento || 'N/A';
+
+        return [fecha, movimiento, operador, directivo, tipoMovimiento];
+    });
+    console.log("Datos:",entradas);
+
+    // Añadir tabla al PDF
     doc.autoTable({
-        head: [headers],
-        body: bodyContent,
-        startY: 24, // Donde la tabla comenzará en la página
-        styles: {
-            fontSize: 10,
-            cellPadding: 4,
-        },
+        head: [tableColumn],
+        body: tableRows,
+        startY: 24, // Ajusta la posición inicial de la tabla
     });
 
-    // Obtener la fecha actual
+    // Añadir footer al PDF
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
-
-    // Agregar un pie de página con la fecha de creación
     doc.setFontSize(10);
     doc.text(`Fecha de creación: ${fechaCreacion}`, 14, doc.internal.pageSize.height - 10);
 
-    // Generar y descargar el archivo PDF
+    // Guardar el PDF
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
     doc.save(nombreArchivo);
 };
 
 const generarExcel = (tipo, periodoSeleccionado) => {
     let periodoTexto;
-
     // Ajustar el texto del periodo según el tipo
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;
@@ -173,36 +184,39 @@ const generarExcel = (tipo, periodoSeleccionado) => {
         periodoTexto = months[periodoSeleccionado.valor - 1];
     } else if (periodoSeleccionado.tipo === 'anio') {
         periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
+    } else if (periodoSeleccionado.tipo === 'dia') {
+        periodoTexto = new Date(periodoSeleccionado.valor).toLocaleDateString();
     } else {
-        periodoTexto = periodoSeleccionado.valor; // Default case
+        periodoTexto = periodoSeleccionado.valor;
     }
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
     // Crear datos para el archivo Excel
-    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Entrada', 'Tipo Entrada', 'Extremo', 'Operador']];
+    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Inicio', 'Castigo', 'Hora Fin', 'Observaciones', 'Operador']];
     entradas.value.forEach(entry => {
         const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
         const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
-        const tipoEntrada = entry.tipoEntrada;
-        const extremo = entry.extremo || 'N/A';
+        const horaInicio = entry.horaInicio ? entry.horaInicio.substring(0, 5) : 'N/A';
+        const castigo = entry.castigo || 'N/A';
+        const horaFin = entry.horaFin ? entry.horaFin.substring(0, 5) : 'N/A';
+        const observaciones = entry.observaciones;
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-        data.push([ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador]);
+        data.push([ruta, fecha, numeroUnidad, directivo, horaInicio, castigo, horaFin, observaciones, operador]);
     });
 
     // Crear libro de Excel
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Entradas_Tardes');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Movimientos');
     // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
 const reportes = [
-    { titulo: 'Entradas Tardes', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Movimientos', periodo: 'dia', periodoSeleccionado: 'dia' },
 ];
 
 const formatos = [
@@ -222,10 +236,48 @@ const months = [
 const currentYear = new Date().getFullYear();
 const startYear = 2024; // Año inicial deseado
 const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
+// Función para formatear fechas en formato DD-MM-YYYY
+let formatDate = (date) => {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Intl.DateTimeFormat('es-ES', options).format(date);
+};
 
+// Fecha actual en formato DD-MM-YYYY
+let diaSeleccionado = ref(formatDate(new Date()));
 let semanaSeleccionada = 1; // Por defecto, la primera semana
 let mesSeleccionado = 1; // Por defecto, enero
 let anioSeleccionado = currentYear; // Por defecto, el año actual
+
+// Función para obtener los días de la semana en formato DD-MM-YYYY
+const diasSemana = Array.from({ length: 7 }, (_, i) => {
+    const dia = new Date();
+    // Calcular el lunes de la semana actual
+    const dayOfWeek = dia.getDay() || 7;  // Si es domingo (0), lo tratamos como 7
+    dia.setDate(dia.getDate() - dayOfWeek + 1 + i); // Ajustar para obtener los días de lunes a domingo
+    return formatDate(dia);
+});
+// Función para obtener los días actuales en formato DD-MM-YYYY
+const days = Array.from({ length: 7 }, (_, i) => {
+    const dia = new Date();
+    const dayOfWeek = dia.getDay() || 7;  // Si es domingo (0), lo tratamos como 7
+    dia.setDate(dia.getDate() - dayOfWeek + 1 + i); // Ajustar para obtener los días de lunes a domingo
+    return formatDate(dia);
+});
+
+const periodos = {
+    semana: weeks,
+    mes: months,
+    anio: years,
+    dia: days
+};
+
+const reporte = reactive({
+    periodoSeleccionado: '',
+    semana: null,
+    mes: null,
+    anio: null,
+    dia: null
+});
 
 </script>
 
@@ -238,25 +290,12 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
             <h2 class="font-semibold text-l pt-0">Buscar por: </h2>
             <div>
                 <div>
-                    <select name="unidad" id="unidad" v-model="form.unidad"
-                        class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option disabled select value="">----- Unidad ----- </option>
-                        <option value="todas">Todas las unidades</option>
-                        <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
-                            {{ carro.numeroUnidad }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <h2 class="font-semibold text-l pt-0"> o </h2>
-            <div>
-                <div>
-                    <select name="operador" id="operador" v-model="form.operador"
-                        class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="" disabled selected>----------- Operador -----------</option>
-                        <option value="todas">Todos los operadores</option>
-                        <option v-for="chofer in operador" :key="chofer.idOperador" :value="chofer.idOperador">
-                            {{ chofer.nombre_completo }}
+                    <select name="directivo" id="directivo" v-model="form.directivo"
+                        class="block w-72 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option disabled select value="">--------------- Socio/Prestador --------------- </option>
+                        <option value="todas">Todos los socios y prestadores</option>
+                        <option v-for="socio in directivo" :key="socio.idDirectivo" :value="socio.idDirectivo">
+                            {{ socio.nombre_completo }}
                         </option>
                     </select>
                 </div>
@@ -267,10 +306,17 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                 <h2 class="font-semibold text-l pt-0">Periodo: </h2>
                 <select v-model="reporte.periodoSeleccionado"
                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    <option value="dia">Día</option>
                     <option value="semana">Semanal</option>
                     <option value="mes">Mensual</option>
                     <option value="anio">Anual</option>
                 </select>
+                <template v-if="reporte.periodoSeleccionado === 'dia'">
+                    <select v-model="diaSeleccionado"
+                        class="block w-28 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option v-for="(day, index) in days" :key="index" :value="day">{{ day }}</option>
+                    </select>
+                </template>
                 <template v-if="reporte.periodoSeleccionado === 'semana'">
                     <select v-model="semanaSeleccionada"
                         class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -294,7 +340,7 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
         </div>
         <div class="flex flex-wrap space-x-3">
             <button v-for="formato in formatos" :key="formato.tipo" :class="formato.clase"
-                @click="generarArchivo(reporte, formato.tipo, form.unidad, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado : '' })">
+                @click="generarArchivo(reporte, formato.tipo, form.directivo, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'dia' ? diaSeleccionado : reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado : '' })">
                 <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
             </button>
         </div>

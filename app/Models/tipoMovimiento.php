@@ -16,8 +16,10 @@ class tipoMovimiento extends Model
         'idEstado'
     ];
 
-    public function estado()
+    public function movimientos()
     {
-        return $this->belongsTo(estado::class, 'idEstado');
+        return $this->hasMany(movimiento::class, 'idTipoMovimiento', 'idTipoMovimiento');
     }
+
+
 }

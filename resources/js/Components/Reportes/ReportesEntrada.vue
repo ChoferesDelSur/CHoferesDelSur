@@ -1,18 +1,10 @@
 <script setup>
 import Swal from 'sweetalert2';
-/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
-
-/* pdfMake.fonts = {
-    Roboto: {
-        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-}; */
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const entradas = ref([]);
 
@@ -109,86 +101,64 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 };
 
 const generarPDF = (tipo, periodoSeleccionado) => {
-    let periodoTexto;
-    // Ajustar el texto del periodo según el tipo
-    if (periodoSeleccionado.tipo === 'semana') {
-        periodoTexto = `Semana ${periodoSeleccionado.valor}`;
-    } else if (periodoSeleccionado.tipo === 'mes') {
-        periodoTexto = months[periodoSeleccionado.valor - 1];
-    } else if (periodoSeleccionado.tipo === 'anio') {
-        periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
-    } else {
-        periodoTexto = periodoSeleccionado.valor; // Default case
-    }
+    const periodoTexto = periodoSeleccionado.tipo === 'semana'
+        ? `Semana ${periodoSeleccionado.valor}`
+        : periodoSeleccionado.tipo === 'mes'
+        ? months[periodoSeleccionado.valor - 1]
+        : periodoSeleccionado.valor;
 
-    const bodyContent = entradas.value.map(entry => {
-        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
-        const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
-        const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
-        const tipoEntrada = entry.tipoEntrada;
-        const extremo = entry.extremo || 'N/A';
-        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-
-        return [ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador];
-    });
-
-    // Construye el nombre del archivo con el tipo de reporte y el período
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
-
-    // Obtener la fecha actual
+    // Crear una instancia de jsPDF
+    const doc = new jsPDF('landscape');
+    // Agregar título
+    doc.setFontSize(12);
+    doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
+    // Configurar tabla
+    const columns = [
+        { title: 'Ruta', dataKey: 'ruta' },
+        { title: 'Fecha', dataKey: 'fecha' },
+        { title: 'Numero Unidad', dataKey: 'numeroUnidad' },
+        { title: 'Socio/Prestador', dataKey: 'socioPrestador' },
+        { title: 'Hora Entrada', dataKey: 'horaEntrada' },
+        { title: 'Tipo Entrada', dataKey: 'tipoEntrada' },
+        { title: 'Extremo', dataKey: 'extremo' },
+        { title: 'Operador', dataKey: 'operador' }
+    ];
+    // Formatear datos para jsPDF
+    const rows = entradas.value.map(entry => ({
+        ruta: entry.unidad?.ruta?.nombreRuta || 'N/A',
+        fecha: entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A',
+        numeroUnidad: entry.unidad?.numeroUnidad || 'N/A',
+        socioPrestador: entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A',
+        horaEntrada: entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A',
+        tipoEntrada: entry.tipoEntrada || "S/PT",//Agregué retardo
+        extremo: entry.extremo || 'N/A',
+        operador: entry.operador ? `${entry.operador.nombre_completo}` : 'N/A'
+    }));
+    // Agregar tabla al PDF
+    doc.autoTable(columns, rows, {
+        startY: 24, // Ajustar la posición vertical de la tabla
+        styles: {
+            fontSize: 10,
+            cellPadding: 4,
+            halign: 'center'
+        },
+    });
+    // Agregar fecha de creación en el pie de página
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
+    doc.setFontSize(10);
+    doc.text(`Fecha de creación: ${fechaCreacion}`, 14, doc.internal.pageSize.height - 10);
 
-    const docDefinition = {
-        content: [
-            { text: `Reporte de ${tipo} - Período: ${periodoTexto}`, style: 'header' },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: ['*', 'auto', 'auto', 'auto', '*', 'auto', 'auto', 'auto'], // Ajustar según el número de columnas
-                    body: [
-                        [
-                            { text: 'Ruta', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Fecha', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Numero Unidad', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Socio/Prestador', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Hora Entrada', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Tipo Entrada', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Extremo', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Operador', style: 'tableHeader', alignment: 'center' }
-                        ],
-                        ...bodyContent
-                    ]
-                }
-            }
-        ],
-        footer: function (currentPage, pageCount) {
-            return {
-                text: `Fecha de creación: ${fechaCreacion}`,
-                style: 'footer',
-                alignment: 'right',
-                margin: [0, 20, 30, 0] // Margen: [left, top, right, bottom]
-            };
-        },
-        styles: {
-            header: { fontSize: 16, bold: true },
-            tableHeader: { bold: true },
-            footer: { fontSize: 10, italic: true }
-        },
-        pageOrientation: 'landscape'
-    };
-
-    pdfMake.createPdf(docDefinition).download(nombreArchivo);
+    // Descargar el PDF
+    doc.save(nombreArchivo);
 };
 
 const generarExcel = (tipo, periodoSeleccionado) => {
     let periodoTexto;
-
     // Ajustar el texto del periodo según el tipo
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;
@@ -214,7 +184,6 @@ const generarExcel = (tipo, periodoSeleccionado) => {
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
         data.push([ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador]);
     });
-
     // Crear libro de Excel
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);

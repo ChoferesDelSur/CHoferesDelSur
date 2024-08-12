@@ -1,18 +1,10 @@
 <script setup>
 import Swal from 'sweetalert2';
-/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
-
-/* pdfMake.fonts = {
-    Roboto: {
-        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-}; */
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const entradas = ref([]);
 
@@ -109,13 +101,14 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
 const generarPDF = (tipo, periodoSeleccionado) => {
     let periodoTexto;
+
     // Ajustar el texto del periodo según el tipo
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;
     } else if (periodoSeleccionado.tipo === 'mes') {
         periodoTexto = months[periodoSeleccionado.valor - 1];
     } else if (periodoSeleccionado.tipo === 'anio') {
-        periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
+        periodoTexto = periodoSeleccionado.valor;
     } else {
         periodoTexto = periodoSeleccionado.valor; // Default case
     }
@@ -133,56 +126,37 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         return [ruta, fecha, numeroUnidad, directivo, horaCorte, causa, horaRegreso, operador];
     });
 
-    // Construye el nombre del archivo con el tipo de reporte y el período
-    const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
+    // Crear una nueva instancia de jsPDF
+    const doc = new jsPDF('landscape');
 
-    // Obtener la fecha actual
+    // Añadir título
+    doc.setFontSize(12);
+    doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
+
+    // Generar tabla con autoTable
+    doc.autoTable({
+        head: [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Corte', 'Causa', 'Hora Regreso', 'Operador']],
+        body: bodyContent,
+        startY: 24, // Ajusta el inicio de la tabla para que no se superponga con el título
+        styles: {
+            fontSize: 10, // Ajusta el tamaño de la fuente de la tabla si es necesario
+            halign: 'center', // Centrar texto en las celdas
+        },
+    });
+
+    // Añadir pie de página con la fecha de creación
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
 
-    const docDefinition = {
-        content: [
-            { text: `Reporte de ${tipo} - Período: ${periodoTexto}`, style: 'header' },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: ['*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'], // Ajustar según el número de columnas
-                    body: [
-                        [
-                            { text: 'Ruta', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Fecha', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Numero Unidad', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Socio/Prestador', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Hora Corte', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Causa', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Hora Regreso', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Operador', style: 'tableHeader', alignment: 'center' }
-                        ],
-                        ...bodyContent
-                    ]
-                }
-            }
-        ],
-        footer: function (currentPage, pageCount) {
-            return {
-                text: `Fecha de creación: ${fechaCreacion}`,
-                style: 'footer',
-                alignment: 'right',
-                margin: [0, 20, 30, 0] // Margen: [left, top, right, bottom]
-            };
-        },
-        styles: {
-            header: { fontSize: 16, bold: true },
-            tableHeader: { bold: true },
-            footer: { fontSize: 10, italic: true }
-        },
-        pageOrientation: 'landscape'
-    };
+    doc.setFontSize(10);
+    doc.text(`Fecha de creación: ${fechaCreacion}`, 14, doc.internal.pageSize.height - 10);
 
-    pdfMake.createPdf(docDefinition).download(nombreArchivo);
+    // Guardar el documento PDF
+    const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
+    doc.save(nombreArchivo);
 };
 
 const generarExcel = (tipo, periodoSeleccionado) => {

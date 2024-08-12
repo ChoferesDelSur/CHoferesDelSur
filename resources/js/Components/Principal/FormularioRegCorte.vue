@@ -27,6 +27,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    unidadesConOperador: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
@@ -116,7 +120,7 @@ const save = async () => {
                                     placeholder="Seleccione la unidad"
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     <option value="" disabled selected>Seleccione la unidad</option>
-                                    <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
+                                    <option v-for="carro in unidadesConOperador" :key="carro.idUnidad" :value="carro.idUnidad">
                                         {{ carro.numeroUnidad }}
 
                                     </option>

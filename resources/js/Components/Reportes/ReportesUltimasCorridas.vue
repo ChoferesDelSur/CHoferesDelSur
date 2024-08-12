@@ -1,18 +1,10 @@
 <script setup>
 import Swal from 'sweetalert2';
-/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
-
-/* pdfMake.fonts = {
-    Roboto: {
-        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-}; */
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const ultimasCorridas = ref([]);
 
@@ -123,6 +115,15 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     } else {
         periodoTexto = periodoSeleccionado.valor; // Default case
     }
+
+    const doc = new jsPDF({
+        orientation: 'landscape',
+    });
+
+    // Configurar el título y el encabezado
+    doc.setFontSize(12);
+    doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
+
     const bodyContent = ultimasCorridas.value.map(entry => {
         const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
@@ -136,8 +137,12 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         return [ruta, fecha, numeroUnidad, directivo, tipoUltimaCorrida, horaInicioUC, horaFinUC, operador];
     });
 
-    // Construye el nombre del archivo con el tipo de reporte y el período
-    const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
+    // Configurar la tabla
+    doc.autoTable({
+        startY: 24,
+        head: [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Tipo Última Corrida', 'Hora Inicio', 'Hora Fin', 'Operador']],
+        body: bodyContent,
+    });
 
     // Obtener la fecha actual
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
@@ -146,46 +151,12 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         year: 'numeric'
     });
 
-    const docDefinition = {
-        content: [
-            { text: `Reporte de ${tipo} - Período: ${periodoTexto}`, style: 'header' },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: ['*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'], // Ajustar según el número de columnas
-                    body: [
-                        [
-                            { text: 'Ruta', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Fecha', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Numero Unidad', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Socio/Prestador', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Tipo Última Corrida', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Hora Inicio', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Hora Fin', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Operador', style: 'tableHeader', alignment: 'center' }
-                        ],
-                        ...bodyContent
-                    ]
-                }
-            }
-        ],
-        footer: function (currentPage, pageCount) {
-            return {
-                text: `Fecha de creación: ${fechaCreacion}`,
-                style: 'footer',
-                alignment: 'right',
-                margin: [0, 20, 30, 0] // Margen: [left, top, right, bottom]
-            };
-        },
-        styles: {
-            header: { fontSize: 16, bold: true },
-            tableHeader: { bold: true },
-            footer: { fontSize: 10, italic: true }
-        },
-        pageOrientation: 'landscape'
-    };
-
-    pdfMake.createPdf(docDefinition).download(nombreArchivo);
+    // Agregar el pie de página
+    doc.setFontSize(10);
+    doc.text(`Fecha de creación: ${fechaCreacion}`, 14, doc.internal.pageSize.height - 10);
+    // Guardar el PDF
+    const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
+    doc.save(nombreArchivo);
 };
 
 const generarExcel = (tipo, periodoSeleccionado) => {
@@ -325,7 +296,6 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
         </div>
     </div>
 </template>
-
 
 <style>
 .jump-icon:hover i {

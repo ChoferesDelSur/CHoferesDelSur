@@ -1,18 +1,10 @@
 <script setup>
 import Swal from 'sweetalert2';
-/* import pdfMake from 'pdfmake/build/pdfmake'; */
 import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
-
-/* pdfMake.fonts = {
-    Roboto: {
-        normal: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
-        bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
-        italics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
-        bolditalics: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf",
-    },
-}; */
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const entradas = ref([]);
 
@@ -122,7 +114,6 @@ const obtenerTotalDias = (tipo, valor) => {
     }
 };
 
-
 const generarPDF = (tipo, periodoSeleccionado) => {
     let periodoTexto;
 
@@ -139,63 +130,57 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     // Calcular el total de días del periodo seleccionado
     const totalDiasPeriodo = obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor);
 
-    // Obtener la fecha actual
+    // Crear una instancia de jsPDF en modo horizontal
+    const doc = new jsPDF('landscape'); // Establece la orientación a 'landscape'
+
+    // Título
+    doc.setFontSize(12);
+    doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
+
+    // Agregar tabla
+    const columns = [
+        { header: 'Nombre del operador', dataKey: 'nombre' },
+        { header: 'Días trabajados', dataKey: 'diasTrabajados' },
+        { header: 'Días no trabajados', dataKey: 'diasNoTrabajados' },
+        { header: 'Total de días', dataKey: 'totalDias' },
+        { header: 'Productividad (%)', dataKey: 'productividad' }
+    ];
+
+    const rows = entradas.value.map(entry => {
+        const nombreCompleto = entry.nombre_completo || 'N/A';
+        const diasTrabajados = entry.diasTrabajados || 0;
+        const diasNoTrabajados = totalDiasPeriodo - diasTrabajados;
+        const productividad = ((diasTrabajados / totalDiasPeriodo) * 100).toFixed(2); // Porcentaje con 2 decimales
+        return {
+            nombre: nombreCompleto,
+            diasTrabajados: diasTrabajados,
+            diasNoTrabajados: diasNoTrabajados,
+            totalDias: totalDiasPeriodo,
+            productividad: `${productividad}%`
+        };
+    });
+
+    // Ajusta la tabla para el formato horizontal
+    doc.autoTable(columns, rows, {
+        startY: 24, // Ajusta la posición vertical de la tabla si es necesario
+        styles: { fontSize: 10 },
+        /* margin: { top: 25 } // Ajusta el margen superior */
+    });
+
+    // Añadir footer al PDF
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
 
-    const bodyContent = entradas.value.map(entry => {
-        const nombreCompleto = entry.nombre_completo || 'N/A';
-        const diasTrabajados = entry.diasTrabajados || 'N/A';
-        const diasNoTrabajados = totalDiasPeriodo - (entry.diasTrabajados || 0);
-        return [nombreCompleto, diasTrabajados, diasNoTrabajados];
-    });
+    // Pie de página
+    doc.setFontSize(10);
+    doc.text(`Fecha de creación: ${fechaCreacion}`, 14, doc.internal.pageSize.height - 10);
 
+    // Guardar el archivo
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
-
-    const docDefinition = {
-        content: [
-            { text: `Reporte de ${tipo} - Período: ${periodoTexto}`, style: 'header' },
-            {
-                table: {
-                    headerRows: 1,
-                    widths: ['*', 'auto', 'auto', 'auto'],
-                    body: [
-                        [
-                            { text: 'Nombre del operador', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Días trabajados', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Días no trabajados', style: 'tableHeader', alignment: 'center' },
-                            { text: 'Total de días', style: 'tableHeader', alignment: 'center' }
-                        ],
-                        ...bodyContent.map(entry => [
-                            entry[0], // Nombre del operador
-                            entry[1], // Días trabajados
-                            entry[2], // Días no trabajados
-                            obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor) // Total de días del periodo
-                        ])
-                    ]
-                }
-            }
-        ],
-        footer: function (currentPage, pageCount) {
-            return {
-                text: `Fecha de creación: ${fechaCreacion}`,
-                style: 'footer',
-                alignment: 'right',
-                margin: [0, 20, 30, 0] // Margen: [left, top, right, bottom]
-            };
-        },
-        styles: {
-            header: { fontSize: 16, bold: true },
-            tableHeader: { bold: true },
-            footer: { fontSize: 10, italic: true }
-        },
-        pageOrientation: 'portrait'
-    };
-
-    pdfMake.createPdf(docDefinition).download(nombreArchivo);
+    doc.save(nombreArchivo);
 };
 
 const generarExcel = (tipo, periodoSeleccionado) => {
@@ -257,7 +242,6 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
 const reportes = [
     { titulo: 'Días Trabajados', periodo: 'semana', periodoSeleccionado: 'semana' },
 ];
-
 </script>
 
 <template>

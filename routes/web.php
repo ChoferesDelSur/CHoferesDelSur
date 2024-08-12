@@ -99,6 +99,9 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/UC-semana/unidad/{idUnidad}/semana/{semana}','obtenerUCPorSemana')->name('reportes.UCSemana');
     Route::get('/reporte/UC-mes/unidad/{idUnidad}/mes/{mes}','obtenerUCPorMes')->name('reportes.UCMes');
     Route::get('/reporte/UC/unidad/{idUnidad}/anio/{anio}','obtenerUCPorAnio')->name('reportes.UCAnio');
+
+    Route::get('/reporte/Movimientos/directivo/{idDirectivo}/anio/{anio}','obtenerMovimientosPorAnio')->name('reportes.MovAnio');
+
 });
 
 Route::controller(InfoController::class)->group(function () {
@@ -190,6 +193,8 @@ Route::middleware([RHMiddleware::class])->group(function () {
     Route::get('/RecursosHumanos/movimientos', 'movimientos')->name('rh.movimientos');
     Route::post('/RecursosHumanos/agregarMovimiento', 'addMovimiento')->name('rh.addMovimiento');
     Route::delete('/RecursosHumanos/movimientos/{movimientosIds}', 'eliminarMovimiento')->name('rh.eliminarMovimiento');
+
+    Route::get('/RecursosHumanos/reportes', 'reportes')->name('rh.reportes');
 
     });
 });

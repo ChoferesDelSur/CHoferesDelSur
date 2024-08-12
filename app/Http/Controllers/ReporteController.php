@@ -9,6 +9,7 @@ use App\Models\calificacion;
 use App\Models\estado;
 use App\Models\usuario;
 use App\Models\formacionunidades;
+use App\Models\movimiento;
 use App\Models\ruta;
 use App\Models\tipodirectivo;
 use App\Models\tipooperador;
@@ -578,6 +579,27 @@ class ReporteController extends Controller
         } catch (\Exception $e) {
             // Manejar excepciones y devolver un mensaje de error
             return response()->json(['error' => 'Error al obtener las ultimas corridas por año', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerMovimientosPorAnio($idDirectivo, $anio)
+    {
+        try {
+            // Crear las fechas de inicio y fin del año seleccionado
+            $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
+            $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
+            // Obtener los movimientos filtrados por idDirectivo y por el rango de fechas en fechaMovimiento
+            $movimientos = movimiento::with(['operador', 'directivo', 'tipoMovimiento', 'estado'])
+                ->when($idDirectivo !== 'todas', function ($query) use ($idDirectivo) {
+                    return $query->where('idDirectivo', $idDirectivo);
+                })
+                ->whereBetween('fechaMovimiento', [$inicioAnio, $finAnio])//tenia fechaMovimiento
+                ->get();
+            // Devolver los movimientos filtrados como respuesta JSON
+            return response()->json($movimientos);//Estaba $reportes
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            return response()->json(['error' => 'Error al obtener los movimientos por año', 'details' => $e->getMessage()], 500);
         }
     }
 

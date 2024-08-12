@@ -74,6 +74,8 @@ class PrincipalController extends Controller
     public function formarUnidades(){
         $directivo = directivo::all();
         $unidad = unidad::all();
+        // Obtener unidades que tienen operadores asignados
+        $unidadesConOperador = Unidad::whereNotNull('idOperador')->with('operador')->get();
         $operador = operador::all();
         $ruta = ruta::all();
         $castigo = castigo::all();
@@ -87,6 +89,7 @@ class PrincipalController extends Controller
             'usuario' => $usuario,
             'directivo' => $directivo,
             'unidad' => $unidad,
+            'unidadesConOperador' => $unidadesConOperador,
             'operador' => $operador,
             'ruta' => $ruta,
             'castigo' => $castigo,

@@ -868,4 +868,33 @@ class RHController extends Controller
         ]);
     }
 
+    public function reportes()
+    {
+        $directivo = directivo::all();
+        $operador = operador::all(); 
+        $tipoOperador = tipooperador::all();
+        $estado = estado::all();
+        $unidad = unidad::all();
+        $ruta = ruta::all();
+        $tipoUltimaCorrida = tipoUltimaCorrida::all();
+        $movimiento = movimiento::all();
+        $tipoMovimiento = tipoMovimiento::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('RH/Reportes',[
+            'usuario' => $usuario,
+            'directivo' => $directivo,
+            'unidad' => $unidad,
+            'operador' => $operador,
+            'movimiento' => $movimiento,
+            'tipoOperador' => $tipoOperador,
+            'estado' => $estado,
+            'ruta' => $ruta,
+            'tipoUltimaCorrida' => $tipoUltimaCorrida,
+            'tipoMovimiento' => $tipoMovimiento,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
 }

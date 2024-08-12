@@ -28,6 +28,7 @@ const props = defineProps({
   color: { String, default: '' },
   ruta: { type: Object },
   unidad: { type: Object },
+  unidadesConOperador: { type: Object },
   operador: { type: Object },
   directivo: { type: Object },
   rolServicio: { type: Object },
@@ -38,8 +39,6 @@ const props = defineProps({
   tipoUltimaCorrida: { type: Object },
   usuario: { type: Object },
 });
-console.log("Ultima Corrida",props.ultimaCorrida);
-console.log("Tipo UC",props.tipoUltimaCorrida);
 // Dentro del bloque <script setup>
 const fechaActual = new Date().toLocaleDateString(); // Obtiene la fecha actual en formato de cadena
 const diaSemana = obtenerDiaSemana(new Date().getDay()); // Obtiene el día de la semana actual
@@ -63,7 +62,7 @@ const exportarExcel = () => {
     // Obtener la instancia de DataTable
     const table = $('#formacionTablaId').DataTable();
     const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
-    
+
     // Función para formatear la hora a "HH:MM"
     const formatoHoraMinuto = (time) => {
       if (!time) return ''; // Si la hora es null o undefined, retorna una cadena vacía
@@ -775,10 +774,11 @@ const cerrarModalE = () => {
     </div>
     <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
       :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :entrada="props.entrada"
-      :unidad="props.unidad">
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador">
     </FormularioRegHoraEntrada>
     <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
-      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad">
+      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad"
+      :unidadesConOperador="props.unidadesConOperador">
     </FormularioRegCorte>
     <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
