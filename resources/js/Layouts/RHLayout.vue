@@ -2,6 +2,10 @@
 import { Head } from '@inertiajs/inertia-vue3';
 import TopContentRH from '../Components/RH/TopContentRH.vue';
 import OpcionesNavRH from '../Components/RH/OpcionesNavRH.vue';
+import $ from 'jquery';
+window.$ = $;
+window.jQuery = $;
+import 'jspdf-autotable';
 
 const props = defineProps({
   title: String,
@@ -22,8 +26,8 @@ const props = defineProps({
     que afecta al menu y el encabezado -->
 
       <!-- Barra lateral de navegación (oculta en dispositivos pequeños) -->
-      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col" id="sideNav"> <!--Color de la barra de menu-->
-        <nav>
+      <div class="p-2 bg-gray-800 w-full md:w-60 flex flex-col overflow-y-auto">
+        <nav class="flex flex-col flex-grow">
           <div class="w-60 h-16 justify-start items-center px-2 inline-flex">
             <div class="w-12 h-12 relative">
               <div class="w-12 h-12 left-0 top-0 absolute bg-zinc-300 rounded-full">
@@ -90,11 +94,9 @@ const props = defineProps({
   transform: rotate(360deg);
 }
 
-/* Estilos CSS para el contenido principal */
-main {
-  /* Establece una altura máxima para el contenido principal */
-  max-height: calc(100vh - 64px);
-  /* Ajusta el valor según el tamaño de la barra de navegación superior */
+/* Asegúrate de que la barra lateral ocupe la altura completa disponible y pueda desplazarse si es necesario */
+nav {
+  flex-grow: 1;
 }
 
 /* Opcional: Estilos para el scroll si el contenido excede la altura del contenido principal */

@@ -41,7 +41,7 @@ const props = defineProps({
             <h2 class="font-bold text-center text-xl pt-0 mb-2">Reportes</h2>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
 
-            <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador" />
+            <!-- <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador" /> -->
 
             <ReportesMovimientos :unidad="props.unidad" :operador="props.operador" :directivo="props.directivo"
                 :movimiento="props.movimiento" :tipoMovimiento="props.tipoMovimiento"/>

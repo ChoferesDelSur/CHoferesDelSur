@@ -4,7 +4,7 @@ import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+/* import 'jspdf-autotable'; */
 
 const entradas = ref([]);
 
@@ -114,15 +114,16 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     doc.setFontSize(12);
     doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
     // Configurar tabla
+    // Configurar columnas y filas
     const columns = [
-        { title: 'Ruta', dataKey: 'ruta' },
-        { title: 'Fecha', dataKey: 'fecha' },
-        { title: 'Numero Unidad', dataKey: 'numeroUnidad' },
-        { title: 'Socio/Prestador', dataKey: 'socioPrestador' },
-        { title: 'Hora Entrada', dataKey: 'horaEntrada' },
-        { title: 'Tipo Entrada', dataKey: 'tipoEntrada' },
-        { title: 'Extremo', dataKey: 'extremo' },
-        { title: 'Operador', dataKey: 'operador' }
+        { header: 'Ruta', dataKey: 'ruta' },
+        { header: 'Fecha', dataKey: 'fecha' },
+        { header: 'Numero Unidad', dataKey: 'numeroUnidad' },
+        { header: 'Socio/Prestador', dataKey: 'socioPrestador' },
+        { header: 'Hora Entrada', dataKey: 'horaEntrada' },
+        { header: 'Tipo Entrada', dataKey: 'tipoEntrada' },
+        { header: 'Extremo', dataKey: 'extremo' },
+        { header: 'Operador', dataKey: 'operador' }
     ];
     // Formatear datos para jsPDF
     const rows = entradas.value.map(entry => ({
@@ -135,8 +136,10 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         extremo: entry.extremo || 'N/A',
         operador: entry.operador ? `${entry.operador.nombre_completo}` : 'N/A'
     }));
-    // Agregar tabla al PDF
-    doc.autoTable(columns, rows, {
+    // Agregar la tabla al PDF
+    doc.autoTable({
+        head: [columns.map(col => col.header)],
+        body: rows.map(row => columns.map(col => row[col.dataKey])),
         startY: 24, // Ajustar la posición vertical de la tabla
         styles: {
             fontSize: 10,

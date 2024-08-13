@@ -6,6 +6,7 @@ import OpcionesNav from '../Components/Principal/OpcionesNav.vue';
 import $ from 'jquery';
 window.$ = $;
 window.jQuery = $;
+import 'jspdf-autotable';
 
 const props = defineProps({
   title: String,

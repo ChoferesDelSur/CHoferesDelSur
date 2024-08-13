@@ -91,7 +91,7 @@ const save = async () => {
     ) {
         return;
     }
-    form.post(route('principal.registrarCastigo'), {
+    form.post(route('servicio.registrarCastigo'), {
         onSuccess: () => {
             close()
             horaInicioError.value = '';

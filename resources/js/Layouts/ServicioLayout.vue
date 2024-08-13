@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/inertia-vue3';
 import TopContentServ from '../Components/Servicio/TopContentServ.vue';
 import OpcionesNavServ from '../Components/Servicio/OpcionesNavServ.vue';
+import 'jspdf-autotable';
 
 const props = defineProps({
   title: String,

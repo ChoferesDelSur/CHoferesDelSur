@@ -18,15 +18,15 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    formacionUnidades: {
+    ultimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
+    tipoUltimaCorrida: {
         type: Object,
         default: () => ({}),
     },
     unidad: {
-        type: Object,
-        default: () => ({}),
-    },
-    castigo: {
         type: Object,
         default: () => ({}),
     },
@@ -38,21 +38,18 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    idCastigo: props.castigo.idCastigo,
-    castigo: props.castigo.castigo,
-    observaciones: props.castigo.observaciones,
-    horaInicio: props.castigo.horaInicio,
-    horaFin: props.castigo.horaFin,
-    unidad: props.castigo.idUnidad,
+    idUltimaCorrida: props.ultimaCorrida.idUltimaCorrida,
+    unidad: props.ultimaCorrida.idUnidad,
+    tipoUltimaCorrida: props.ultimaCorrida.idTipoUltimaCorrida,
+    horaInicioUC: props.ultimaCorrida.horaInicioUC,
+    horaFinUC: props.ultimaCorrida.horaFinUC,
 });
 
-watch(() => props.castigo, async (newVal) => {
-    form.idCastigo = newVal.idCastigo;
-    form.castigo = newVal.castigo;
-    form.observaciones = newVal.observaciones;
-    form.horaInicio = newVal.horaInicio;
-    form.horaFin = props.horaFin;
-    form.unidad = props.unidad;
+watch(() => props.ultimaCorrida, async (newVal) => {
+    form.idUltimaCorrida = newVal.idUltimaCorrida;
+    form.tipoUltimaCorrida = newVal.tipoUltimaCorrida;
+    form.horaInicioUC = newVal.horaInicioUC;
+    form.horaFinUC = newVal.horaFinUC;
 }, { deep: true }
 );
 
@@ -64,15 +61,13 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
-// Validación de cadenas no vacias
-const validateStringNotEmpty = (value) => {
-    return typeof value === 'string' && value.trim() !== '';
-}
+const validateSelectTipoCorrida = (selectedValue) => {
+    return selectedValue != null;
+};
 
 const unidadError = ref('');
 const horaInicioError = ref('');
-const castigoError = ref('');
-const horaFinError = ref('');
+const tipoUltimaCorridaError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -81,23 +76,22 @@ const close = async () => {
 }
 
 const save = async () => {
-    horaInicioError.value = validateSelect(form.horaInicio) ? '' : 'Seleccione la hora de inicio del castigo';
+    horaInicioError.value = validateSelect(form.horaInicioUC) ? '' : 'Seleccione la hora de inicio de la última corrida';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
-    castigoError.value = validateStringNotEmpty(form.castigo) ? '' : 'Ingrese motivo del castigo';
-    horaFinError.value = validateSelect(form.horaFin) ? '' : 'Seleccione la hora de fin del castigo';
+    tipoUltimaCorridaError.value = validateSelectTipoCorrida(form.tipoUltimaCorrida) ? '' : 'Seleccione al un tipo de corrida'
+
 
     if (
-        horaInicioError.value || unidadError.value || castigoError.value || horaFinError.value
+        horaInicioError.value || unidadError.value || tipoUltimaCorridaError.value
     ) {
         return;
     }
-    form.post(route('principal.registrarCastigo'), {
+    form.post(route('servicio.registrarUC'), {
         onSuccess: () => {
             close()
             horaInicioError.value = '';
             unidadError.value = '';
-            castigoError.value = '';
-            horaFinError.value = '';
+            tipoUltimaCorridaError.value = '';
         }
     })
 }
@@ -109,7 +103,8 @@ const save = async () => {
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar el castigo. Los campos con <span class="text-red-500">*</span> son
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar la
+                        última corrida de una unidad. Los campos con <span class="text-red-500">*</span> son
                         obligatorios.
                     </p>
                     <div class="flex flex-wrap -mx-4">
@@ -130,43 +125,38 @@ const save = async () => {
                             <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}
                             </div>
                         </div>
-                        <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="castigo" class="block text-sm font-medium leading-6 text-gray-900">Castigo <span
-                                    class="text-red-500">*</span></label>
-                            <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
-                                <input type="text" name="castigo" :id="'castigo' + op" v-model="form.castigo"
-                                    placeholder="Ingrese el motivo del castigo"
-                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <div class="sm:col-span-2 px-4">
+                            <label for="tipoCorrida" class="block text-sm font-medium leading-6 text-gray-900">Tipo de corrida <span class="text-red-500">*</span></label>
+                            <div class="mt-2">
+                                <select name="tipoCorrida" :id="'tipoCorrida' + op" v-model="form.tipoUltimaCorrida"
+                                    placeholder="Seleccione el tipo de la ultima corrida"
+                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <option value="" disabled selected>Seleccione el tipo de corrida</option>
+                                    <option v-for="tipoCorrida in tipoUltimaCorrida" :key="tipoCorrida.idTipoUltimaCorrida" :value="tipoCorrida.idTipoUltimaCorrida">
+                                        {{ tipoCorrida.tipoUltimaCorrida }}
+
+                                    </option>
+                                </select>
                             </div>
-                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
-                            <!--  // Div para mostrar las validaciones en dado caso que no sean correctas -->
-                            <div v-if="castigoError != ''" class="text-red-500 text-xs mt-1">{{ castigoError }}</div>
-                            <!-- //////////////////////////////////////////////////////////////////////////////////////////////// -->
+                            <div v-if="tipoUltimaCorridaError != ''" class="text-red-500 text-xs mt-1">{{ tipoUltimaCorridaError }}
+                            </div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="horaInicio" class="block text-sm font-medium leading-6 text-gray-900">Hora de inicio <span class="text-red-500">*</span></label>
+                            <label for="horaInicioUC" class="block text-sm font-medium leading-6 text-gray-900">Hora de
+                                inicio <span class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <input type="time" name="horaInicio" :id="'horaInicio' + op" v-model="form.horaInicio"
+                                <input type="time" name="horaInicioUC" :id="'horaInicioUC' + op" v-model="form.horaInicioUC"
                                     placeholder="Seleccione la hora de inicio"
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
-                            <div v-if="horaInicioError != ''" class="text-red-500 text-xs">{{ horaInicioError }}</div>
+                            <div v-if="horaInicioError != ''" class="text-red-500 text-xs">{{ horaInicioError}}</div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="horaFin" class="block text-sm font-medium leading-6 text-gray-900">Hora fin <span class="text-red-500">*</span></label>
+                            <label for="horaFinUC" class="block text-sm font-medium leading-6 text-gray-900">Hora fin</label>
                             <div class="mt-2">
-                                <input type="time" name="horaFin" :id="'horaFin' + op" v-model="form.horaFin"
-                                    placeholder="Seleccione la horade finalización"
+                                <input type="time" name="horaFinUC" :id="'horaFinUC' + op" v-model="form.horaFinUC"
+                                    placeholder="Seleccione la hora de finalización"
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                            </div>
-                            <div v-if="horaFinError != ''" class="text-red-500 text-xs">{{ horaFinError }}</div>
-                        </div>
-                        <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="observaciones" class="block text-sm font-medium leading-6 text-gray-900">Observaciones</label>
-                            <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
-                                <input type="text" name="observaciones" :id="'observaciones' + op" v-model="form.observaciones"
-                                    placeholder="Ingrese sus observaciones"
-                                    class="block w-64 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
                     </div>

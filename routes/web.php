@@ -101,6 +101,9 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/UC/unidad/{idUnidad}/anio/{anio}','obtenerUCPorAnio')->name('reportes.UCAnio');
 
     Route::get('/reporte/Movimientos/directivo/{idDirectivo}/anio/{anio}','obtenerMovimientosPorAnio')->name('reportes.MovAnio');
+    Route::get('/reporte/Movimientos/directivo/{idDirectivo}/semana/{semana}','obtenerMovimientosPorSemana')->name('reportes.MovSemana');
+    Route::get('/reporte/Movimientos/directivo/{idDirectivo}/mes/{mes}','obtenerMovimientosPorMes')->name('reportes.MovMes');
+    Route::get('/reporte/Movimientos/directivo/{idDirectivo}/dia/{dia}','obtenerMovimientosPorDia')->name('reportes.MovDia');
 
 });
 
@@ -140,6 +143,15 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::post('/servicio/rutas', 'addRuta')->name('servicio.addRuta');
     Route::put('/servicio/rutas/{idRuta}/edit','actualizarRuta')->name('servicio.actualizarRuta');
     Route::delete('/servicio/rutas/{rutasIds}', 'eliminarRuta')->name('servicio.eliminarRuta');
+
+    Route::get('/servicio/formUnidades', 'formarUnidades')->name('servicio.formarUni');
+    Route::post('/servicio/formarUnidades', 'registrarHoraEntrada')->name('servicio.registarHoraEntrada');
+    Route::post('/servicio/formarUnidades/corte', 'registrarCorte')->name('servicio.registarCorte');
+    Route::post('/servicio/formarUnidades/regreso', 'RegistrarHoraRegreso')->name('servicio.registrarHoraRegreso');
+    Route::post('/servicio/formarUnidades/regUC', 'registrarUC')->name('servicio.registrarUC');
+    Route::post('/servicio/formarUnidades/regresoUC', 'RegistrarHoraRegresoUC')->name('servicio.regresoUC');
+    Route::post('/servicio/formarUnidades/regCastigo', 'registrarCastigo')->name('servicio.registrarCastigo');
+    Route::post('/servicio/formarUnidades/trabajaDomingo', 'registrarTrabajanDomingo')->name('servicio.trabDomingo');
 
     Route::get('/servicio/sociosPrestadores', 'sociosPrestadores')->name('servicio.sociosPrestadores');
     Route::post('/servicio/sociosPrestadores', 'addDirectivo')->name('servicio.addDirectivo');

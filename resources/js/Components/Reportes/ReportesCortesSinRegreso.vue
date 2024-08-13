@@ -4,7 +4,7 @@ import { ref, reactive } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+/* import 'jspdf-autotable'; */
 
 const entradas = ref([]);
 

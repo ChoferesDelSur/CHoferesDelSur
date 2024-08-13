@@ -1,4 +1,5 @@
 <script setup>
+import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -7,11 +8,17 @@ import 'datatables.net-responsive-dt';
 import { ref, onMounted, computed, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
+import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
+import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
+import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
+import FormularioCastigo from '../../Components/Principal/FormularioCastigo.vue';
+import FormularioRegUC from '../../Components/Principal/FormularioRegUC.vue';
+import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.vue';
+import FormularioDomingo from '../../Components/Principal/FormularioDomingo.vue';
 import Mensaje from '../../Components/Mensaje.vue';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import 'jspdf-autotable';
-import RHLayout from '../../Layouts/RHLayout.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -559,13 +566,106 @@ const columnas = [
   },
 ]
 
+const mostrarModal = ref(false);
+const mostrarModalCorte = ref(false);
+const mostrarModalCastigo = ref(false);
+const mostrarModalRegreso = ref(false);
+const mostrarModalRegUC = ref(false);
+const mostrarModalRegresoUC = ref(false);
+const mostrarModalDomingo = ref(false);
+const mostrarModalE = ref(false);
+const maxWidth = 'xl';
+const closeable = true;
+
+const form = useForm({});
+
+var formacionE = ({});
+const abrirE = ($formacioness) => {
+  formacionE = $formacioness;
+  mostrarModalE.value = true;
+}
+
+const cerrarModal = () => {
+  mostrarModal.value = false;
+};
+
+const cerrarModalCorte = () => {
+  mostrarModalCorte.value = false;
+};
+
+const cerrarModalCastigo = () => {
+  mostrarModalCastigo.value = false;
+};
+
+const cerrarModalRegreso = () => {
+  mostrarModalRegreso.value = false;
+};
+
+const cerrarModalUC = () => {
+  mostrarModalRegUC.value = false;
+};
+
+const cerrarModalRegresoUC = () => {
+  mostrarModalRegresoUC.value = false;
+};
+
+const cerrarModalDomingo = () => {
+  mostrarModalDomingo.value = false;
+};
+
+const cerrarModalE = () => {
+  mostrarModalE.value = false;
+};
+
 </script>
 
 <template>
-  <RHLayout title="Formar Unidades" :usuario="props.usuario">
+  <PrincipalLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
       <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
+
+      <Mensaje />
+
+      <div class="py-0 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
+        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
+        </button>
+        <button class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCorte = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-scissors" aria-hidden="true"></i> Registrar Corte
+        </button>
+
+        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalRegreso = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-history" aria-hidden="true"></i> Registrar Regreso
+        </button>
+
+        <button class="bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar castigo
+        </button>
+
+        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalRegUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
+        </button>
+      </div>
+
+      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
+
+        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalRegresoUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
+        </button>
+
+        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalDomingo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-calendar" aria-hidden="true"></i> Rol domingo
+        </button>
+
+      </div>
 
       <div class="overflow-x-auto">
         <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
@@ -672,7 +772,37 @@ const columnas = [
         </DataTable>
       </div>
     </div>
-  </RHLayout>
+    <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
+      :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :entrada="props.entrada"
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador">
+    </FormularioRegHoraEntrada>
+    <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
+      :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad"
+      :unidadesConOperador="props.unidadesConOperador">
+    </FormularioRegCorte>
+    <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
+      :unidad="props.unidad">
+    </FormularioRegRegreso>
+    <FormularioCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalCastigo" :title="'Registrar un castigo'" :op="'1'" :modal="'modalCreate'"
+      :unidad="props.unidad" :castigo="props.castigo">
+    </FormularioCastigo>
+    <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
+      :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida"
+      :tipoUltimaCorrida="props.tipoUltimaCorrida" :unidad="props.unidad">
+    </FormularioRegUC>
+    <FormularioRegresoUC :show="mostrarModalRegresoUC" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalRegresoUC" :title="'Registrar hora de regreso de última corrida'" :op="'1'"
+      :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida" :unidad="props.unidad">
+    </FormularioRegresoUC>
+    <FormularioDomingo :show="mostrarModalDomingo" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalDomingo" :title="'Registrar las unidades que trabajaran domingo'" :op="'1'"
+      :modal="'modalCreate'" :rolServicio="props.rolServicio" :unidad="props.unidad">
+    </FormularioDomingo>
+
+
+  </PrincipalLayout>
 </template>
 <style>
 /* Estilo personalizado para centrar el texto en las celdas de la tabla */

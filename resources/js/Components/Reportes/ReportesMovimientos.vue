@@ -4,7 +4,7 @@ import { ref, reactive, computed } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+/* import 'jspdf-autotable'; */
 
 const entradas = ref([]);
 
@@ -32,8 +32,6 @@ const props = defineProps({
         default: () => ({}),
     },
 });
-console.log("Movimiento:", props.movimiento);
-console.log("Tipo movimiento:",props.tipoMovimiento);
 const form = reactive({
     directivo: null,
     movimiento: null,
@@ -41,20 +39,28 @@ const form = reactive({
 
 const fetchMovimientos = async (idDirectivo, periodo) => {
     let url = '';
+    let valor = periodo.valor.value ? periodo.valor.value : periodo.valor;
+    
+    let formattedDate = valor;
+
+    // Si el tipo de periodo es 'dia', convierte el valor del formato 'DD/MM/YYYY' a 'DD-MM-YYYY'
+    if (periodo.tipo === 'dia' && valor.includes('/')) {
+        const [day, month, year] = valor.split('/');
+        formattedDate = `${day}-${month}-${year}`;
+    }
     if (periodo.tipo === 'semana') {
-        url = route('reportes.castigosSemana', { idDirectivo: idDirectivo, semana: periodo.valor });
+        url = route('reportes.MovSemana', { idDirectivo: idDirectivo, semana: valor });
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
-        url = route('reportes.castigosMes', { idDirectivo: idDirectivo, mes: periodo.valor });
+        url = route('reportes.MovMes', { idDirectivo: idDirectivo, mes: valor });
     } else if (periodo.tipo === 'anio') {
-        url = route('reportes.MovAnio', { idDirectivo: idDirectivo, anio: periodo.valor });
+        url = route('reportes.MovAnio', { idDirectivo: idDirectivo, anio: valor });
     } else if (periodo.tipo === 'dia') {
-        url = route('reportes.castigosDia', { idDirectivo: idDirectivo, dia: periodo.valor });
+        url = route('reportes.MovDia', { idDirectivo: idDirectivo, dia: formattedDate });
     }
     try {
         const response = await axios.get(url);
         entradas.value = response.data;
     } catch (error) {
-        /* console.error(error); */
         Swal.fire({
             title: 'Error',
             text: 'No se pudieron obtener los datos',
@@ -85,8 +91,10 @@ const generarArchivo = async (reporte, formato, idDirectivo, periodoSeleccionado
     } else if (reporte.periodoSeleccionado === 'dia') {
         periodo.valor = diaSeleccionado;
     }
+
     try {
         await fetchMovimientos(idDirectivo, periodo);
+
         if (reporte.titulo === 'Movimientos') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
@@ -104,7 +112,7 @@ const generarArchivo = async (reporte, formato, idDirectivo, periodoSeleccionado
             });
         }
     } catch (error) {
-        console.error(error);
+        console.error("Error al obtener datos:", error);
         Swal.fire({
             title: 'Error',
             text: 'No se pudieron obtener los datos',
@@ -126,40 +134,90 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     } else if (periodoSeleccionado.tipo === 'anio') {
         periodoTexto = periodoSeleccionado.valor;
     } else if (periodoSeleccionado.tipo === 'dia') {
-        periodoTexto = new Date(periodoSeleccionado.valor).toLocaleDateString();
+        periodoTexto = typeof periodoSeleccionado.valor === 'string'
+            ? periodoSeleccionado.valor
+            : periodoSeleccionado.valor._value || 'Fecha inválida';
     } else {
         periodoTexto = periodoSeleccionado.valor;
     }
+
     // Añadir título al PDF
     doc.setFontSize(12);
     doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
 
-    // Crear el contenido de la tabla
-    const tableColumn = [
+    // Filtrar los datos para `Alta` y `Baja`
+    const movimientosAlta = entradas.value.filter(entry => entry.estado.idEstado === 1);
+    const movimientosBaja = entradas.value.filter(entry => entry.estado.idEstado === 2);
+
+    // Añadir título para la primera tabla (Alta)
+    doc.setFontSize(12);
+    doc.text('Movimientos de Alta', 14, 30);
+
+    // Crear el contenido de la primera tabla (Alta)
+    const tableColumnAlta = [
         'Fecha', 'Movimiento', 'Operador', 'Socio/Prestador', 'Tipo De Movimiento'
     ];
 
-    const tableRows = entradas.value.map(entry => {
-        // Formatear la fecha usando fechaMovimiento
+    const tableRowsAlta = movimientosAlta.map(entry => {
         const fecha = entry.fechaMovimiento || 'N/A';
         const movimiento = entry.estado ? entry.estado.estado : 'N/A';
-        // Obtener el nombre completo del operador
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-        // Obtener el nombre completo del directivo
         const directivo = entry.directivo?.nombre_completo || 'N/A';
-        // Usar el nombre del tipo de movimiento para 'Tipo De Movimiento'
         const tipoMovimiento = entry.tipo_movimiento?.tipoMovimiento || 'N/A';
 
         return [fecha, movimiento, operador, directivo, tipoMovimiento];
     });
-    console.log("Datos:",entradas);
 
-    // Añadir tabla al PDF
+    // Añadir la primera tabla al PDF
     doc.autoTable({
-        head: [tableColumn],
-        body: tableRows,
-        startY: 24, // Ajusta la posición inicial de la tabla
+        head: [tableColumnAlta],
+        body: tableRowsAlta,
+        startY: 34, // Ajusta la posición inicial de la tabla para dejar espacio para el título
+        margin: { top: 30 }
     });
+
+    // Añadir título para la segunda tabla (Baja)
+    doc.setFontSize(12);
+    doc.text('Movimientos de Baja', 14, doc.autoTable.previous.finalY + 10);
+
+    // Crear el contenido de la segunda tabla (Baja)
+    const tableColumnBaja = [
+        'Fecha', 'Movimiento', 'Operador', 'Socio/Prestador', 'Tipo De Movimiento'
+    ];
+
+    const tableRowsBaja = movimientosBaja.map(entry => {
+        const fecha = entry.fechaMovimiento || 'N/A';
+        const movimiento = entry.estado ? entry.estado.estado : 'N/A';
+        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
+        const directivo = entry.directivo?.nombre_completo || 'N/A';
+        const tipoMovimiento = entry.tipo_movimiento?.tipoMovimiento || 'N/A';
+
+        return [fecha, movimiento, operador, directivo, tipoMovimiento];
+    });
+
+    // Añadir la segunda tabla al PDF
+    doc.autoTable({
+        head: [tableColumnBaja],
+        body: tableRowsBaja,
+        startY: doc.autoTable.previous.finalY + 14, // Ajusta la posición inicial de la tabla
+        margin: { top: 30 }
+    });
+
+    // Añadir espacio para "Elaboró" y "Recibió" en la misma línea
+    const posInicio = doc.autoTable.previous.finalY + 25;
+    const posElaboroX = 14;
+    const posRecibioX = 150; // Ajusta la posición X para "Recibió"
+
+    doc.setFontSize(12);
+    doc.text('Elaboró:', posElaboroX, posInicio);
+    doc.line(posElaboroX + 20, posInicio + 2, posElaboroX + 130, posInicio + 2); // Línea horizontal para la firma
+
+    doc.text('Recibió:', posRecibioX, posInicio);
+    doc.line(posRecibioX + 20, posInicio + 2, posRecibioX + 100, posInicio + 2); // Línea horizontal para la firma
+
+    // Añadir texto debajo de las líneas
+    doc.text('Jefa de Departamento de Recursos Humanos', posElaboroX + 30, posInicio + 10); // Texto debajo de la línea "Elaboró"
+    doc.text('Departamento de Servicio', posRecibioX + 30, posInicio + 10); // Texto debajo de la línea "Recibió"
 
     // Añadir footer al PDF
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
@@ -183,34 +241,52 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     } else if (periodoSeleccionado.tipo === 'mes') {
         periodoTexto = months[periodoSeleccionado.valor - 1];
     } else if (periodoSeleccionado.tipo === 'anio') {
-        periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
+        periodoTexto = periodoSeleccionado.valor;
     } else if (periodoSeleccionado.tipo === 'dia') {
-        periodoTexto = new Date(periodoSeleccionado.valor).toLocaleDateString();
+        // Accede al valor real si es una referencia reactiva
+        periodoTexto = typeof periodoSeleccionado.valor === 'string'
+            ? periodoSeleccionado.valor
+            : periodoSeleccionado.valor._value || 'Fecha inválida';
     } else {
         periodoTexto = periodoSeleccionado.valor;
     }
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
-    // Crear datos para el archivo Excel
-    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Inicio', 'Castigo', 'Hora Fin', 'Observaciones', 'Operador']];
-    entradas.value.forEach(entry => {
-        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
-        const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
-        const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
-        const horaInicio = entry.horaInicio ? entry.horaInicio.substring(0, 5) : 'N/A';
-        const castigo = entry.castigo || 'N/A';
-        const horaFin = entry.horaFin ? entry.horaFin.substring(0, 5) : 'N/A';
-        const observaciones = entry.observaciones;
+    // Filtrar los datos para `Alta` y `Baja`
+    const movimientosAlta = entradas.value.filter(entry => entry.estado.idEstado === 1);
+    const movimientosBaja = entradas.value.filter(entry => entry.estado.idEstado === 2);
+
+    // Crear datos para la primera hoja (Movimientos de Alta)
+    const dataAlta = [['Fecha', 'Movimiento', 'Operador', 'Directivo', 'Tipo De Movimiento']];
+    movimientosAlta.forEach(entry => {
+        const fecha = entry.fechaMovimiento || 'N/A';
+        const movimiento = entry.estado ? entry.estado.estado : 'N/A';
         const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-        data.push([ruta, fecha, numeroUnidad, directivo, horaInicio, castigo, horaFin, observaciones, operador]);
+        const directivo = entry.directivo?.nombre_completo || 'N/A';
+        const tipoMovimiento = entry.tipo_movimiento?.tipoMovimiento || 'N/A';
+        dataAlta.push([fecha, movimiento, operador, directivo, tipoMovimiento]);
+    });
+
+    // Crear datos para la segunda hoja (Movimientos de Baja)
+    const dataBaja = [['Fecha', 'Movimiento', 'Operador', 'Directivo', 'Tipo De Movimiento']];
+    movimientosBaja.forEach(entry => {
+        const fecha = entry.fechaMovimiento || 'N/A';
+        const movimiento = entry.estado ? entry.estado.estado : 'N/A';
+        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
+        const directivo = entry.directivo?.nombre_completo || 'N/A';
+        const tipoMovimiento = entry.tipo_movimiento?.tipoMovimiento || 'N/A';
+        dataBaja.push([fecha, movimiento, operador, directivo, tipoMovimiento]);
     });
 
     // Crear libro de Excel
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    const worksheetAlta = XLSX.utils.aoa_to_sheet(dataAlta);
+    const worksheetBaja = XLSX.utils.aoa_to_sheet(dataBaja);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Movimientos');
+    // Añadir hojas al libro
+    XLSX.utils.book_append_sheet(workbook, worksheetAlta, 'Movimientos de Alta');
+    XLSX.utils.book_append_sheet(workbook, worksheetBaja, 'Movimientos de Baja');
+
     // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
@@ -223,10 +299,8 @@ const formatos = [
     { tipo: 'pdf', texto: 'Generar PDF', clase: 'bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded', icono: 'fa-solid fa-file-pdf' },
     { tipo: 'excel', texto: 'Generar Excel', clase: 'bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded', icono: 'fa-solid fa-file-excel' },
 ];
-
 // Definir semanas
 const weeks = Array.from({ length: 52 }, (_, i) => i + 1);
-
 // Definir meses
 const months = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -241,13 +315,11 @@ let formatDate = (date) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Intl.DateTimeFormat('es-ES', options).format(date);
 };
-
 // Fecha actual en formato DD-MM-YYYY
 let diaSeleccionado = ref(formatDate(new Date()));
 let semanaSeleccionada = 1; // Por defecto, la primera semana
 let mesSeleccionado = 1; // Por defecto, enero
 let anioSeleccionado = currentYear; // Por defecto, el año actual
-
 // Función para obtener los días de la semana en formato DD-MM-YYYY
 const diasSemana = Array.from({ length: 7 }, (_, i) => {
     const dia = new Date();
@@ -278,12 +350,10 @@ const reporte = reactive({
     anio: null,
     dia: null
 });
-
 </script>
 
 <template>
     <div v-for="reporte in reportes" :key="reporte.titulo" class="mb-4 bg-zinc-100 rounded-lg p-4">
-
         <h3 class="text-lg font-bold ">{{ reporte.titulo }}</h3>
         <div class="bg-gradient-to-r from-cyan-500 to-cyan-500 h-px mb-2"></div>
         <div class="flex flex-wrap gap-4 mb-3">

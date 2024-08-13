@@ -284,7 +284,17 @@ class PrincipalController extends Controller
         $numeroUnidad = $unidad->numeroUnidad;
 
         // Obtener el operador asociado con la unidad seleccionada
-        $idOperador = $unidad->operador->idOperador;
+        $operador = $unidad->operador;
+
+        if (!$operador) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "No se puede registrar el castigo porque no se encontró un operador asociado con la unidad " . $numeroUnidad . ".",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
+        }
+
+        $idOperador = $operador->idOperador;
 
         // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
         $fechaActual = Carbon::now()->toDateString();
@@ -420,6 +430,16 @@ class PrincipalController extends Controller
     
             $numeroUnidad = $unidad->numeroUnidad;
 
+            // Obtener el operador asociado con la unidad seleccionada
+        $operador = $unidad->operador;
+
+        if (!$operador) {
+            return redirect()->route('principal.formarUni')->with([
+                'message' => "No se encontró un operador asociado con la unidad " . $numeroUnidad . ".",
+                'color' => 'yellow',
+                'type' => 'info'
+            ]);
+        }
             // Obtener el operador asociado con la unidad seleccionada
         $idOperador = $unidad->operador->idOperador;
     

@@ -603,4 +603,70 @@ class ReporteController extends Controller
         }
     }
 
+    public function obtenerMovimientosPorMes($idDirectivo, $mes)
+    {
+        try {
+            // Crear las fechas de inicio y fin del mes seleccionado
+            $inicioMes = Carbon::create(null, $mes, 1)->startOfMonth();
+            $finMes = Carbon::create(null, $mes, 1)->endOfMonth();
+            // Obtener los movimientos filtrados por idDirectivo y por el rango de fechas en fechaMovimiento
+            $movimientos = movimiento::with(['operador', 'directivo', 'tipoMovimiento', 'estado'])
+                ->when($idDirectivo !== 'todas', function ($query) use ($idDirectivo) {
+                    return $query->where('idDirectivo', $idDirectivo);
+                })
+                ->whereBetween('fechaMovimiento', [$inicioMes, $finMes])
+                ->get();
+
+            return response()->json($movimientos);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los movimientos por mes', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerMovimientosPorSemana($idDirectivo, $semana)
+    {
+        try {
+            // Calcular el inicio y fin de la semana
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+
+            // Obtener los movimientos filtrados por idDirectivo y por el rango de fechas en fechaMovimiento
+            $movimientos = movimiento::with(['operador', 'directivo', 'tipoMovimiento', 'estado'])
+                ->when($idDirectivo !== 'todas', function ($query) use ($idDirectivo) {
+                    return $query->where('idDirectivo', $idDirectivo);
+                })
+                ->whereBetween('fechaMovimiento', [$inicioSemana, $finSemana])
+                ->get();
+
+            return response()->json($movimientos);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los movimientos por semana', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerMovimientosPorDia($idDirectivo, $dia)
+    {
+        try {
+            // Convertir la fecha proporcionada de DD-MM-YYYY a un formato de Carbon
+            $diaCarbon = Carbon::createFromFormat('d-m-Y', $dia);
+    
+            // Validar que la fecha se ha convertido correctamente
+            if (!$diaCarbon) {
+                return response()->json(['error' => 'Formato de fecha inválido'], 400);
+            }
+    
+            // Consulta para obtener los movimientos filtrados
+            $movimientos = movimiento::with(['operador', 'directivo', 'tipoMovimiento', 'estado'])
+                ->when($idDirectivo !== 'todas', function ($query) use ($idDirectivo) {
+                    return $query->where('idDirectivo', $idDirectivo);
+                })
+                ->whereDate('fechaMovimiento', $diaCarbon->format('Y-m-d'))
+                ->get();
+    
+            return response()->json($movimientos);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los movimientos por fecha', 'details' => $e->getMessage()], 500);
+        }
+    }
+
 }
