@@ -1,5 +1,4 @@
 <script setup>
-import PrincipalLayout from '../../Layouts/PrincipalLayout.vue';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -8,17 +7,18 @@ import 'datatables.net-responsive-dt';
 import { ref, onMounted, computed, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-import FormularioRegHoraEntrada from '../../Components/Principal/FormularioRegHoraEntrada.vue';
-import FormularioRegCorte from '../../Components/Principal/FormularioRegCorte.vue';
-import FormularioRegRegreso from '../../Components/Principal/FormularioRegRegreso.vue';
-import FormularioCastigo from '../../Components/Principal/FormularioCastigo.vue';
-import FormularioRegUC from '../../Components/Principal/FormularioRegUC.vue';
-import FormularioRegresoUC from '../../Components/Principal/FormularioRegresoUC.vue';
-import FormularioDomingo from '../../Components/Principal/FormularioDomingo.vue';
 import Mensaje from '../../Components/Mensaje.vue';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import 'jspdf-autotable';
+import ServicioLayout from '../../Layouts/ServicioLayout.vue';
+import FormularioRegHoraEntrada from '../../Components/Servicio/FormularioRegHoraEntrada.vue';
+import FormularioRegCorte from '../../Components/Servicio/FormularioRegCorte.vue';
+import FormularioRegRegreso from '../../Components/Servicio/FormularioRegRegreso.vue';
+import FormularioCastigo from '../../Components/Servicio/FormularioCastigo.vue';
+import FormularioRegUC from '../../Components/Servicio/FormularioRegUC.vue';
+import FormularioRegresoUC from '../../Components/Servicio/FormularioRegresoUC.vue';
+import FormularioDomingo from '../../Components/Servicio/FormularioDomingo.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -620,7 +620,7 @@ const cerrarModalE = () => {
 </script>
 
 <template>
-  <PrincipalLayout title="Formar Unidades" :usuario="props.usuario">
+  <ServicioLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
       <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
@@ -802,7 +802,7 @@ const cerrarModalE = () => {
     </FormularioDomingo>
 
 
-  </PrincipalLayout>
+  </ServicioLayout>
 </template>
 <style>
 /* Estilo personalizado para centrar el texto en las celdas de la tabla */

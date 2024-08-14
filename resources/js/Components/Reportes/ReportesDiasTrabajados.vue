@@ -137,7 +137,7 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     doc.setFontSize(12);
     doc.text(`Reporte de ${tipo} - Período: ${periodoTexto}`, 14, 20);
 
-    // Agregar tabla
+    // Configurar columnas y datos
     const columns = [
         { header: 'Nombre del operador', dataKey: 'nombre' },
         { header: 'Días trabajados', dataKey: 'diasTrabajados' },
@@ -160,11 +160,12 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         };
     });
 
-    // Ajusta la tabla para el formato horizontal
-    doc.autoTable(columns, rows, {
+    // Añadir tabla usando la nueva API de autoTable
+    doc.autoTable({
+        columns: columns,
+        body: rows,
         startY: 24, // Ajusta la posición vertical de la tabla si es necesario
-        styles: { fontSize: 10 },
-        /* margin: { top: 25 } // Ajusta el margen superior */
+        styles: { fontSize: 10 }
     });
 
     // Añadir footer al PDF
@@ -182,6 +183,7 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
     doc.save(nombreArchivo);
 };
+
 
 const generarExcel = (tipo, periodoSeleccionado) => {
     let periodoTexto;

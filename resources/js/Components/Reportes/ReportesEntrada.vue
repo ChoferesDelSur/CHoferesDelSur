@@ -132,7 +132,7 @@ const generarPDF = (tipo, periodoSeleccionado) => {
         numeroUnidad: entry.unidad?.numeroUnidad || 'N/A',
         socioPrestador: entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A',
         horaEntrada: entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A',
-        tipoEntrada: entry.tipoEntrada || "S/PT",//Agregué retardo
+        tipoEntrada: entry.tipoEntrada || "Tarde",//Agregué retardo
         extremo: entry.extremo || 'N/A',
         operador: entry.operador ? `${entry.operador.nombre_completo}` : 'N/A'
     }));
@@ -243,7 +243,7 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                     </select>
                 </div>
             </div>
-            <h2 class="font-semibold text-l pt-0"> o </h2>
+            <!-- <h2 class="font-semibold text-l pt-0"> o </h2>
             <div>
                 <div>
                     <select name="operador" id="operador" v-model="form.operador"
@@ -255,7 +255,7 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                         </option>
                     </select>
                 </div>
-            </div>
+            </div> -->
         </div>
         <div class="flex flex-wrap gap-4 mb-3">
             <div class="flex flex-wrap space-x-3 mb-2">
