@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig({
     server: {
         //port: 5173, // Puedes especificar el puerto que prefieras
-        host: '192.168.0.14', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
+        host: '192.168.0.13', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
     },
     resolve: {
         alias: {
@@ -26,15 +26,7 @@ export default defineConfig({
             },
         }),
     ],
-    optimizeDeps: {
-        include: [
-            'pdfmake/build/pdfmake',  // Incluye pdfmake para optimización de dependencias
-            'pdfmake/build/vfs_fonts' // Incluye vfs_fonts para optimización de dependencias
-        ],
+    build: {
+        outDir: 'public/build', // Configura la carpeta de salida
     },
-    assetsInclude: [
-        'pdfmake/build/pdfmake',   // Incluye pdfmake y sus archivos necesarios
-        'pdfmake/build/vfs_fonts', // Incluye vfs_fonts y sus archivos necesarios
-        // Puedes agregar más rutas de archivos de fuentes u otros recursos aquí si es necesario
-    ],
 });
