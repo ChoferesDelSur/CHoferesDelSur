@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'web',/* env('AUTH_GUARD', 'web') */
+        'passwords' => 'users',/* env('AUTH_PASSWORD_BROKER', 'users'), */
     ],
 
     /*
@@ -62,9 +62,9 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\usuario::class),//Tenia User
+            'model' => App\Models\usuario::class,/* env('AUTH_MODEL', App\Models\usuario::class), *///Tenia User
             'table' => 'usuario',
-            'id' => 'idUsuarios',
+            'id' => 'idUsuario',
             'username' => 'usuario',
         ],
 
@@ -96,7 +96,7 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('password_reset_tokens'),//Le quite esto 'AUTH_PASSWORD_RESET_TOKEN_TABLE',
+            'table' => 'password_reset_tokens',/* env('password_reset_tokens'), *///Le quite esto 'AUTH_PASSWORD_RESET_TOKEN_TABLE',
             'expire' => 60,
             'throttle' => 60,
         ],
@@ -113,6 +113,6 @@ return [
     |
     */
 
-    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+    'password_timeout' => 10800/* env('AUTH_PASSWORD_TIMEOUT', 10800), */
 
 ];
