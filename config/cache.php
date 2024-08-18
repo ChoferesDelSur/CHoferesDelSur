@@ -51,7 +51,7 @@ return [
             'lock_path' => storage_path('framework/cache/data'),
         ],
 
-        'memcached' => [
+        /* 'memcached' => [
             'driver' => 'memcached',
             'persistent_id' => env('MEMCACHED_PERSISTENT_ID'),
             'sasl' => [
@@ -68,7 +68,7 @@ return [
                     'weight' => 100,
                 ],
             ],
-        ],
+        ], */
 
         'redis' => [
             'driver' => 'redis',
@@ -76,14 +76,14 @@ return [
             'lock_connection' => 'default',
         ],
 
-        'dynamodb' => [
+        /* 'dynamodb' => [
             'driver' => 'dynamodb',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
             'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
             'endpoint' => env('DYNAMODB_ENDPOINT'),
-        ],
+        ], */
 
         'octane' => [
             'driver' => 'octane',
