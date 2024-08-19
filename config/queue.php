@@ -40,17 +40,17 @@ return [
             'table' => 'jobs',/* env('DB_QUEUE_TABLE', 'jobs'), */
             'queue' => 'default',/* env('DB_QUEUE', 'default'), */
             'retry_after' => 90,/* (int) env('DB_QUEUE_RETRY_AFTER', 90), */
-            'after_commit' => false,
+            //'after_commit' => false,
         ],
 
-        'beanstalkd' => [
-            'driver' => 'beanstalkd',
-            'host' => 'localhost',/* env('BEANSTALKD_QUEUE_HOST', 'localhost'), */
-            'queue' => 'default',/* env('BEANSTALKD_QUEUE', 'default'), */
-            'retry_after' => 90,/* (int) env('BEANSTALKD_QUEUE_RETRY_AFTER', 90), */
-            'block_for' => 0,
-            'after_commit' => false,
-        ],
+        //'beanstalkd' => [
+          //  'driver' => 'beanstalkd',
+            //'host' => 'localhost',/* env('BEANSTALKD_QUEUE_HOST', 'localhost'), */
+            //'queue' => 'default',/* env('BEANSTALKD_QUEUE', 'default'), */
+            //'retry_after' => 90,/* (int) env('BEANSTALKD_QUEUE_RETRY_AFTER', 90), */
+            //'block_for' => 0,
+            //'after_commit' => false,
+        //],
 
         /* 'sqs' => [
             'driver' => 'sqs',

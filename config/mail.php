@@ -34,9 +34,9 @@ return [
     |
     */
 
-    /* 'mailers' => [
+    'mailers' => [
 
-        'smtp' => [
+        /* 'smtp' => [
             'transport' => 'smtp',
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', '127.0.0.1'),
@@ -63,14 +63,14 @@ return [
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
-        ],
+        ], */
 
         'log' => [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
         ],
 
-        'array' => [
+        /* 'array' => [
             'transport' => 'array',
         ],
 
@@ -80,9 +80,9 @@ return [
                 'smtp',
                 'log',
             ],
-        ],
+        ], */
 
-    ], */
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -95,9 +95,9 @@ return [
     |
     */
 
-    /* 'from' => [
+    'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
-    ], */
+    ],
 
 ];
