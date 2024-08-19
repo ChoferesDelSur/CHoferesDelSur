@@ -17,7 +17,7 @@
     <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet" />
 
     <!-- Agregar el enlace al favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('/Iconos/autobus.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ secure_asset('/Iconos/autobus.png') }}">
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
