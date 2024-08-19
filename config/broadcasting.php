@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('BROADCAST_DRIVER', 'null'),
+    'default' => env('BROADCAST_DRIVER', 'log'),
 
     /*
     |--------------------------------------------------------------------------
@@ -53,11 +53,11 @@ return [
             'key' => env('ABLY_KEY'),
         ],
 
-        'redis' => [
+        /* 'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
         ],
-
+ */
         'log' => [
             'driver' => 'log',
         ],
