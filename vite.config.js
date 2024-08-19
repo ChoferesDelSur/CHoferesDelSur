@@ -3,6 +3,11 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
+    base: '/', // Ajusta esta ruta según tu configuración de despliegue
+    build: {
+        outDir: 'public/build',
+        manifest: true,
+    },
     server: {
         //port: 5173, // Puedes especificar el puerto que prefieras
         host: '192.168.0.13', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
@@ -26,8 +31,4 @@ export default defineConfig({
             },
         }),
     ],
-    /* build: {
-        outDir: 'public/build', // Configura la carpeta de salida
-        manifest: true,
-    }, */
 });
