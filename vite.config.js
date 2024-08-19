@@ -28,5 +28,6 @@ export default defineConfig({
     ],
     build: {
         outDir: 'public/build', // Configura la carpeta de salida
+        manifest: true,
     },
 });
