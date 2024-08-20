@@ -3,7 +3,7 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-    base: '/',
+    base: process.env.APP_URL ? process.env.APP_URL + '/' : '/',
     build: {
         outDir: 'public/build',
     },
