@@ -2,9 +2,11 @@
 import { Head, useForm } from '@inertiajs/inertia-vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+/* import PrimaryButton from '@/Components/PrimaryButton.vue'; */
+/* import TextInput from '@/Components/TextInput.vue'; */
 import Mensaje from '../../Components/Mensaje.vue';
+import TextInput from '../../Components/TextInput.vue';
+import PrimaryButton from '../../Components/PrimaryButton.vue';
 
 const form = useForm({
     nombre: '',
