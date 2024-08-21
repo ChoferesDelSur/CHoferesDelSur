@@ -1,4 +1,6 @@
 <script setup>
+import '../../css/app.css';
+
 defineProps({
     type: {
         type: String,
