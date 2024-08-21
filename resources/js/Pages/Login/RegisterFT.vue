@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/inertia-vue3';
+import { Head, useForm } from '@inertiajs/inertia';
 /* import AuthenticationCard from '@/Components/AuthenticationCard.vue'; */
 /* import InputLabel from '@/Components/InputLabel.vue'; */
 /* import PrimaryButton from '@/Components/PrimaryButton.vue'; */
