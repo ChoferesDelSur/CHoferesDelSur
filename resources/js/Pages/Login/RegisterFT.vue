@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/inertia-vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
+/* import AuthenticationCard from '@/Components/AuthenticationCard.vue'; */
 /* import InputLabel from '@/Components/InputLabel.vue'; */
 /* import PrimaryButton from '@/Components/PrimaryButton.vue'; */
 /* import TextInput from '@/Components/TextInput.vue'; */
@@ -10,6 +10,7 @@ import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import InputLabel from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/InputLabel.vue';
 import PrimaryButton from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/PrimaryButton.vue';
 import TextInput from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/TextInput.vue';
+import AuthenticationCard from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/AuthenticationCard.vue';
 
 const form = useForm({
     nombre: '',
