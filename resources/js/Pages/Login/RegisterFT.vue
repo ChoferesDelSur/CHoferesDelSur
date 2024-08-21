@@ -5,9 +5,11 @@ import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 /* import PrimaryButton from '@/Components/PrimaryButton.vue'; */
 /* import TextInput from '@/Components/TextInput.vue'; */
 /* import Mensaje from '../../Components/Mensaje.vue'; */
-import TextInput from '../../Components/TextInput.vue';
-import PrimaryButton from '../../Components/PrimaryButton.vue';
+/* import TextInput from '../../Components/TextInput.vue'; */
+/* import PrimaryButton from '../../Components/PrimaryButton.vue'; */
 import InputLabel from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/InputLabel.vue';
+import PrimaryButton from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/PrimaryButton.vue';
+import TextInput from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/TextInput.vue';
 
 const form = useForm({
     nombre: '',
