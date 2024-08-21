@@ -1,12 +1,13 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/inertia-vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import InputLabel from '@/Components/InputLabel.vue';
+/* import InputLabel from '@/Components/InputLabel.vue'; */
 /* import PrimaryButton from '@/Components/PrimaryButton.vue'; */
 /* import TextInput from '@/Components/TextInput.vue'; */
-import Mensaje from '../../Components/Mensaje.vue';
+/* import Mensaje from '../../Components/Mensaje.vue'; */
 import TextInput from '../../Components/TextInput.vue';
 import PrimaryButton from '../../Components/PrimaryButton.vue';
+import InputLabel from '../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/InputLabel.vue';
 
 const form = useForm({
     nombre: '',
@@ -42,7 +43,7 @@ const submit = () => {
                     usuario administrador.</span>
             </div>
         </div>
-        <Mensaje />
+        <!-- <Mensaje /> -->
         <form @submit.prevent="submit">
             <div class="">
                 <InputLabel for="nombre" value="Nombre(s)" />
