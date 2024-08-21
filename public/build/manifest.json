@@ -9,9 +9,9 @@
       "assets/Mensaje-BCnomaqz.css"
     ]
   },
-  "_Mensaje.vue_vue_type_style_index_0_lang-!~{00w}~.js": {
+  "_Mensaje.vue_vue_type_style_index_0_lang-!~{00x}~.js": {
     "file": "assets/Mensaje-BCnomaqz.css",
-    "src": "_Mensaje.vue_vue_type_style_index_0_lang-!~{00w}~.js"
+    "src": "_Mensaje.vue_vue_type_style_index_0_lang-!~{00x}~.js"
   },
   "_Modal-BIHKF-2e.js": {
     "file": "assets/Modal-BIHKF-2e.js",
@@ -20,9 +20,9 @@
       "resources/js/app.js"
     ]
   },
-  "_PrimaryButton-!~{00t}~.js": {
+  "_PrimaryButton-!~{00u}~.js": {
     "file": "assets/PrimaryButton-B1h9Ufmx.css",
-    "src": "_PrimaryButton-!~{00t}~.js"
+    "src": "_PrimaryButton-!~{00u}~.js"
   },
   "_PrimaryButton-Dro4HtJN.js": {
     "file": "assets/PrimaryButton-Dro4HtJN.js",
@@ -34,9 +34,9 @@
       "assets/PrimaryButton-B1h9Ufmx.css"
     ]
   },
-  "_PrincipalLayout-!~{00y}~.js": {
+  "_PrincipalLayout-!~{00z}~.js": {
     "file": "assets/PrincipalLayout-B5c5mB6U.css",
-    "src": "_ServicioLayout-!~{00H}~.js"
+    "src": "_ServicioLayout-!~{00I}~.js"
   },
   "_PrincipalLayout-DocT8WpR.js": {
     "file": "assets/PrincipalLayout-DocT8WpR.js",
@@ -49,9 +49,9 @@
       "assets/PrincipalLayout-B5c5mB6U.css"
     ]
   },
-  "_RHLayout-!~{00G}~.js": {
+  "_RHLayout-!~{00H}~.js": {
     "file": "assets/RHLayout-CGvxUS8k.css",
-    "src": "_RHLayout-!~{00G}~.js"
+    "src": "_RHLayout-!~{00H}~.js"
   },
   "_RHLayout-CxlwUskT.js": {
     "file": "assets/RHLayout-CxlwUskT.js",
@@ -64,11 +64,11 @@
       "assets/RHLayout-CGvxUS8k.css"
     ]
   },
-  "_ReportesDiasTrabajados.vue_vue_type_style_index_0_lang-!~{00F}~.js": {
+  "_ReportesDiasTrabajados.vue_vue_type_style_index_0_lang-!~{00G}~.js": {
     "file": "assets/Reportes-C4TkVVYL.css",
     "src": "resources/js/Pages/Servicio/SociosPrestadores.vue"
   },
-  "_ReportesUltimasCorridas-!~{00E}~.js": {
+  "_ReportesUltimasCorridas-!~{00F}~.js": {
     "file": "assets/Reportes-C4TkVVYL.css",
     "src": "resources/js/Pages/Servicio/SociosPrestadores.vue"
   },
@@ -85,9 +85,9 @@
       "assets/Reportes-C4TkVVYL.css"
     ]
   },
-  "_ServicioLayout-!~{00H}~.js": {
+  "_ServicioLayout-!~{00I}~.js": {
     "file": "assets/PrincipalLayout-B5c5mB6U.css",
-    "src": "_ServicioLayout-!~{00H}~.js"
+    "src": "_ServicioLayout-!~{00I}~.js"
   },
   "_ServicioLayout-cpuBT-XK.js": {
     "file": "assets/ServicioLayout-cpuBT-XK.js",
@@ -165,6 +165,11 @@
     "name": "html2canvas.esm",
     "src": "node_modules/html2canvas/dist/html2canvas.esm.js",
     "isDynamicEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DE-2Rtaj.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
   },
   "resources/js/Pages/Login/Login.vue": {
     "file": "assets/Login-DR9_Ylq7.js",
