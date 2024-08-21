@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import '../../css/app.css';
 
-defineProps({
+const porps=defineProps({
     modelValue: String,
 });
 
