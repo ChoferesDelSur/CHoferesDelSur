@@ -18,7 +18,7 @@
 
     <!-- Agregar el enlace al favicon -->
     <link rel="icon" type="image/x-icon" href="{{ secure_asset('/Iconos/autobus.png') }}">
-    @vite(['resources/css/app.css'])
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -26,14 +26,13 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @routes
-    <!-- @vite(['resources/js/app.js','resources/css/app.css',"resources/js/Pages/{$page['component']}.vue"]) -->
+    @vite(['resources/js/app.js','resources/css/app.css',"resources/js/Pages/{$page['component']}.vue"])
     @inertiaHead
 </head>
 
 <body class="font-sans antialiased">
 
     @inertia
-    @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
 </body>
 
 </html>
