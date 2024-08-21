@@ -1,7 +1,6 @@
 <script setup>
-import '../../css/app.css';
 
-const props=defineProps({
+defineProps({
     type: {
         type: String,
         default: 'submit',

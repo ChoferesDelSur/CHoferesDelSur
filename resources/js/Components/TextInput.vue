@@ -1,8 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import '../../css/app.css';
 
-const porps=defineProps({
+defineProps({
     modelValue: String,
 });
 
