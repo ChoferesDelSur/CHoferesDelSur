@@ -3,10 +3,6 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-    /* base: '/',
-    build: {
-        outDir: 'public/build',
-    }, */
     server: {
         //https: true, // Asegúrate de que HTTPS esté habilitado si es necesario
         //port: 5173, // Puedes especificar el puerto que prefieras
