@@ -21,7 +21,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/js/app.js',
-                //'resources/css/app.css',  // Incluye el archivo CSS aquí
+                'resources/css/app.css',  // Incluye el archivo CSS aquí
             ],
             refresh: true,
         }),
