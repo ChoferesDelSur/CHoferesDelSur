@@ -6,7 +6,6 @@ export default defineConfig({
     base: '/',
     build: {
         outDir: 'public/build',
-        manifest: true,
     },
     server: {
         https: true, // Asegúrate de que HTTPS esté habilitado si es necesario
