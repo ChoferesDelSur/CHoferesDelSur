@@ -8,7 +8,7 @@ use App\Models\operador;
 use App\Models\calificacion;
 use App\Models\estado;
 use App\Models\ruta;
-use App\Models\tipodirectivo;
+use App\Models\tipoDirectivo;
 use App\Models\tipoOperador;
 use App\Models\castigo;
 use App\Models\corte;
@@ -902,7 +902,7 @@ class PrincipalController extends Controller
     public function sociosPrestadores(){
         $directivo = directivo::all();
         $operador = operador::all();
-        $tipDirectivo = tipodirectivo::all();
+        $tipDirectivo = tipoDirectivo::all();
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Principal/SociosPrestadores',[
             'usuario' => $usuario,

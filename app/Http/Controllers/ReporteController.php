@@ -11,7 +11,7 @@ use App\Models\usuario;
 use App\Models\formacionunidades;
 use App\Models\movimiento;
 use App\Models\ruta;
-use App\Models\tipodirectivo;
+use App\Models\tipoDirectivo;
 use App\Models\tipoOperador;
 use App\Models\castigo;
 use App\Models\corte;
