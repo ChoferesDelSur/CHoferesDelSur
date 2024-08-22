@@ -8,11 +8,14 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import VueSelect from 'vue-select';
 import DataTablesLib from 'datatables.net'; //Se agrego esto
 import DataTable from 'datatables.net-vue3';//Se agrego esto
+import axios from 'axios';
 
  
 DataTable.use(DataTablesLib);//Se agrego esto
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+// Configura la base URL para Axios
+axios.defaults.baseURL = import.meta.env.VITE_APP_URL;
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
