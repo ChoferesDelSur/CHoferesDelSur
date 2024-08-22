@@ -729,7 +729,6 @@ class PrincipalController extends Controller
             $request->validate([
                 'numeroUnidad'=> 'required',
                 'ruta' => 'required',
-                'operador' => 'required',
                 'directivo' => 'required',
             ]);
             $unidad = unidad::find($idUnidad);
@@ -741,7 +740,7 @@ class PrincipalController extends Controller
 
             return redirect()->route('principal.unidades')->with(['message' => "Unidad actualizado correctamente: " . $request->numeroUnidad, "color" => "green"]);
         }catch(Exception $e){
-            return redirect()->route('principal.unidades')->with(['message' => "La unidad no se actualizó correctamente: " . $requests->numeroUnidad, "color" => "reed"]);
+            return redirect()->route('principal.unidades')->with(['message' => "La unidad no se actualizó correctamente: " . $request->numeroUnidad, "color" => "reed"]);
         }
     }
 

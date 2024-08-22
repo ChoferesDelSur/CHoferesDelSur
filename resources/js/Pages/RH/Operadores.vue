@@ -13,6 +13,9 @@ import Mensaje from '../../Components/Mensaje.vue';
 import RHLayout from '../../Layouts/RHLayout.vue';
 import FormularioOperadores from '../../Components/RH/FormularioOperadores.vue';
 import FormularioActualizarOperadores from '../../Components/RH/FormularioActualizarOperadores.vue';
+import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
+import 'jspdf-autotable';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -31,6 +34,78 @@ const props = defineProps({
     direccion: { type: Object },
 });
 
+const exportarPDF = (titulo = 'Documento') => {
+    const doc = new jsPDF('landscape');
+    // Título del documento
+    doc.setFontSize(12);
+    doc.text(titulo, 14, 22); // Posiciona el título en la parte superior izquierda
+    // Fecha de generación del documento
+    const fecha = new Date().toLocaleDateString();
+    doc.setFontSize(8);
+    doc.text(`Fecha: ${fecha}`, 260, 22); // Posiciona la fecha en la parte superior derecha
+    // Definir las columnas de la tabla
+    const columnas = [
+        "ID",
+        "Apellido Paterno",
+        "Apellido Materno",
+        "Nombre",
+        "Tipo de Operador",
+        "Estado",
+        "Jefe"
+    ];
+    // Extraer los datos filtrados y visibles de la tabla
+    const filas = [];
+    nextTick(() => {
+        const table = $('#operadoresTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+        data.each((row) => {
+            filas.push([
+                row.idOperador,
+                row.apellidoP,
+                row.apellidoM,
+                row.nombre,
+                props.tipoOperador.find(tipOp => tipOp.idTipoOperador === row.idTipoOperador)?.tipOperador || '',
+                props.estado.find(estad => estad.idEstado === row.idEstado)?.estado || '',
+                props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || ''
+            ]);
+        });
+        // Generar la tabla en el PDF
+        doc.autoTable({
+            head: [columnas],
+            body: filas,
+            startY: 24 // Ajusta el inicio de la tabla debajo del título y la fecha
+        });
+        // Guardar el documento con el título como nombre del archivo
+        doc.save(`${titulo}.pdf`);
+    });
+};
+const exportarExcel = () => {
+    nextTick(() => {
+        // Obtener la instancia de DataTable
+        const table = $('#operadoresTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+
+        // Convertir los datos a formato JSON
+        const jsonData = data.toArray().map(row => ({
+            ID: row.idOperador,
+            'Apellido Paterno': row.apellidoP,
+            'Apellido Materno': row.apellidoM,
+            Nombre: row.nombre,
+            'Tipo de Operador': props.tipoOperador.find(tipOp => tipOp.idTipoOperador === row.idTipoOperador)?.tipOperador || '',
+            Estado: props.estado.find(estad => estad.idEstado === row.idEstado)?.estado || '',
+            Jefe: props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || ''
+        }));
+
+        // Crear la hoja de Excel
+        const ws = XLSX.utils.json_to_sheet(jsonData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Operadores Registrados');
+
+        // Guardar el archivo Excel
+        XLSX.writeFile(wb, 'Operadores Registrados.xlsx');
+    });
+};
+
 const botonesPersonalizados = [
     {
         extend: 'copyHtml5',
@@ -43,22 +118,16 @@ const botonesPersonalizados = [
     },
     {
         title: 'Operadores registrados',
-        extend: 'excelHtml5',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8]
-        }
+        action: () => exportarExcel() // Usa la función de exportar a Excel
     },
     {
         title: 'Operadores registrados',
-        extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         orientation: 'landscape', // Configurar la orientación horizontal
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8]
-        }
+        action: () => exportarPDF(props.title || 'Operadores registrados')
     },
     {
         title: 'Operadores registrados',

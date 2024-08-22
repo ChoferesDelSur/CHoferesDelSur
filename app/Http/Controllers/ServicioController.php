@@ -464,12 +464,13 @@ class ServicioController extends Controller
             $request->validate([
                 'numeroUnidad'=> 'required',
                 'ruta' => 'required',
-                'operador' => 'required',
+                'directivo' => 'required',
             ]);
             $unidad = unidad::find($idUnidad);
             $unidad->numeroUnidad = $request -> numeroUnidad;
             $unidad->idOperador = $request->operador;
             $unidad->idRuta = $request->ruta;
+            $unidad->idDirectivo = $request->directivo;
             $unidad->save();
 
             return redirect()->route('servicio.unidades')->with(['message' => "Unidad actualizado correctamente: " . $request->numeroUnidad, "color" => "green"]);
