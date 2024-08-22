@@ -5,7 +5,7 @@ import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import Swal from 'sweetalert2';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';

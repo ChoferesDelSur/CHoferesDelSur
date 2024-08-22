@@ -4,7 +4,7 @@ import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import Swal from 'sweetalert2';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
