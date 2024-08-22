@@ -9,7 +9,7 @@ use App\Models\calificacion;
 use App\Models\estado;
 use App\Models\ruta;
 use App\Models\tipodirectivo;
-use App\Models\tipooperador;
+use App\Models\tipoOperador;
 use App\Models\castigo;
 use App\Models\corte;
 use App\Models\usuario;
@@ -271,7 +271,7 @@ class ServicioController extends Controller
 
     public function operadores(){
         $operador = operador::all(); 
-        $tipoOperador = tipooperador::all();
+        $tipoOperador = tipoOperador::all();
         $estado = estado::all();
         $directivo = directivo::all();
         $usuario = $this->obtenerInfoUsuario();
@@ -544,7 +544,7 @@ class ServicioController extends Controller
     {
         $directivo = directivo::all();
         $operador = operador::all(); 
-        $tipoOperador = tipooperador::all();
+        $tipoOperador = tipoOperador::all();
         $estado = estado::all();
         $unidad = unidad::all();
         $ruta = ruta::all();

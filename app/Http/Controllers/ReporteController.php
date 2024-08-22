@@ -12,7 +12,7 @@ use App\Models\formacionunidades;
 use App\Models\movimiento;
 use App\Models\ruta;
 use App\Models\tipodirectivo;
-use App\Models\tipooperador;
+use App\Models\tipoOperador;
 use App\Models\castigo;
 use App\Models\corte;
 use App\Models\entrada;
