@@ -1,12 +1,5 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/inertia-vue3';
-/* import AuthenticationCard from '@/Components/AuthenticationCard.vue'; */
-/* import InputLabel from '@/Components/InputLabel.vue'; */
-/* import PrimaryButton from '@/Components/PrimaryButton.vue'; */
-/* import TextInput from '@/Components/TextInput.vue'; */
-/* import Mensaje from '../../Components/Mensaje.vue'; */
-/* import TextInput from '../../Components/TextInput.vue'; */
-/* import PrimaryButton from '../../Components/PrimaryButton.vue'; */
 import AuthenticationCard from '../../Components/AuthenticationCard.vue';
 import InputLabel from '../../Components/InputLabel.vue';
 import TextInput from '../../Components/TextInput.vue';
@@ -22,7 +15,9 @@ const form = useForm({
 
 const submit = () => {
     try {
-        form.post(route('registrarse'));
+        const url = route('registrarse');
+        console.log('Request URL:', url); // Verifica que esta URL sea HTTPS
+        form.post(url);
     } catch (e) {
         console.log(e);
     }
