@@ -12,6 +12,9 @@ import Mensaje from '../../Components/Mensaje.vue';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 import FormularioRuta from '../../Components/Servicio/FormularioRuta.vue';
 import FormularioActualizarRuta from '../../Components/Servicio/FormularioActualizarRuta.vue';
+import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
+import 'jspdf-autotable';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -19,6 +22,73 @@ const props = defineProps({
     ruta: { type: Object },
     usuario: { type: Object },
 });
+
+const exportarPDF = (titulo = 'Documento') => {
+    const doc = new jsPDF('portrait'); // Cambiado a vertical (portrait)
+
+    // Título del documento
+    doc.setFontSize(12);
+    doc.text(titulo, 14, 22); // Posiciona el título en la parte superior izquierda
+
+    // Fecha de generación del documento
+    const fecha = new Date().toLocaleDateString();
+    doc.setFontSize(8);
+
+    // Ajusta la posición de la fecha
+    const margenDerecho = 175; // Ajusta este valor según sea necesario
+    doc.text(`Fecha: ${fecha}`, margenDerecho, 22); // Posiciona la fecha en la parte superior derecha
+
+    // Definir las columnas de la tabla
+    const columnas = [
+        "ID",
+        "Ruta",
+    ];
+
+    // Extraer los datos filtrados y visibles de la tabla
+    const filas = [];
+    nextTick(() => {
+        const table = $('#rutasTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+        data.each((row) => {
+            filas.push([
+                row.idRuta,
+                row.nombreRuta,
+            ]);
+        });
+
+        // Generar la tabla en el PDF
+        doc.autoTable({
+            head: [columnas],
+            body: filas,
+            startY: 24 // Ajusta el inicio de la tabla debajo del título y la fecha
+        });
+
+        // Guardar el documento con el título como nombre del archivo
+        doc.save(`${titulo}.pdf`);
+    });
+};
+
+const exportarExcel = () => {
+    nextTick(() => {
+        // Obtener la instancia de DataTable
+        const table = $('#rutasTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+
+        // Convertir los datos a formato JSON
+        const jsonData = data.toArray().map(row => ({
+            ID: row.idRuta,
+            'Ruta': row.nombreRuta,
+        }));
+
+        // Crear la hoja de Excel
+        const ws = XLSX.utils.json_to_sheet(jsonData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Rutas Registradas');
+
+        // Guardar el archivo Excel
+        XLSX.writeFile(wb, 'Rutas Registradas.xlsx');
+    });
+};
 
 const botonesPersonalizados = [
     {
@@ -32,21 +102,15 @@ const botonesPersonalizados = [
     },
     {
         title: 'Rutas registradas',
-        extend: 'excelHtml5',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
-        exportOptions: {
-            columns: [1, 2]
-        }
+        action: () => exportarExcel() // Usa la función de exportar a Excel
     },
     {
         title: 'Rutas registradas',
-        extend: 'pdfHtml5',
         text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
         className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
-        exportOptions: {
-            columns: [1, 2]
-        },
+        action: () => exportarPDF(props.title || 'Rutas Registradas')
     },
     {
         title: 'Rutas registradas',

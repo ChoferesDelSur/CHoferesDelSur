@@ -93,10 +93,10 @@ const exportarExcel = () => {
         // Crear la hoja de Excel
         const ws = XLSX.utils.json_to_sheet(jsonData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Operadores Registrados');
+        XLSX.utils.book_append_sheet(wb, ws, 'Unidades Registrados');
 
         // Guardar el archivo Excel
-        XLSX.writeFile(wb, 'Operadores Registrados.xlsx');
+        XLSX.writeFile(wb, 'Unidades Registrados.xlsx');
     });
 };
 
