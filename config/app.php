@@ -53,6 +53,8 @@ return [
     */
 
     'url' => env('APP_URL', 'https://choferesdelsur-production.up.railway.app'),
+    
+    'asset_url' => env('ASSET_URL'),
 
 
     /*

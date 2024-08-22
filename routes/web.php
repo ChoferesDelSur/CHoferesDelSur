@@ -14,6 +14,7 @@ use App\Http\Controllers\DireccionesApiController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ServicioMiddleware;
 use App\Http\Middleware\RHMiddleware;
+use App\Http\Middleware\RedurectToHttps;
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/', 'index')->name('inicioSesion');
