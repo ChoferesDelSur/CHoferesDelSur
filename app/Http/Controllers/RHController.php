@@ -202,7 +202,11 @@ class RHController extends Controller
 
             // Función para calcular el número máximo de operadores permitidos
             function maxOperadoresPermitidos($numUnidades) {
-                return ceil($numUnidades * 1.2); // Para cada unidad, el máximo de operadores permitido es 1.2 veces el número de unidades
+                // Calcular el múltiplo de 5 menor o igual
+                $mUltimo = floor($numUnidades / 5) * 5;
+                // Incremento basado en el múltiplo de 5
+                $incremento = ($mUltimo / 5);
+                return $numUnidades + $incremento;
             }
 
             // Verificar si el número de operadores excede el límite permitido
@@ -313,6 +317,26 @@ class RHController extends Controller
 
             // Encontrar el operador
             $operador = operador::find($idOperador);
+            if (!$operador) {
+                return redirect()->route('rh.operadores')->with(['message' => "Operador no encontrado", "color" => "red", 'type' => 'error']);
+            }
+    
+            // Verificar si el directivo cambia
+            if ($operador->idDirectivo != $request->directivo) {
+                // Decrementar el numOperadores del directivo anterior
+                $directivoAnterior = directivo::find($operador->idDirectivo);
+                if ($directivoAnterior) {
+                    $directivoAnterior->numOperadores = max(0, $directivoAnterior->numOperadores - 1);
+                    $directivoAnterior->save();
+                }
+    
+                // Incrementar el numOperadores del nuevo directivo
+                $nuevoDirectivo = directivo::find($request->directivo);
+                if ($nuevoDirectivo) {
+                    $nuevoDirectivo->numOperadores += 1;
+                    $nuevoDirectivo->save();
+                }
+            }
             // Actualizar la dirección si es necesario
             if ($request->has('calle') || $request->has('numero') || $request->has('asentamiento')) {
                 $domicilio = direccion::find($operador->idDireccion);
@@ -369,20 +393,36 @@ class RHController extends Controller
         }
     }
 
-    public function eliminarOperador($operadoresIds){
-        try{
-            // Convierte la cadena de IDs en un array
-            $operadoresIdsArray = explode(',', $operadoresIds);
-            // Limpia los IDs para evitar posibles problemas de seguridad
-            $operadoresIdsArray = array_map('intval', $operadoresIdsArray);
-            // Elimina las materias
-            operador::whereIn('idOperador', $operadoresIdsArray)->delete();
-            // Redirige a la página deseada después de la eliminación
-            return redirect()->route('rh.operadores')->with(['message' => "Operador eliminado correctamente", "color" => "green"]);
-        }catch(Exception $e){
-            return redirect()->route('rh.operadores')->with(['message' => "No se pudo eliminar al operador", "color" => "red"]);
+    public function eliminarOperador($operadoresIds)
+{
+    try {
+        // Convierte la cadena de IDs en un array
+        $operadoresIdsArray = explode(',', $operadoresIds);
+        // Limpia los IDs para evitar posibles problemas de seguridad
+        $operadoresIdsArray = array_map('intval', $operadoresIdsArray);
+
+        // Encuentra los operadores antes de eliminarlos
+        $operadores = operador::whereIn('idOperador', $operadoresIdsArray)->get();
+
+        foreach ($operadores as $operador) {
+            // Encuentra el directivo asociado y decrementar su numOperadores
+            $directivo = directivo::find($operador->idDirectivo);
+            if ($directivo) {
+                $directivo->numOperadores = max(0, $directivo->numOperadores - 1);
+                $directivo->save();
+            }
         }
+
+        // Elimina los operadores
+        operador::whereIn('idOperador', $operadoresIdsArray)->delete();
+
+        // Redirige a la página deseada después de la eliminación
+        return redirect()->route('rh.operadores')->with(['message' => "Operador eliminado correctamente", "color" => "green"]);
+    } catch (Exception $e) {
+        Log::error('Error al eliminar al operador:', ['error' => $e->getMessage()]);
+        return redirect()->route('rh.operadores')->with(['message' => "No se pudo eliminar al operador", "color" => "red"]);
     }
+}
 
     public function sociosPrestadores(){
         $directivo = directivo::all();
