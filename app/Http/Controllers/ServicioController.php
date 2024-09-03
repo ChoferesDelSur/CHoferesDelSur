@@ -475,7 +475,7 @@ class ServicioController extends Controller
             $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
             ->where('idRuta', $request->ruta)
             ->where('idDirectivo', $request->directivo)
-            ->where('id', '!=', $idUnidad)
+            ->where('idUnidad', '!=', $idUnidad)
             ->first();
 
             if ($existingUnidad) {
