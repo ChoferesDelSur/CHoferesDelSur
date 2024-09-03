@@ -330,16 +330,16 @@ class RHController extends Controller
 
         // Verificar si el directivo cambia
         if ($operador->idDirectivo != $request->directivo) {
-            // Decrementar el numOperadores del directivo anterior
+            // Decrementar el numOperadores del directivo anterior si el operador era de tipo "Base"
             $directivoAnterior = directivo::find($operador->idDirectivo);
-            if ($directivoAnterior) {
+            if ($directivoAnterior && $tipoActual == 1) { // 1 representa "Base"
                 $directivoAnterior->numOperadores = max(0, $directivoAnterior->numOperadores - 1);
                 $directivoAnterior->save();
             }
 
-            // Incrementar el numOperadores del nuevo directivo
+            // Incrementar el numOperadores del nuevo directivo si el operador es de tipo "Base"
             $nuevoDirectivo = directivo::find($request->directivo);
-            if ($nuevoDirectivo) {
+            if ($nuevoDirectivo && $nuevoTipo == 1) { // 1 representa "Base"
                 $nuevoDirectivo->numOperadores += 1;
                 $nuevoDirectivo->save();
             }
@@ -348,11 +348,9 @@ class RHController extends Controller
             if ($tipoActual != $nuevoTipo) {
                 $directivo = directivo::find($operador->idDirectivo);
                 if ($directivo) {
-                    if ($tipoActual == 'Base' && $nuevoTipo == 'Eventual') {
-                        // Decrementar si el operador pasa de Base a Eventual
+                    if ($tipoActual == 1 && $nuevoTipo == 2) { // De "Base" a "Eventual"
                         $directivo->numOperadores = max(0, $directivo->numOperadores - 1);
-                    } elseif ($tipoActual == 'Eventual' && $nuevoTipo == 'Base') {
-                        // Incrementar si el operador pasa de Eventual a Base
+                    } elseif ($tipoActual == 2 && $nuevoTipo == 1) { // De "Eventual" a "Base"
                         $directivo->numOperadores += 1;
                     }
                     $directivo->save();
