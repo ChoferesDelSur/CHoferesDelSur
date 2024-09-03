@@ -288,132 +288,137 @@ class RHController extends Controller
     }
 
     public function actualizarOperador(Request $request, $idOperador)
-    {
-        try {
-            // Validaciones básicas
-            $request->validate([
-                'nombre' => 'required',
-                'apellidoP' => 'required',
-                'apellidoM' => 'required',
-                'tipoOperador' => 'required',
-                'directivo' => 'required',
-                'fechaNacimiento' => 'required',
-                'edad' => 'required',
-                'CURP' => 'required',
-                'RFC' => 'required',
-                'numTelefono' => 'required',
-                'NSS' => 'required',
-                'fechaAlta' => 'required',
-                'fechaBaja' => 'nullable',
-                'empresaa' => 'required',
-                'convenioPa' => 'required',
-                'antiguedad' => 'required',
-                'numLicencia' => 'required',
-                'vigenciaLicencia' => 'required',
-                'vigenciaINE' => 'required',
-                'constanciaSF' => 'nullable|boolean',
-                'cursoSemovi' => 'nullable|boolean',
-                'constanciaSemovi' => 'nullable|boolean',
-                'cursoPsicologico' => 'nullable|boolean',
-                'ultimoContrato' => 'required',
-            ]);
+{
+    try {
+        // Validaciones básicas
+        $request->validate([
+            'nombre' => 'required',
+            'apellidoP' => 'required',
+            'apellidoM' => 'required',
+            'tipoOperador' => 'required',
+            'directivo' => 'required',
+            'fechaNacimiento' => 'required',
+            'edad' => 'required',
+            'CURP' => 'required',
+            'RFC' => 'required',
+            'numTelefono' => 'required',
+            'NSS' => 'required',
+            'fechaAlta' => 'required',
+            'fechaBaja' => 'nullable',
+            'empresaa' => 'required',
+            'convenioPa' => 'required',
+            'antiguedad' => 'required',
+            'numLicencia' => 'required',
+            'vigenciaLicencia' => 'required',
+            'vigenciaINE' => 'required',
+            'constanciaSF' => 'nullable|boolean',
+            'cursoSemovi' => 'nullable|boolean',
+            'constanciaSemovi' => 'nullable|boolean',
+            'cursoPsicologico' => 'nullable|boolean',
+            'ultimoContrato' => 'required',
+        ]);
 
-            // Encontrar el operador
-            $operador = operador::find($idOperador);
-            if (!$operador) {
-                return redirect()->route('rh.operadores')->with(['message' => "Operador no encontrado", "color" => "red", 'type' => 'error']);
-            }
-
-            // Obtener el tipo de operador actual y el nuevo tipo
-            $tipoActual = $operador->idTipoOperador;
-            $nuevoTipo = $request->tipoOperador;
-    
-            // Verificar si el directivo cambia
-            if ($operador->idDirectivo != $request->directivo) {
-                // Decrementar el numOperadores del directivo anterior
-                $directivoAnterior = directivo::find($operador->idDirectivo);
-                if ($directivoAnterior) {
-                    $directivoAnterior->numOperadores = max(0, $directivoAnterior->numOperadores - 1);
-                    $directivoAnterior->save();
-                }
-
-                // Incrementar el numOperadores del nuevo directivo
-                $nuevoDirectivo = directivo::find($request->directivo);
-                if ($nuevoDirectivo) {
-                    $nuevoDirectivo->numOperadores += 1;
-                    $nuevoDirectivo->save();
-                }
-            } else {
-                // Si el directivo no cambia, verificar si el tipo de operador cambia
-                if ($tipoActual != $nuevoTipo) {
-                    $directivo = directivo::find($operador->idDirectivo);
-                    if ($directivo) {
-                        if ($tipoActual == 'Base' && $nuevoTipo == 'Eventual') {
-                            // Decrementar si el operador pasa de Base a Eventual
-                            $directivo->numOperadores = max(0, $directivo->numOperadores - 1);
-                        } elseif ($tipoActual == 'Eventual' && $nuevoTipo == 'Base') {
-                            // Incrementar si el operador pasa de Eventual a Base
-                            $directivo->numOperadores += 1;
-                        }
-                        $directivo->save();
-                    }
-                }
-            }
-            // Actualizar la dirección si es necesario
-            if ($request->has('calle') || $request->has('numero') || $request->has('asentamiento')) {
-                $domicilio = direccion::find($operador->idDireccion);
-                if ($domicilio) {
-                    $domicilio->calle = $request->calle ?? $domicilio->calle;
-                    $domicilio->numero = $request->numero ?? $domicilio->numero;
-                    $domicilio->idAsentamiento = $request->asentamiento ?? $domicilio->idAsentamiento;
-                    $domicilio->save();
-                }
-            }
-            // Determinar la fecha actual
-            $fechaActual = now();
-            // Lógica para actualizar fechas según el estado
-            if ($request->estado == 1) { // Estado 'Alta'
-                $operador->fechaAlta = $fechaActual;
-                /* $operador->fechaBaja = null; */ // Limpiar fechaBaja si se cambia a Alta
-            } elseif ($request->estado == 2) { // Estado 'Baja'
-                $operador->fechaBaja = $fechaActual;
-            }
-            // Actualizar el operador
-            $operador->nombre = $request->nombre;
-            $operador->apellidoP = $request->apellidoP;
-            $operador->apellidoM = $request->apellidoM;
-            $operador->idTipoOperador = $request->tipoOperador;
-            $operador->idDirectivo = $request->directivo;
-            // Campos adicionales
-            $operador->fechaNacimiento = $request->fechaNacimiento ?? $operador->fechaNacimiento;
-            $operador->edad = $request->edad ?? $operador->edad;
-            $operador->CURP = $request->CURP ?? $operador->CURP;
-            $operador->RFC = $request->RFC ?? $operador->RFC;
-            $operador->numTelefono = $request->numTelefono ?? $operador->numTelefono;
-            $operador->NSS = $request->NSS ?? $operador->NSS;
-            $operador->idEmpresa = $request->empresaa ?? $operador->idEmpresa;
-            $operador->idConvenioPago = $request->convenioPa ?? $operador->idConvenioPago;
-            $operador->antiguedad = $request->antiguedad ?? $operador->antiguedad;
-            $operador->numLicencia = $request->numLicencia ?? $operador->numLicencia;
-            $operador->vigenciaLicencia = $request->vigenciaLicencia ?? $operador->vigenciaLicencia;
-            $operador->numINE = $request->numINE ?? $operador->numINE;
-            $operador->vigenciaINE = $request->vigenciaINE ?? $operador->vigenciaINE;
-            $operador->constanciaSF = $request->constanciaSF ?? $operador->constanciaSF;
-            $operador->cursoSemovi = $request->cursoSemovi ?? $operador->cursoSemovi;
-            $operador->constanciaSemovi = $request->constanciaSemovi ?? $operador->constanciaSemovi;
-            $operador->cursoPsicologico = $request->cursoPsicologico ?? $operador->cursoPsicologico;
-            $operador->ultimoContrato = $request->ultimoContrato ?? $operador->ultimoContrato;
-            // Actualizar el nombre completo
-            $operador->nombre_completo = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
-    
-            $operador->save();
-    
-            return redirect()->route('rh.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green", 'type' => 'success']);
-        } catch (Exception $e) {
-            Log::error('Error al actualizar al operador:', ['error' => $e->getMessage()]);
-            return redirect()->route('rh.operadores')->with(['message' => "Error al actualizar al operador", "color" => "red", 'type' => 'error']);
+        // Encontrar el operador
+        $operador = operador::find($idOperador);
+        if (!$operador) {
+            return redirect()->route('rh.operadores')->with(['message' => "Operador no encontrado", "color" => "red", 'type' => 'error']);
         }
+
+        // Obtener el tipo de operador actual y el nuevo tipo
+        $tipoActual = $operador->idTipoOperador;
+        $nuevoTipo = $request->tipoOperador;
+
+        // Verificar si el directivo cambia
+        if ($operador->idDirectivo != $request->directivo) {
+            // Decrementar el numOperadores del directivo anterior
+            $directivoAnterior = directivo::find($operador->idDirectivo);
+            if ($directivoAnterior) {
+                $directivoAnterior->numOperadores = max(0, $directivoAnterior->numOperadores - 1);
+                $directivoAnterior->save();
+            }
+
+            // Incrementar el numOperadores del nuevo directivo
+            $nuevoDirectivo = directivo::find($request->directivo);
+            if ($nuevoDirectivo) {
+                $nuevoDirectivo->numOperadores += 1;
+                $nuevoDirectivo->save();
+            }
+        } else {
+            // Si el directivo no cambia, verificar si el tipo de operador cambia
+            if ($tipoActual != $nuevoTipo) {
+                $directivo = directivo::find($operador->idDirectivo);
+                if ($directivo) {
+                    if ($tipoActual == 'Base' && $nuevoTipo == 'Eventual') {
+                        // Decrementar si el operador pasa de Base a Eventual
+                        $directivo->numOperadores = max(0, $directivo->numOperadores - 1);
+                    } elseif ($tipoActual == 'Eventual' && $nuevoTipo == 'Base') {
+                        // Incrementar si el operador pasa de Eventual a Base
+                        $directivo->numOperadores += 1;
+                    }
+                    $directivo->save();
+                }
+            }
+        }
+
+        // Actualizar la dirección si es necesario
+        if ($request->has('calle') || $request->has('numero') || $request->has('asentamiento')) {
+            $domicilio = direccion::find($operador->idDireccion);
+            if ($domicilio) {
+                $domicilio->calle = $request->calle ?? $domicilio->calle;
+                $domicilio->numero = $request->numero ?? $domicilio->numero;
+                $domicilio->idAsentamiento = $request->asentamiento ?? $domicilio->idAsentamiento;
+                $domicilio->save();
+            }
+        }
+
+        // Determinar la fecha actual
+        $fechaActual = now();
+        // Lógica para actualizar fechas según el estado
+        if ($request->estado == 1) { // Estado 'Alta'
+            $operador->fechaAlta = $fechaActual;
+            /* $operador->fechaBaja = null; */ // Limpiar fechaBaja si se cambia a Alta
+        } elseif ($request->estado == 2) { // Estado 'Baja'
+            $operador->fechaBaja = $fechaActual;
+        }
+
+        // Actualizar el operador
+        $operador->nombre = $request->nombre;
+        $operador->apellidoP = $request->apellidoP;
+        $operador->apellidoM = $request->apellidoM;
+        $operador->idTipoOperador = $request->tipoOperador;
+        $operador->idDirectivo = $request->directivo;
+
+        // Campos adicionales
+        $operador->fechaNacimiento = $request->fechaNacimiento ?? $operador->fechaNacimiento;
+        $operador->edad = $request->edad ?? $operador->edad;
+        $operador->CURP = $request->CURP ?? $operador->CURP;
+        $operador->RFC = $request->RFC ?? $operador->RFC;
+        $operador->numTelefono = $request->numTelefono ?? $operador->numTelefono;
+        $operador->NSS = $request->NSS ?? $operador->NSS;
+        $operador->idEmpresa = $request->empresaa ?? $operador->idEmpresa;
+        $operador->idConvenioPago = $request->convenioPa ?? $operador->idConvenioPago;
+        $operador->antiguedad = $request->antiguedad ?? $operador->antiguedad;
+        $operador->numLicencia = $request->numLicencia ?? $operador->numLicencia;
+        $operador->vigenciaLicencia = $request->vigenciaLicencia ?? $operador->vigenciaLicencia;
+        $operador->numINE = $request->numINE ?? $operador->numINE;
+        $operador->vigenciaINE = $request->vigenciaINE ?? $operador->vigenciaINE;
+        $operador->constanciaSF = $request->constanciaSF ?? $operador->constanciaSF;
+        $operador->cursoSemovi = $request->cursoSemovi ?? $operador->cursoSemovi;
+        $operador->constanciaSemovi = $request->constanciaSemovi ?? $operador->constanciaSemovi;
+        $operador->cursoPsicologico = $request->cursoPsicologico ?? $operador->cursoPsicologico;
+        $operador->ultimoContrato = $request->ultimoContrato ?? $operador->ultimoContrato;
+
+        // Actualizar el nombre completo
+        $operador->nombre_completo = $operador->apellidoP . ' ' . $operador->apellidoM . ' ' . $operador->nombre;
+
+        $operador->save();
+
+        return redirect()->route('rh.operadores')->with(['message' => "Operador actualizado correctamente: " . $request->nombre . " " . $request->apellidoP . " " . $request->apellidoM, "color" => "green", 'type' => 'success']);
+    } catch (Exception $e) {
+        Log::error('Error al actualizar al operador:', ['error' => $e->getMessage()]);
+        return redirect()->route('rh.operadores')->with(['message' => "Error al actualizar al operador", "color" => "red", 'type' => 'error']);
     }
+}
 
     public function eliminarOperador($operadoresIds)
 {
