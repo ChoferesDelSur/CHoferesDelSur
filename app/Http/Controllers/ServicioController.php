@@ -467,11 +467,48 @@ class ServicioController extends Controller
                 'directivo' => 'required',
             ]);
             $unidad = unidad::find($idUnidad);
+
+            // Guardar el id del directivo actual antes de realizar cambios
+            $directivoAnteriorId = $unidad->idDirectivo;
+
+            // Verificar si la combinación de número de unidad, ruta y directivo ya existe
+            $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
+            ->where('idRuta', $request->ruta)
+            ->where('idDirectivo', $request->directivo)
+            ->where('id', '!=', $idUnidad)
+            ->first();
+
+            if ($existingUnidad) {
+                return redirect()->route('servicio.unidades')->with([
+                    'message' => "La combinación de número de unidad, ruta y directivo ya existe.",
+                    "color" => "yellow",
+                    'type' => 'info'
+                ]);
+            }
+
             $unidad->numeroUnidad = $request -> numeroUnidad;
             $unidad->idOperador = $request->operador;
             $unidad->idRuta = $request->ruta;
             $unidad->idDirectivo = $request->directivo;
+
             $unidad->save();
+
+            // Verificar si el directivo ha cambiado
+            if ($directivoAnteriorId != $request->directivo) {
+                // Reducir numUnidades del directivo anterior
+                $directivoAnterior = directivo::find($directivoAnteriorId);
+                if ($directivoAnterior) {
+                    $directivoAnterior->numUnidades -= 1;
+                    $directivoAnterior->save();
+                }
+
+                // Aumentar numUnidades del nuevo directivo
+                $nuevoDirectivo = directivo::find($request->directivo);
+                if ($nuevoDirectivo) {
+                    $nuevoDirectivo->numUnidades += 1;
+                    $nuevoDirectivo->save();
+                }
+            }
 
             return redirect()->route('servicio.unidades')->with(['message' => "Unidad actualizado correctamente: " . $request->numeroUnidad, "color" => "green"]);
         }catch(Exception $e){
