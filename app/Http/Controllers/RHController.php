@@ -265,9 +265,12 @@ class RHController extends Controller
 
             $operador->save();
 
-            // Aumentar el número de operadores del directivo
-            $directivo->numOperadores += 1;
-            $directivo->save();
+            // Solo aumentar el número de operadores si el tipo es "Base"
+            $tipoOperador = tipoOperador::find($request->tipoOperador);
+            if ($tipoOperador && $tipoOperador->tipOperador === 'Base') {
+                $directivo->numOperadores += 1;
+                $directivo->save();
+            }
 
             // Registrar el movimiento
             $movimiento = new movimiento();
@@ -320,6 +323,10 @@ class RHController extends Controller
             if (!$operador) {
                 return redirect()->route('rh.operadores')->with(['message' => "Operador no encontrado", "color" => "red", 'type' => 'error']);
             }
+
+            // Obtener el tipo de operador actual y el nuevo tipo
+            $tipoActual = $operador->idTipoOperador;
+            $nuevoTipo = $request->tipoOperador;
     
             // Verificar si el directivo cambia
             if ($operador->idDirectivo != $request->directivo) {
@@ -329,12 +336,27 @@ class RHController extends Controller
                     $directivoAnterior->numOperadores = max(0, $directivoAnterior->numOperadores - 1);
                     $directivoAnterior->save();
                 }
-    
+
                 // Incrementar el numOperadores del nuevo directivo
                 $nuevoDirectivo = directivo::find($request->directivo);
                 if ($nuevoDirectivo) {
                     $nuevoDirectivo->numOperadores += 1;
                     $nuevoDirectivo->save();
+                }
+            } else {
+                // Si el directivo no cambia, verificar si el tipo de operador cambia
+                if ($tipoActual != $nuevoTipo) {
+                    $directivo = directivo::find($operador->idDirectivo);
+                    if ($directivo) {
+                        if ($tipoActual == 'Base' && $nuevoTipo == 'Eventual') {
+                            // Decrementar si el operador pasa de Base a Eventual
+                            $directivo->numOperadores = max(0, $directivo->numOperadores - 1);
+                        } elseif ($tipoActual == 'Eventual' && $nuevoTipo == 'Base') {
+                            // Incrementar si el operador pasa de Eventual a Base
+                            $directivo->numOperadores += 1;
+                        }
+                        $directivo->save();
+                    }
                 }
             }
             // Actualizar la dirección si es necesario
