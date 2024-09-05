@@ -127,7 +127,7 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-        columns: [2,3,4,5,6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
+        columns: [1,2,3,4,5,6] // Índices de las columnas que deseas imprimir (por ejemplo, imprimir las columnas 0 y 2)
     }
     }
 ];
@@ -149,11 +149,6 @@ const columnas = [
     },
     { data: 'numUnidades' },
     { data: 'numOperadores' },
-    /* {
-        data: null, render: function (data, type, row, meta) {
-            return `<button class="editar-button" data-id="${row.idDirectivo}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
-        }
-    }, */
 ]
 
 const mostrarModal = ref(false);

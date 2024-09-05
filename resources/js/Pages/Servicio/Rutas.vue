@@ -291,6 +291,7 @@ const eliminarRutas = () => {
                             lengthMenu: 'Mostrar _MENU_ registros',
                             paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' },
                         }, buttons: [botonesPersonalizados],
+                        pageLength: 20
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">

@@ -10,6 +10,11 @@ use App\Models\estado;
 use App\Models\ruta;
 use App\Models\tipoDirectivo;
 use App\Models\tipoOperador;
+use App\Models\incapacidad;
+use App\Models\codigoPostal;
+use App\Models\direccion;
+use App\Models\empresa;
+use App\Models\convenioPago;
 use App\Models\castigo;
 use App\Models\corte;
 use App\Models\usuario;
@@ -270,17 +275,40 @@ class ServicioController extends Controller
     }
 
     public function operadores(){
-        $operador = operador::all(); 
+        $operador = operador::all();
+        //$operador = operador::with('direccion.asentamiento.municipio.estados','direccion.asentamiento.codigoPostal')->get();
         $tipoOperador = tipoOperador::all();
         $estado = estado::all();
         $directivo = directivo::all();
+        $incapacidad = incapacidad::all();
+        $codigoPostal = codigoPostal::all();
+        $direccion = direccion::all();
+        //$direccion = direccion::with('asentamiento.municipio.estados', 'asentamiento.codigoPostal')->get();
+        // Aquí se ajusta el operadorDireccion a cada operador y agrega propiedades al operador
+        $operador->each(function($operador) use ($direccion) {
+            $domicilio = $direccion->where('idDireccion', $operador->idDireccion)->first();
+            $operador->domicilio = $domicilio ? $domicilio->calle . " #" . $domicilio->numero . ", " . $domicilio->asentamiento->asentamiento . ", " . $domicilio->asentamiento->municipio->municipio . ", " . $domicilio->asentamiento->municipio->estados->entidad . ", " . $domicilio->asentamiento->codigoPostal->codigoPostal : null;
+            $operador->calle = $domicilio ? $domicilio->calle : null;
+            $operador->numero = $domicilio ? $domicilio->numero : null;
+            $operador->codigoPostal = $domicilio ? $domicilio->asentamiento->codigoPostal->codigoPostal : null;
+            $operador->idAsentamiento = $domicilio ? $domicilio->asentamiento->idAsentamiento : null;
+            $operador->idMunicipio = $domicilio ? $domicilio->asentamiento->municipio->idMunicipio : null;
+            $operador->idEntidad = $domicilio ? $domicilio->asentamiento->municipio->estados->idEntidad : null;
+        });
+        $empresa = empresa::all();
+        $convenioPago = convenioPago::all();
         $usuario = $this->obtenerInfoUsuario();
         return Inertia::render('Servicio/Operadores',[
             'usuario' => $usuario,
             'operador' => $operador,
             'tipoOperador' => $tipoOperador,
             'estado' => $estado,
+            'incapacidad' => $incapacidad,
             'directivo' => $directivo,
+            'empresa' => $empresa,
+            'convenioPago' => $convenioPago,
+            'codigoPostal' => $codigoPostal,
+            'direccion' => $direccion,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),

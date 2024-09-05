@@ -1,5 +1,4 @@
 <script setup>
-import $ from 'jquery';
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -13,7 +12,6 @@ import Mensaje from '../../Components/Mensaje.vue';
 import RHLayout from '../../Layouts/RHLayout.vue';
 import FormularioOperadores from '../../Components/RH/FormularioOperadores.vue';
 import FormularioActualizarOperadores from '../../Components/RH/FormularioActualizarOperadores.vue';
-import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import 'jspdf-autotable';
 
@@ -34,56 +32,20 @@ const props = defineProps({
     direccion: { type: Object },
 });
 
-const exportarPDF = (titulo = 'Documento') => {
-    const doc = new jsPDF('landscape');
-    // Título del documento
-    doc.setFontSize(12);
-    doc.text(titulo, 14, 22); // Posiciona el título en la parte superior izquierda
-    // Fecha de generación del documento
-    const fecha = new Date().toLocaleDateString();
-    doc.setFontSize(8);
-    doc.text(`Fecha: ${fecha}`, 260, 22); // Posiciona la fecha en la parte superior derecha
-    // Definir las columnas de la tabla
-    const columnas = [
-        "ID",
-        "Apellido Paterno",
-        "Apellido Materno",
-        "Nombre",
-        "Tipo de Operador",
-        "Estado",
-        "Jefe"
-    ];
-    // Extraer los datos filtrados y visibles de la tabla
-    const filas = [];
-    nextTick(() => {
-        const table = $('#operadoresTablaId').DataTable();
-        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
-        data.each((row) => {
-            filas.push([
-                row.idOperador,
-                row.apellidoP,
-                row.apellidoM,
-                row.nombre,
-                props.tipoOperador.find(tipOp => tipOp.idTipoOperador === row.idTipoOperador)?.tipOperador || '',
-                props.estado.find(estad => estad.idEstado === row.idEstado)?.estado || '',
-                props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || ''
-            ]);
-        });
-        // Generar la tabla en el PDF
-        doc.autoTable({
-            head: [columnas],
-            body: filas,
-            startY: 24 // Ajusta el inicio de la tabla debajo del título y la fecha
-        });
-        // Guardar el documento con el título como nombre del archivo
-        doc.save(`${titulo}.pdf`);
-    });
-};
 const exportarExcel = () => {
     nextTick(() => {
         // Obtener la instancia de DataTable
         const table = $('#operadoresTablaId').DataTable();
         const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+
+        // Mapear IDs a valores
+        const empresaMap = new Map(props.empresa.map(emp => [emp.idEmpresa, emp.empresa]));
+        const convenioPagoMap = new Map(props.convenioPago.map(con => [con.idConvenioPago, con.convenioPago]));
+        const direccionMap = new Map(props.operador.map(direc => [direc.idOperador, direc.domicilio]));
+        const constanciaSFMap = new Map([[1, 'SI'], [0, 'NO']]);
+        const cursoSemoviMap = new Map([[1, 'SI'], [0, 'NO']]);
+        const constanciaSemoviMap = new Map([[1, 'SI'], [0, 'NO']]);
+        const cursoPsicologicoMap = new Map([[1, 'SI'], [0, 'NO']]);
 
         // Convertir los datos a formato JSON
         const jsonData = data.toArray().map(row => ({
@@ -91,9 +53,30 @@ const exportarExcel = () => {
             'Apellido Paterno': row.apellidoP,
             'Apellido Materno': row.apellidoM,
             Nombre: row.nombre,
+            'Fecha Nacimiento': row.fechaNacimiento,
+            Edad: `${row.edad} años`,
+            'CURP': row.CURP,
+            'RFC': row.RFC,
+            'Teléfono': row.numTelefono,
+            'NSS': row.NSS,
             'Tipo de Operador': props.tipoOperador.find(tipOp => tipOp.idTipoOperador === row.idTipoOperador)?.tipOperador || '',
             Estado: props.estado.find(estad => estad.idEstado === row.idEstado)?.estado || '',
-            Jefe: props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || ''
+            'Fecha Alta': row.fechaAlta,
+            'Fecha Baja': row.fechaBaja,
+            Empresa: empresaMap.get(row.idEmpresa) || '',
+            'Convenio de Pago': convenioPagoMap.get(row.idConvenioPago) || '',
+            Antiguedad: `${row.antiguedad} años`,
+            Direccion: direccionMap.get(row.idDireccion) || '',
+            'Num. Licencia': row.numLicencia,
+            'Vigencia Licencia': row.vigenciaLicencia,
+            'Número de INE': row.numINE,
+            'Vigencia INE': row.vigenciaINE,
+            'Constancia de Situación Fiscal': constanciaSFMap.get(row.constanciaSF) || '',
+            'Curso SEMOVI': cursoSemoviMap.get(row.cursoSemovi) || '',
+            'Constancia SEMOVI': constanciaSemoviMap.get(row.constanciaSemovi) || '',
+            'Curso Psicologico': cursoPsicologicoMap.get(row.cursoPsicologico) || '',
+            'Fecha Último Contrato': row.ultimoContrato,
+            Jefe: props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || '',
         }));
 
         // Crear la hoja de Excel
@@ -124,18 +107,11 @@ const botonesPersonalizados = [
     },
     {
         title: 'Operadores registrados',
-        text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
-        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
-        orientation: 'landscape', // Configurar la orientación horizontal
-        action: () => exportarPDF(props.title || 'Operadores registrados')
-    },
-    {
-        title: 'Operadores registrados',
         extend: 'print',
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-            columns: [2, 3, 4, 5, 6, 7, 8] // Índices de las columnas que deseas imprimir 
+            columns: [2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28] // Índices de las columnas que deseas imprimir 
         }
     }
 ];
