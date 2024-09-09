@@ -52,90 +52,96 @@ const registrosFiltrados = computed(() => {
 
 const exportarExcel = () => {
   nextTick(() => {
-    // Obtener la instancia de DataTable
     const table = $('#formacionTablaId').DataTable();
-    const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+    const data = table.rows({ search: 'applied', page: 'current' }).data(); // Obtiene solo los datos filtrados y en la página actual
 
-    // Obtener la fecha actual en el mismo formato que las fechas de los registros
-    const fechaActual = new Date().toLocaleDateString('es-ES'); // Ajusta el formato si es necesario
+    if (!data.length) {
+      console.warn('No hay datos para exportar.');
+      return;
+    }
 
-    // Función para obtener la fecha actual en formato "YYYY-MM-DD"
-    const obtenerFechaActualFormato = () => {
-      const fecha = new Date();
-      const year = fecha.getFullYear();
-      const month = String(fecha.getMonth() + 1).padStart(2, '0');
-      const day = String(fecha.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+    // Obtener la fecha actual en formato YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
+    // Crear mapas para optimizar las búsquedas
+    const rutasMap = Object.fromEntries(props.ruta.map(r => [r.idRuta, r.nombreRuta]));
+    const rolServicioMap = Object.fromEntries(props.rolServicio.map(rol => [rol.idRolServicio, rol.trabajaDomingo]));
+    const unidadMap = Object.fromEntries(props.unidad.map(u => [u.idUnidad, u.numeroUnidad]));
+    const directivoMap = Object.fromEntries(props.directivo.map(d => [d.idDirectivo, d.nombre_completo]));
+    const entradaMap = Object.fromEntries(props.entrada.map(e => [e.idUnidad, { horaEntrada: e.horaEntrada, tipoEntrada: e.tipoEntrada, extremo: e.extremo, created_at: e.created_at }]));
+    const corteMap = Object.fromEntries(props.corte.map(c => [c.idUnidad, []]));
+    const ultimaCorridaMap = Object.fromEntries(props.ultimaCorrida.map(uc => [uc.idUnidad, { tipoCorrida: uc.idTipoUltimaCorrida, horaInicioUC: uc.horaInicioUC, horaFinUC: uc.horaFinUC, created_at: uc.created_at }]));
+    const castigoMap = Object.fromEntries(props.castigo.map(c => [c.idUnidad, []])); // Cambiado a lista de castigos
+    const operadorMap = Object.fromEntries(props.operador.map(o => [o.idOperador, o.nombre_completo]));
+
+    // Función para formatear hora a "HH:mm"
+    const formatTime = (time) => {
+      if (!time) return '';
+      const [hours, minutes] = time.split(':');
+      return `${hours}:${minutes}`;
     };
 
-    // Función para formatear la hora a "HH:MM"
-    const formatoHoraMinuto = (time) => {
-      if (!time) return ''; // Si la hora es null o undefined, retorna una cadena vacía
-      const [hour, minute] = time.split(':'); // Separa la hora y minuto
-      return `${hour}:${minute}`; // Retorna el formato "HH:MM"
-    };
+    // Agrupar los datos por unidad
+    const groupedData = data.toArray().reduce((acc, row) => {
+      const entrada = entradaMap[row.idUnidad] || {};
+      const corte = props.corte.filter(c => c.idUnidad === row.idUnidad && c.created_at.split('T')[0] === today);
+      const ultimaCorrida = ultimaCorridaMap[row.idUnidad] || {};
+      const castigos = props.castigo.filter(c => c.idUnidad === row.idUnidad && c.created_at.split('T')[0] === today);
 
-    // Convertir los datos a formato JSON
-    const jsonData = data.toArray().map(row => {
-      // Encuentra la última corrida y el tipo asociado
-      const ultimaCorrida = props.ultimaCorrida.find(uc => uc.idUnidad === row.idUnidad);
-      const tipoUltimaCorrida = props.tipoUltimaCorrida.find(tipo => tipo.idTipoUltimaCorrida === ultimaCorrida?.idTipoUltimaCorrida);
+      const isEntradaValid = entrada.created_at?.split('T')[0] === today;
+      const isUltimaCorridaValid = ultimaCorrida.created_at?.split('T')[0] === today;
+      const isCastigoValid = castigos.length > 0;
 
-      // Obtener el registro de entrada y corte
-      const registroEntrada = props.entrada.find(en => en.idUnidad === row.idUnidad);
-      const registroCorte = props.corte.find(c => c.idUnidad === row.idUnidad);
-      const registroCastigo = props.castigo.find(cas => cas.idUnidad === row.idUnidad);
-      
-      // Obtener la fecha de entrada
-      const fechaRegistroEntrada = new Date(registroEntrada?.fechaRegistro).toLocaleDateString('es-ES');
+      if (!acc[row.idUnidad]) {
+        acc[row.idUnidad] = {
+          ID: row.idUnidad,
+          'Ruta': rutasMap[row.idRuta] || 'N/A',
+          'Trab. Domingo': rolServicioMap[row.idRolServicio] || 'Sin Asignar',
+          'Unidad': unidadMap[row.idUnidad] || '',
+          'Socio/Prestador': directivoMap[row.idDirectivo] || '',
+          'Hr. Entrada': isEntradaValid ? formatTime(entrada.horaEntrada) || '' : '',
+          'Tipo Entrada': isEntradaValid ? entrada.tipoEntrada || '' : '',
+          'Extremo': isEntradaValid ? entrada.extremo || '' : '',
+          'Hr. Corte': '',
+          'Causa': '',
+          'Hr. Regreso': '',
+          'Tipo De Corrida': isUltimaCorridaValid ? ultimaCorrida.tipoCorrida || '' : '',
+          'Hr. Inicio UC': isUltimaCorridaValid ? formatTime(ultimaCorrida.horaInicioUC) || '' : '',
+          'Hr. Regreso UC': isUltimaCorridaValid ? formatTime(ultimaCorrida.horaFinUC) || '' : '',
+          'Hr. Inicio': '',
+          'Hr. Finaliza': '',
+          'Motivo': '',
+          'Otras Observaciones': '',
+          'Operador': operadorMap[row.idOperador] || 'Sin Asignar'
+        };
+      }
 
-      // Verificar si las columnas específicas deben mostrar datos de la fecha actual
-      const hrEntrada = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(registroEntrada?.horaEntrada) : '';
-      const tipoEntrada = fechaRegistroEntrada === fechaActual ? registroEntrada?.tipoEntrada : '';
-      const extremo = fechaRegistroEntrada === fechaActual ? registroEntrada?.extremo : '';
-      const hrCorte = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(registroCorte?.horaCorte) : '';
-      const causa = fechaRegistroEntrada === fechaActual ? registroCorte?.causa : '';
-      const hrRegreso = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(registroCorte?.horaRegreso) : '';
-      const tipoDeCorrida = fechaRegistroEntrada === fechaActual ? tipoUltimaCorrida?.tipoUltimaCorrida : '';
-      const hrInicioUC = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(ultimaCorrida?.horaInicioUC) : '';
-      const hrRegresoUC = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(ultimaCorrida?.horaFinUC) : '';
-      const hrInicio = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(registroCastigo?.horaInicio) : '';
-      const hrFinaliza = fechaRegistroEntrada === fechaActual ? formatoHoraMinuto(registroCastigo?.horaFin) : '';
-      const motivo = fechaRegistroEntrada === fechaActual ? registroCastigo?.castigo : '';
-      const otrasObservaciones = fechaRegistroEntrada === fechaActual ? registroCastigo?.observaciones : '';
+      // Concatenar los registros de corte si existen múltiples para la misma unidad
+      corte.forEach(c => {
+        acc[row.idUnidad]['Hr. Corte'] += (acc[row.idUnidad]['Hr. Corte'] ? ', ' : '') + formatTime(c.horaCorte);
+        acc[row.idUnidad]['Causa'] += (acc[row.idUnidad]['Causa'] ? ', ' : '') + c.causa;
+        acc[row.idUnidad]['Hr. Regreso'] += (acc[row.idUnidad]['Hr. Regreso'] ? ', ' : '') + formatTime(c.horaRegreso);
+      });
 
-      return {
-        ID: row.idUnidad,
-        'Ruta': props.ruta.find(r => r.idRuta === row.idRuta)?.nombreRuta,
-        'Trab. Domingo': props.rolServicio.find(rol => rol.idRolServicio === row.idUnidad)?.trabajaDomingo,
-        'Unidad': props.unidad.find(u => u.idUnidad === row.idUnidad)?.numeroUnidad,
-        'Socio/Prestador': props.directivo.find(jefe => jefe.idDirectivo === row.idDirectivo)?.nombre_completo || '',
-        'Hr. Entrada': hrEntrada, // Solo se muestra si la fecha coincide
-        'Tipo Entrada': tipoEntrada, // Solo se muestra si la fecha coincide
-        'Extremo': extremo, // Solo se muestra si la fecha coincide
-        'Hr. Corte': hrCorte, // Solo se muestra si la fecha coincide
-        'Causa': causa, // Solo se muestra si la fecha coincide
-        'Hr. Regreso': hrRegreso, // Solo se muestra si la fecha coincide
-        'Tipo De Corrida': tipoDeCorrida, // Solo se muestra si la fecha coincide
-        'Hr. Inicio UC': hrInicioUC, // Solo se muestra si la fecha coincide
-        'Hr. Regreso UC': hrRegresoUC, // Solo se muestra si la fecha coincide
-        'Hr. Inicio': hrInicio, // Solo se muestra si la fecha coincide
-        'Hr. Finaliza': hrFinaliza, // Solo se muestra si la fecha coincide
-        'Motivo': motivo, // Solo se muestra si la fecha coincide
-        'Otras Observaciones': otrasObservaciones, // Solo se muestra si la fecha coincide
-        'Operador': props.operador.find(chofer => chofer.idOperador === row.idOperador)?.nombre_completo
-      };
-    });
+      // Concatenar los registros de castigo si existen múltiples para la misma unidad
+      castigos.forEach(c => {
+        acc[row.idUnidad]['Hr. Inicio'] += (acc[row.idUnidad]['Hr. Inicio'] ? ', ' : '') + formatTime(c.horaInicio);
+        acc[row.idUnidad]['Hr. Finaliza'] += (acc[row.idUnidad]['Hr. Finaliza'] ? ', ' : '') + formatTime(c.horaFin);
+        acc[row.idUnidad]['Motivo'] += (acc[row.idUnidad]['Motivo'] ? ', ' : '') + c.castigo;
+        acc[row.idUnidad]['Otras Observaciones'] += (acc[row.idUnidad]['Otras Observaciones'] ? ', ' : '') + c.observaciones;
+      });
 
-    // Crear la hoja de Excel solo con los datos filtrados
+      return acc;
+    }, {});
+
+    // Convertir el objeto agrupado en un array para la exportación
+    const jsonData = Object.values(groupedData);
+
+    // Crear y exportar el archivo Excel
     const ws = XLSX.utils.json_to_sheet(jsonData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Formación De Unidades');
-
-    // Obtener la fecha actual en formato "YYYY-MM-DD"
-    const fechaArchivo = obtenerFechaActualFormato();
-
-    // Guardar el archivo Excel con la fecha en el nombre
+    const fechaArchivo = new Date().toISOString().split('T')[0];
     XLSX.writeFile(wb, `Formación_De_Unidades_${fechaArchivo}.xlsx`);
   });
 };
