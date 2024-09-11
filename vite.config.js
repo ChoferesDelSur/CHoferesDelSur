@@ -8,6 +8,9 @@ export default defineConfig({
         //port: 5173, // Puedes especificar el puerto que prefieras
         //host: '0.0.0.0', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
     },
+    build: {
+        outDir: 'public/build', // Este es el directorio de salida
+      },
     resolve: {
         alias: {
             '@inertiajs/vue3': '/node_modules/@inertiajs/vue3/dist/index.mjs',
