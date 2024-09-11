@@ -202,6 +202,8 @@ Route::middleware([RHMiddleware::class])->group(function () {
 
     Route::get('/RecursosHumanos/personalAdministrativo', 'personalAdministrativo')->name('rh.personalAdministrativo');
     Route::post('/RecursosHumanos/personalAdministrativo/agregar', 'addPersonal')->name('rh.addPersonal');
+    Route::put('/RecursosHumanos/personal/{idPersonal}/edit', 'actualizarPersonal')->name('rh.actualizarPersonal');
+    Route::delete('/RecursosHumanos/personal/{personalesIds}', 'eliminarPersonal')->name('rh.eliminarPersonal');
 
     Route::get('/RecursosHumanos/movimientos', 'movimientos')->name('rh.movimientos');
     Route::post('/RecursosHumanos/agregarMovimiento', 'addMovimiento')->name('rh.addMovimiento');
@@ -209,5 +211,7 @@ Route::middleware([RHMiddleware::class])->group(function () {
 
     Route::get('/RecursosHumanos/reportes', 'reportes')->name('rh.reportes');
 
+    Route::get('/RecursosHumanos/vacaciones', 'vacaciones')->name('rh.vacaciones');
+    Route::post('/RecursosHumanos/agregarVacaciones', 'addVacaciones')->name('rh.addVacaciones');
     });
 });

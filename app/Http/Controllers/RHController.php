@@ -21,6 +21,7 @@ use App\Models\codigoPostal;
 use App\Models\entrada;
 use App\Models\empresa;
 use App\Models\personal;
+use App\Models\vacaciones;
 use App\Models\escolaridad;
 use App\Models\tipoMovimiento;
 use App\Models\direccion;
@@ -704,7 +705,6 @@ class RHController extends Controller
     }
 
     public function addPersonal(Request $request){
-        dd($request->all());
         try{
             $request->validate([
                 'nombre'=> 'required',
@@ -728,7 +728,7 @@ class RHController extends Controller
                 'totalDiasVac' => 'required',
                 'diasVacRestantes' => 'required',
             ]);
-            dd($request->all());
+            //dd($request->all());
             // Verificar si el operador ya existe
             $existingPersonal = personal::where('CURP', $request->CURP)->first();
             if($existingPersonal){
@@ -779,6 +779,101 @@ class RHController extends Controller
             return redirect()->route('rh.personalAdministrativo')->with(['message' => "Personal agregado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
         }catch(Exception $e){
             return redirect()->route('rh.personalAdministrativo')->with(['message' => "Error al agregar al personal", "color" => "red", 'type' => 'error']);
+        }
+    }
+
+    public function actualizarPersonal(Request $request, $idPersonal){
+        try{
+            $request->validate([
+                'nombre'=> 'required',
+                'apellidoP'=> 'required',
+                'apellidoM' => 'required',
+                'fechaNacimiento' => 'required',
+                'edad' => 'required',
+                'CURP' => 'required',
+                'RFC' => 'required',
+                'numTelefono' => 'required',
+                'telEmergencia' => 'nullable',
+                'NSS' => 'required',
+                'escolaridadd' => 'required',
+                'fechaAlta' => 'required',
+                'fechaBaja' => 'nullable',
+                'empresaa' => 'required',
+                'antiguedad' => 'required',
+                'numINE' => 'required',
+                'vigenciaINE' => 'required',
+                'constanciaSF' => 'nullable|boolean',
+                'totalDiasVac' => 'required',
+                'diasVacRestantes' => 'required',
+            ]);
+            // Encontrar el operador
+            $personal = personal::find($idPersonal);
+            if (!$personal) {
+                return redirect()->route('rh.personalAdministrativo')->with(['message' => "Personal no encontrado", "color" => "red", 'type' => 'error']);
+            }
+
+            //fechaFormateada
+            $fechaFormateada = date('ymd', strtotime($request->fechaNacimiento));
+            //Se guarda el domicilio del profesor
+            $domicilio = new direccion();
+            $domicilio->calle = $request->calle;
+            $domicilio->numero = $request->numero;
+            $domicilio->idAsentamiento = $request->asentamiento;
+            $domicilio->save();
+    
+            $personal = new personal();
+            $personal->nombre = $request->nombre;
+            $personal->apellidoP = $request->apellidoP;
+            $personal->apellidoM = $request->apellidoM;
+            $personal->fechaNacimiento = $request->fechaNacimiento;
+            $personal->edad = $request->edad;
+            $personal->CURP = $request->CURP;               
+            $personal->RFC = $request->RFC;
+            $personal->numTelefono = $request->numTelefono;
+            $personal->telEmergencia = $request->telEmergencia;
+            $personal->NSS = $request->NSS;
+            $personal->idEscolaridad = $request->escolaridadd;
+
+            $personal->fechaAlta = $request->fechaAlta;
+            $personal->fechaBaja = $request->fechaBaja;
+            $personal->idEmpresa = $request->empresaa;//le puse empresaa como esta en mi formulario
+            $personal->antiguedad = $request->antiguedad;
+
+            $personal->idDireccion = $domicilio->idDireccion;
+
+            $personal->numINE = $request->numINE;
+            $personal->vigenciaINE = $request->vigenciaINE;
+            $personal->constanciaSF = $request->constanciaSF ?? false;
+
+            $personal->totalDiasVac = $request->totalDiasVac;
+            $personal->diasVacRestantes = $request->diasVacRestantes;
+
+            $nombreCompleto = $personal->apellidoP . ' ' . $personal->apellidoM . ' ' . $personal->nombre;
+            $personal->nombre_completo = $nombreCompleto;
+
+            $personal->save();
+            
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "Personal actualizado correctamente: $nombreCompleto", "color" => "green", 'type' => 'success']);
+        }catch(Exception $e){
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "Error al actualizar al personal", "color" => "red", 'type' => 'error']);
+        }
+    }
+
+        public function eliminarPersonal($personalesIds)
+    {
+        try {
+            // Convierte la cadena de IDs en un array
+            $personalesIdsArray = explode(',', $personalesIds);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $personalesIdsArray = array_map('intval', $personalesIdsArray);
+            // Elimina los operadores
+            personal::whereIn('idPersonal', $personalesIdsArray)->delete();
+
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "Personal eliminado correctamente", "color" => "green"]);
+        } catch (Exception $e) {
+            Log::error('Error al eliminar al operador:', ['error' => $e->getMessage()]);
+            return redirect()->route('rh.personalAdministrativo')->with(['message' => "No se pudo eliminar al personal", "color" => "red"]);
         }
     }
 
@@ -962,4 +1057,96 @@ class RHController extends Controller
         ]);
     }
 
+    public function vacaciones(){
+        $personal = personal::all();
+        $vacaciones = vacaciones::all();
+        $usuario = $this->obtenerInfoUsuario();
+        return Inertia::render('RH/Vacaciones',[
+            'usuario' => $usuario,
+            'personal' => $personal,
+            'vacaciones' => $vacaciones,
+            'message' => session('message'),
+            'color' => session('color'),
+            'type' => session('type'),
+        ]);
+    }
+
+    public function addVacaciones(Request $request)
+    {
+        try {
+            // Validar los datos de entrada
+            $request->validate([
+                'persona' => 'required|exists:personal,idPersonal',
+                'motivo' => 'required',
+                'numeroDias' => 'required|integer|min:1',
+                'fechaInicio' => 'required|date',
+                'fechaFin' => 'required|date|after_or_equal:fechaInicio',
+            ]);
+            // Obtener el ID del personal y el número de días solicitados
+            $idPersonal = $request->input('persona');
+            $numeroDias = $request->input('numeroDias');
+            // Obtener el personal y verificar los días restantes
+            $personal = personal::findOrFail($idPersonal);
+            // Obtener el nombre completo del personal para el mensaje de éxito
+            $nombreCompleto = $personal->nombre_completo;
+            // Verificar si los días restantes son insuficientes
+            if ($personal->diasVacRestantes == 0) {
+                return redirect()->route('rh.vacaciones')->with([
+                    'message' => $nombreCompleto .' ha agotado sus días de vacaciones correspondientes al año.',
+                    'color' => 'red',
+                    'type' => 'error',
+                ]);
+            }
+    
+            if ($numeroDias > $personal->diasVacRestantes) {
+                return redirect()->route('rh.vacaciones')->with([
+                    'message' => 'El número de días solicitados por ' . $nombreCompleto . ' excede los días de vacaciones restantes (' . $personal->diasVacRestantes . ' días restantes).',
+                    'color' => 'red',
+                    'type' => 'error',
+                ]);
+            }
+            // Crear un nuevo registro de vacaciones
+            vacaciones::create([
+                'motivo' => $request->input('motivo'),
+                'numeroDias' => $numeroDias,
+                'fechaInicio' => $request->input('fechaInicio'),
+                'fechaFin' => $request->input('fechaFin'),
+                'idPersonal' => $idPersonal,
+            ]);
+            // Actualizar los días restantes del personal
+            $personal->diasVacRestantes -= $numeroDias;
+            $personal->save();
+            // Redirigir con un mensaje de éxito
+            return redirect()->route('rh.vacaciones')->with([
+                'message' => 'Vacaciones registradas correctamente para: ' . $nombreCompleto .
+                             ' | Días de vacaciones: ' . $numeroDias . 
+                             ' | Del ' . $request->input('fechaInicio') . 
+                             ' al ' . $request->input('fechaFin'),
+                'color' => 'green',
+                'type' => 'success',
+            ]); 
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return redirect()->route('rh.vacaciones')->with([
+                'message' => 'Error al agregar las vacaciones: ' . $e->getMessage(),
+                'color' => 'red',
+                'type' => 'error',
+            ]);
+        }
+    } 
+    
+    public function eliminarVacaciones($vacacionesIds){
+        try{
+            // Convierte la cadena de IDs en un array
+            $vacacionesIdsArray = explode(',', $vacacionesIds);
+            // Limpia los IDs para evitar posibles problemas de seguridad
+            $vacacionesIdsArray = array_map('intval', $vacacionesIdsArray);
+            // Elimina las materias
+            vacaciones::whereIn('idVacaciones', $vacacionesIdsArray)->delete();
+            // Redirige a la página deseada después de la eliminación
+            return redirect()->route('rh.vacaciones')->with(['message' => "Vacaciones eliminado correctamente", "color" => "green"]);
+        }catch(Exception $e){
+            return redirect()->route('rh.vacaciones')->with(['message' => "No se pudo eliminar las vacaciones", "color" => "red"]);
+        }
+    }
 }

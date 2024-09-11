@@ -42,6 +42,7 @@ const anios = ref([]);
 const emit = defineEmits(['close']);
 
 const form = useForm({
+    _method: 'PUT',
     idPersonal: props.personal.idPersonal,
     nombre: props.personal.nombre,
     apellidoP: props.personal.apellidoP,
@@ -82,9 +83,30 @@ watch(() => props.personal, async (newVal) => {
     form.fechaNacimiento = newVal.fechaNacimiento;
     form.edad = newVal.edad;
     form.CURP = newVal.CURP;
-    form.telefono = newVal.telefono;
+    form.RFC = newVal.RFC;
+    form.numTelefono = newVal.numTelefono;
+    form.telEmergencia = newVal.telEmergencia;
     form.NSS = newVal.NSS;
-    form.domicilio = newVal.idDomicilio;
+    form.escolaridadd = newVal.idEscolaridad;
+    form.calle = newVal.calle;
+    form.numero = newVal.numero;
+    form.codigoPostal = await newVal.codigoPostal;
+    await buscarDatosXCodigoPostal();
+    form.entidad = await newVal.idEntidad;
+    await cargarMunicipios();
+    form.municipio = await newVal.idMunicipio;
+    await cargarAsentamientos();
+    form.asentamiento = await newVal.idAsentamiento;
+    form.numINE = newVal.numINE;
+    form.vigenciaINE = newVal.vigenciaINE;
+    form.antiguedad = newVal.antiguedad;
+    form.fechaAlta = newVal.fechaAlta;
+    form.fechaBaja = newVal.fechaBaja;
+    form.empresaa = newVal.idEmpresa;
+    form.constanciaSF = newVal.constanciaSF === 1;
+    form.totalDiasVac = newVal.totalDiasVac;
+    form.diasVacRestantes = newVal.diasVacRestantes;
+    form.idDireccion = newVal.idDireccion;
 }, { deep: true }
 );
 
@@ -426,8 +448,7 @@ const calcularTotalDiasVac = () => {
 
 watch(() => form.antiguedad, calcularTotalDiasVac);
 
-const save = async () => {
-    console.log('Formulario antes de validar (dentro del save):', form);
+const update = async () => {
     // Validación de los campos del formulario principal
     nombreError.value = validateStringNotEmpty(form.nombre) ? '' : 'Ingrese el nombre(s)';
     apellidoPError.value = validateStringNotEmpty(form.apellidoP) ? '' : 'Ingrese el apellido paterno';
@@ -445,7 +466,7 @@ const save = async () => {
     AntiguedadError.value = validateIntegerField(form.antiguedad) ? '' : 'Ingrese los años de antiguedad';
     codigoPError.value = validateCodigoPostal(form.codigoPostal) ? '' : 'Ingrese el codigo postal';
     calleError.value = validateStringNotEmpty(form.calle) ? '' : 'Ingrese el nombre de la calle';
-    numeroCError.value = validateIntegerField(form.numero) ? '' : 'Número de casa no válido';
+    /* numeroCError.value = validateIntegerField(form.numero) ? '' : 'Número de casa no válido'; */
     NumINEError.value = validateNumINE(form.numINE) ? '' : 'Número de INE no válido';
     vigenciaINEError.value = validateINE(form.vigenciaINE) ? '' : 'Vigencia de INE no válido';
     totalDiasVacError.value = validateIntegerField(form.totalDiasVac) ? '' : 'Número de días no válido';
@@ -454,15 +475,13 @@ const save = async () => {
     if (
         nombreError.value || apellidoPError.value || apellidoMError.value || fechaNError.value || edadError.value || CURPError.value || RFCError.value || telError.value ||
         telEmerError.value || escolaridadError.value || NSSError.value || NumINEError.value || AntiguedadError.value || FechaAltaError.value || EmpresaError.value |
-        codigoPError.value || calleError.value || numeroCError.value || vigenciaINEError.value || totalDiasVacError.value || diasRestantesError.value
+        codigoPError.value || calleError.value /* || numeroCError.value  */|| vigenciaINEError.value || totalDiasVacError.value || diasRestantesError.value
     ) {
         return;
     }
-    console.log('Formulario listo para enviar:', form);
     // Si no hay errores, enviar el formulario
-    form.post(route('rh.addPersonal'), {
+    form.post(route('rh.actualizarPersonal',form.idPersonal), {
         onSuccess: () => {
-            console.log('Formulario enviado exitosamente.');
             close();
             // Limpia los errores y campos si es necesario
             nombreError.value = '';
@@ -482,7 +501,7 @@ const save = async () => {
             EmpresaError.value = '';
             codigoPError.value = '';
             calleError.value = '';
-            numeroCError.value = '';
+            /* numeroCError.value = ''; */
             vigenciaINEError.value = '';
             totalDiasVacError.value = '';
             diasRestantesError.value = '';
@@ -497,11 +516,11 @@ const save = async () => {
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-            <form @submit.prevent="save">
+            <form @submit.prevent="update">
                 <div class="pb-0">
                     <h1 class="text-2xl font-semibold leading-7 text-gray-900">{{ title }}</h1>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Rellene el formulario para poder registrar a un
-                        nuevo personal. Los campos con <span class="text-red-500">*</span> son obligatorios.
+                    <p class="mt-1 text-sm leading-6 text-gray-600">Modifique el dato que desea y presione Guardar para
+                        aplicar los cambios.
                     </p>
                     <div class="p-3 border-b border-gray-300">
                         <!-- Linea que divide la seccion de informacion personal -->
@@ -521,7 +540,7 @@ const save = async () => {
                             <div class="md:col-span-2 px-2"> <!-- Definir el tamaño del cuadro de texto -->
                                 <label for="apellidoP"
                                     class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                    Paterno <span class="text-red-500">*</span></label>
+                                    Paterno</label>
                                 <div class="mt-2"><!-- Espacio entre titulo y cuadro de texto -->
                                     <input type="text" name="apellidoP" :id="'apellidoP' + op" v-model="form.apellidoP"
                                         placeholder="Ingrese el apellido paterno"
@@ -533,7 +552,7 @@ const save = async () => {
                             <div class="sm:col-span-2 px-2">
                                 <label for="apellidoM"
                                     class="block text-sm font-medium leading-6 text-gray-900">Apellido
-                                    Materno <span class="text-red-500">*</span></label>
+                                    Materno</label>
                                 <div class="mt-2">
                                     <input type="text" name="apellidoM" :id="'apellidoM' + op" v-model="form.apellidoM"
                                         placeholder="Ingrese el apellido materno"
@@ -543,8 +562,7 @@ const save = async () => {
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombre(s)
-                                    <span class="text-red-500">*</span></label>
+                                <label for="nombre" class="block text-sm font-medium leading-6 text-gray-900">Nombre(s)</label>
                                 <div class="mt-2">
                                     <input type="text" name="nombre" :id="'nombre' + op" v-model="form.nombre"
                                         placeholder="Ingrese el nombre"
@@ -555,7 +573,7 @@ const save = async () => {
                             <div class="sm:col-span-2 px-2">
                                 <label for="fechaNacimiento"
                                     class="block text-sm font-medium leading-6 text-gray-900">Fecha
-                                    de Nacimiento <span class="text-red-500">*</span></label>
+                                    de Nacimiento</label>
                                 <div class="mt-2">
                                     <input type="date" name="fechaNacimiento" :id="'fechaNacimiento' + op"
                                         v-model="form.fechaNacimiento" @change="calcularEdad"
@@ -566,8 +584,7 @@ const save = async () => {
                                     fechaNError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="edad" class="block text-sm font-medium leading-6 text-gray-900">Edad <span
-                                        class="text-red-500">*</span></label>
+                                <label for="edad" class="block text-sm font-medium leading-6 text-gray-900">Edad</label>
                                 <div class="mt-2">
                                     <input type="number" name="edad" :id="'edad' + op" v-model="form.edad"
                                         placeholder="Años "
@@ -576,8 +593,7 @@ const save = async () => {
                                 <div v-if="edadError != ''" class="text-red-500 text-xs mt-1">{{ edadError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="CURP" class="block text-sm font-medium leading-6 text-gray-900">CURP <span
-                                        class="text-red-500">*</span></label>
+                                <label for="CURP" class="block text-sm font-medium leading-6 text-gray-900">CURP</label>
                                 <div class="mt-2">
                                     <input type="text" name="CURP" :id="'CURP' + op" v-model="form.CURP"
                                         placeholder="Ingrese la CURP"
@@ -586,8 +602,7 @@ const save = async () => {
                                 <div v-if="CURPError != ''" class="text-red-500 text-xs mt-1">{{ CURPError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="RFC" class="block text-sm font-medium leading-6 text-gray-900">RFC <span
-                                        class="text-red-500">*</span></label>
+                                <label for="RFC" class="block text-sm font-medium leading-6 text-gray-900">RFC</label>
                                 <div class="mt-2">
                                     <input type="text" name="RFC" :id="'RFC' + op" v-model="form.RFC"
                                         placeholder="Ingrese la RFC"
@@ -597,8 +612,7 @@ const save = async () => {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="numTelefono"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Teléfono
-                                    <span class="text-red-500">*</span></label>
+                                    class="block text-sm font-medium leading-6 text-gray-900">Teléfono</label>
                                 <div class="mt-2">
                                     <input type="text" name="numTelefono" :id="'numTelefono' + op"
                                         v-model="form.numTelefono" placeholder="Ingrese número de telefono"
@@ -618,8 +632,7 @@ const save = async () => {
                                 <div v-if="telEmerError != ''" class="text-red-500 text-xs mt-1">{{ telEmerError }}</div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="NSS" class="block text-sm font-medium leading-6 text-gray-900">NSS <span
-                                        class="text-red-500">*</span></label>
+                                <label for="NSS" class="block text-sm font-medium leading-6 text-gray-900">NSS</label>
                                 <div class="mt-2">
                                     <input type="text" name="NSS" :id="'NSS' + op" v-model="form.NSS"
                                         placeholder="Ingrese el NSS"
@@ -629,8 +642,7 @@ const save = async () => {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="escolaridad"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Escolaridad
-                                    <span class="text-red-500">*</span></label>
+                                    class="block text-sm font-medium leading-6 text-gray-900">Escolaridad</label>
                                 <div class="mt-2">
                                     <select name="escolaridad" :id="'escolaridad' + op" v-model="form.escolaridadd"
                                         placeholder="Seleccione la escolaridad"
@@ -654,7 +666,7 @@ const save = async () => {
                             <div class="sm:col-span-2 px-2">
                                 <label for="fechaAlta" class="block text-sm font-medium leading-6 text-gray-900">Fecha
                                     de
-                                    Alta <span class="text-red-500">*</span></label>
+                                    Alta</label>
                                 <div class="mt-2">
                                     <input type="date" name="fechaAlta" :id="'fechaAlta' + op" v-model="form.fechaAlta"
                                         placeholder=" "
@@ -674,8 +686,7 @@ const save = async () => {
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="empresa" class="block text-sm font-medium leading-6 text-gray-900">Empresa
-                                    <span class="text-red-500">*</span></label>
+                                <label for="empresa" class="block text-sm font-medium leading-6 text-gray-900">Empresa</label>
                                 <div class="mt-2">
                                     <select name="empresa" :id="'empresa' + op" v-model="form.empresaa"
                                         placeholder="Seleccione la empresa a la que pertenece"
@@ -692,8 +703,7 @@ const save = async () => {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="antiguedad"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Antiguedad
-                                    <span class="text-red-500">*</span></label>
+                                    class="block text-sm font-medium leading-6 text-gray-900">Antiguedad</label>
                                 <div class="mt-2">
                                     <input type="number" name="antiguedad" :id="'antiguedad' + op"
                                         v-model="form.antiguedad" placeholder="Años "
@@ -713,7 +723,7 @@ const save = async () => {
                             <div class="sm:col-span-2 px-2">
                                 <label for="codigoPostal"
                                     class="block text-sm font-medium leading-6 text-gray-900">Código
-                                    Postal <span class="text-red-500">*</span></label>
+                                    Postal</label>
                                 <div class="mt-2">
                                     <input type="number" name="codigoPostal" :id="'codigoPostal' + op"
                                         v-model="form.codigoPostal" placeholder="Ingrese el CP"
@@ -724,8 +734,7 @@ const save = async () => {
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="entidad" class="block text-sm font-medium leading-6 text-gray-900">Estado
-                                    <span class="text-red-500">*</span></label>
+                                <label for="entidad" class="block text-sm font-medium leading-6 text-gray-900">Estado</label>
                                 <div class="mt-2">
                                     <select name="entidad" :id="'entidad' + op" v-model="form.entidad"
                                         @change="cargarMunicipios"
@@ -740,8 +749,7 @@ const save = async () => {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="municipio"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Municipio
-                                    <span class="text-red-500">*</span></label>
+                                    class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
                                 <div class="mt-2">
                                     <select name="municipio" :id="'municipio' + op" v-model="form.municipio"
                                         @change="cargarAsentamientos"
@@ -757,7 +765,7 @@ const save = async () => {
                             <div class="sm:col-span-2 px-2">
                                 <label for="asentamiento"
                                     class="block text-sm font-medium leading-6 text-gray-900">Asentamiento
-                                    / Localidad <span class="text-red-500">*</span></label>
+                                    / Localidad</label>
                                 <div class="mt-2">
                                     <select name="asentamiento" :id="'asentamiento' + op" v-model="form.asentamiento"
                                         class="block w-full rounded-md border-0 px-1.5 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -770,8 +778,7 @@ const save = async () => {
                                 </div>
                             </div>
                             <div class="sm:col-span-2 px-2">
-                                <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle <span
-                                        class="text-red-500">*</span></label>
+                                <label for="calle" class="block text-sm font-medium leading-6 text-gray-900">Calle</label>
                                 <div class="mt-2">
                                     <input type="text" name="calle" :id="'calle' + op" v-model="form.calle"
                                         placeholder="Ingrese el nombre de la calle"
@@ -781,8 +788,7 @@ const save = async () => {
                             </div>
                             <div class="sm:col-span-2 px-2">
                                 <label for="numero" class="block text-sm font-medium leading-6 text-gray-900">Número de
-                                    Casa
-                                    <span class="text-red-500">*</span></label>
+                                    Casa</label>
                                 <div class="mt-2">
                                     <input type="number" name="numero" :id="'numero' + op" v-model="form.numero"
                                         placeholder=" Núm. casa"
@@ -852,7 +858,7 @@ const save = async () => {
                             <div class="sm:col-span-2 px-2">
                                 <label for="totalDiasVac"
                                     class="block text-sm font-medium leading-6 text-gray-900">Total de
-                                    Días <span class="text-red-500">*</span></label>
+                                    Días </label>
                                 <div class="mt-2">
                                     <input type="number" name="totalDiasVac" :id="'totalDiasVac' + op"
                                         v-model="form.totalDiasVac" placeholder="Días "

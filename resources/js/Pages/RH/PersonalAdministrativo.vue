@@ -11,6 +11,10 @@ import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';
 import RHLayout from '../../Layouts/RHLayout.vue';
 import FormularioPersonal from '../../Components/RH/FormularioPersonal.vue';
+import FormularioActualizarPersonal from '../../Components/RH/FormularioActualizarPersonal.vue';
+import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
+import 'jspdf-autotable';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -30,6 +34,54 @@ const props = defineProps({
     escolaridad: { type: Object },
     personal: { type: Object },
 });
+console.log("Personal:",props.personal);
+
+const exportarExcel = () => {
+    nextTick(() => {
+        // Obtener la instancia de DataTable
+        const table = $('#personalTablaId').DataTable();
+        const data = table.rows({ search: 'applied' }).data(); // Obtiene solo los datos filtrados
+
+        const empresaMap = new Map(props.empresa.map(emp => [emp.idEmpresa, emp.empresa]));
+        const direccionMap = new Map(props.personal.map(direc => [direc.idPersonal, direc.domicilio]));
+        console.log("Direccion map",direccionMap);
+        const constanciaSFMap = new Map([[1, 'SI'], [0, 'NO']]);
+
+        // Convertir los datos a formato JSON
+        const jsonData = data.toArray().map(row => ({
+            ID: row.idPersonal,
+            'Apellido Paterno': row.apellidoP,
+            'Apellido Materno': row.apellidoM,
+            'Nombre': row.nombre,
+            'Fecha de Nacimiento': row.fechaNacimiento,
+            'Edad': `${row.edad} años`,
+            'CURP': row.CURP,
+            'RFC': row.RFC,
+            'Número de Teléfono': row.numTelefono,
+            'Tel. Emergencia': row.telEmergencia,
+            'NSS': row.NSS,
+            'Escolaridad': props.escolaridad.find(es => es.idEscolaridad === row.idEscolaridad)?.escolaridad || '',
+            'Fecha de Alta': row.fechaAlta,
+            'Fecha de Baja': row.fechaBaja,
+            'Empresa': empresaMap.get(row.idEmpresa) || '',
+            'Antiguedad': `${row.antiguedad} años`,
+            Direccion: direccionMap.get(row.idPersonal) || '',
+            'Número de INE': row.numINE,
+            'Vigencia de INE': row.vigenciaINE,
+            'Constancia de Situación Fiscal': constanciaSFMap.get(row.constanciaSF) || '',
+            'Días de Vacaciones': row.totalDiasVac,
+            'Días Restantes': row.diasVacRestantes,
+        }));
+
+        // Crear la hoja de Excel
+        const ws = XLSX.utils.json_to_sheet(jsonData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Personal Registrados');
+
+        // Guardar el archivo Excel
+        XLSX.writeFile(wb, 'Personal Registrados.xlsx');
+    });
+};
 
 const botonesPersonalizados = [
     {
@@ -43,21 +95,9 @@ const botonesPersonalizados = [
     },
     {
         title: 'Directivos registrados',
-        extend: 'excelHtml5',
         text: '<i class="fa-solid fa-file-excel"></i> Excel',
         className: 'bg-green-600 hover:bg-green-600 text-white py-1/2 px-3 rounded mb-2 jump-icon',
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6]
-        }
-    },
-    {
-        title: 'Directivos registrados',
-        extend: 'pdfHtml5',
-        text: '<i class="fa-solid fa-file-pdf"></i> PDF', // Texto del botón
-        className: 'bg-red-500 hover:bg-red-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
-        exportOptions: {
-            columns: [2, 3, 4, 5, 6]
-        }
+        action: () => exportarExcel()
     },
     {
         title: 'Directivos registrados',
@@ -110,6 +150,14 @@ const columnas = [
     { data: 'telEmergencia' },
     { data: 'NSS' },
     {
+        data: 'idEscolaridad',
+        render: function (data, type, row, meta) {
+            // Modificación para mostrar la descripción del ciclo
+            const nivel = props.escolaridad.find(nivel => nivel.idEscolaridad === data);
+            return nivel ? nivel.escolaridad : '';
+        }
+    },
+    {
         data: 'fechaAlta',
         render: function (data, type, row, meta) {
             // Verifica si el dato es válido
@@ -145,14 +193,6 @@ const columnas = [
             // Modificación para mostrar la descripción del ciclo
             const emp = props.empresa.find(emp => emp.idEmpresa === data);
             return emp ? emp.empresa : '';
-        }
-    },
-    {
-        data: 'idEscolaridad',
-        render: function (data, type, row, meta) {
-            // Modificación para mostrar la descripción del ciclo
-            const nivel = props.escolaridad.find(nivel => nivel.idEscolaridad === data);
-            return nivel ? nivel.escolaridad : '';
         }
     },
     {
@@ -205,7 +245,7 @@ const form = useForm({
     _method: 'DELETE',
 });
 
-const personalSeleccionados = ref([]);
+const personalesSeleccionados = ref([]);
 
 var personalE = ({});
 const abrirE = ($personall) => {
@@ -222,17 +262,17 @@ const cerrarModalE = () => {
 };
 
 const togglePersonalSelection = (personal) => {
-    if (personalSeleccionados.value.includes(personal)) {
+    if (personalesSeleccionados.value.includes(personal)) {
         // Si el alumno ya está seleccionado, la eliminamos del array
-        personalSeleccionados.value = personalSeleccionados.value.filter((p) => p !== personal);
+        personalesSeleccionados.value = personalesSeleccionados.value.filter((p) => p !== personal);
     } else {
         // Si el alumno no está seleccionado, la agregamos al array
-        personalSeleccionados.value.push(personal);
+        personalesSeleccionados.value.push(personal);
     }
     // Llamado del botón de eliminar para cambiar su estado deshabilitado
     const botonEliminar = document.getElementById("eliminarABtn");
     // Cambio de estado del botón eliminar dependiendo de las materias seleccionadas
-    if (personalSeleccionados.value.length > 0) {
+    if (personalesSeleccionados.value.length > 0) {
         botonEliminar.removeAttribute("disabled");
     } else {
         botonEliminar.setAttribute("disabled", "");
@@ -264,16 +304,16 @@ onMounted(() => {
     });
 });
 
-const eliminarPersonal = () => {
+const eliminarPersonales = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
     })
     // Obtener los nombres de las rutas seleccionadas
-    const nombrePersonal = personalSeleccionados.value.map((personal) => personal.nombre_completo).join(', ');
+    const nombresPersonales = personalesSeleccionados.value.map((personal) => personal.nombre_completo).join(', ');
 
     swal.fire({
         title: '¿Estas seguro que deseas eliminar al directivo seleccionado?',
-        html: `Directivo seleccionado: ${nombrePersonal}`,
+        html: `Directivo seleccionado: ${nombresPersonales}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
@@ -281,12 +321,12 @@ const eliminarPersonal = () => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const personalE = personalSeleccionados.value.map((personal) => personal.idPersonal);
-                const $personalIds = personalE.join(',');
-                await form.post(route('rh.eliminarPersonal', $personalIds));
-                personalSeleccionados.value = [];
+                const personalE = personalesSeleccionados.value.map((personal) => personal.idPersonal);
+                const $personalesIds = personalE.join(',');
+                await form.post(route('rh.eliminarPersonal', $personalesIds));
+                personalesSeleccionados.value = [];
                 const botonEliminar = document.getElementById("eliminarABtn");
-                if (personalSeleccionados.value.length > 0) {
+                if (personalesSeleccionados.value.length > 0) {
                     botonEliminar.removeAttribute("disabled");
                 } else {
                     botonEliminar.setAttribute("disabled", "");
@@ -331,10 +371,11 @@ const eliminarPersonal = () => {
                 </button>
                 <button id="eliminarABtn" disabled
                     class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="eliminarPersonal">
+                    @click="eliminarPersonales">
                     <i class="fa fa-trash mr-2"></i>Borrar Personal
                 </button>
             </div>
+            
             <div>
                 <div class="overflow-x-auto">
                     <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
@@ -477,6 +518,9 @@ const eliminarPersonal = () => {
         <FormularioPersonal :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir Personal'" :op="'1'" :modal="'modalCreate'" :personal="props.personal"
             :escolaridad="props.escolaridad" :empresa="props.empresa"></FormularioPersonal>
+        <FormularioActualizarPersonal :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
+            :title="'Editar Personal'" :op="'1'" :modal="'modalEdit'" :personal="personalE"
+            :escolaridad="props.escolaridad" :empresa="props.empresa"></FormularioActualizarPersonal>
     </RHLayout>
 </template>
 

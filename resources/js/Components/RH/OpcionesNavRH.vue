@@ -33,7 +33,7 @@ defineProps
       <i class="fa fa-briefcase" aria-hidden="true"></i> Socios y Prestadores
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
-      :href="route('rh.inicio')">
+      :href="route('rh.vacaciones')">
       <i class="fa fa-plane" aria-hidden="true"></i> Vacaciones
     </a>
     <a class="menu-button block text-white py-2.5 px-4 my-4 rounded transition duration-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-cyan-500 hover:text-white"
