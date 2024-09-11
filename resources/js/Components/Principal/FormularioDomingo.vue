@@ -2,7 +2,7 @@
 import { useForm, put } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
-import { route } from '../../../../vendor/tightenco/ziggy/src/js';
+import { route } from 'ziggy-js';
 
 const props = defineProps({
     show: {
