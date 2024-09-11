@@ -34,7 +34,6 @@ const props = defineProps({
     escolaridad: { type: Object },
     personal: { type: Object },
 });
-console.log("Personal:",props.personal);
 
 const exportarExcel = () => {
     nextTick(() => {
