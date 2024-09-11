@@ -821,7 +821,6 @@ class RHController extends Controller
             $domicilio->idAsentamiento = $request->asentamiento;
             $domicilio->save();
     
-            $personal = new personal();
             $personal->nombre = $request->nombre;
             $personal->apellidoP = $request->apellidoP;
             $personal->apellidoM = $request->apellidoM;
