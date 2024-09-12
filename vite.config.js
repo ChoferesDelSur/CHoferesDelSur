@@ -16,6 +16,9 @@ export default defineConfig({
     build: {
         outDir: 'public/build',
     },
+    define: {
+        'process.env.APP_URL': JSON.stringify(process.env.APP_URL),
+    },
     plugins: [
         laravel({
             input: [
