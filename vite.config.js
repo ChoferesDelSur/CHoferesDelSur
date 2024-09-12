@@ -13,12 +13,6 @@ export default defineConfig({
             '@inertiajs/vue3': '/node_modules/@inertiajs/vue3/dist/index.mjs',
         },
     },
-    build: {
-        outDir: 'public/build',
-    },
-    define: {
-        'process.env.APP_URL': JSON.stringify(process.env.APP_URL),
-    },
     plugins: [
         laravel({
             input: [
