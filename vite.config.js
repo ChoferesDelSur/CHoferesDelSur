@@ -13,6 +13,9 @@ export default defineConfig({
             '@inertiajs/vue3': '/node_modules/@inertiajs/vue3/dist/index.mjs',
         },
     },
+    build: {
+        outDir: 'public/build',
+    },
     plugins: [
         laravel({
             input: [
