@@ -5,7 +5,7 @@ import Modal from '../Modal.vue';
 //import { route } from '../../../../vendor/tightenco/ziggy/src/js';
 import { route } from 'ziggy-js';
 import vSelect from 'vue-select';
-//import 'vue-select/dist/vue-select.css';
+import 'vue-select/dist/vue-select.css';
 import 'vue-select';
 import axios from 'axios';
 
