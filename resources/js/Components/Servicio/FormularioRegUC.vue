@@ -3,6 +3,8 @@ import { useForm, put } from '@inertiajs/inertia-vue3';
 import { ref, watch } from 'vue';
 import Modal from '../Modal.vue';
 import { route } from 'ziggy-js';
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 const props = defineProps({
     show: {
@@ -108,22 +110,15 @@ const save = async () => {
                         obligatorios.
                     </p>
                     <div class="flex flex-wrap -mx-4">
-                        <div class="sm:col-span-2 px-4">
+                        <div class="sm:col-span-2 w-56 px-4">
                             <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
                                     class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <select name="unidad" :id="'unidad' + op" v-model="form.unidad"
-                                    placeholder="Seleccione la unidad"
-                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Seleccione la unidad</option>
-                                    <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
-                                        {{ carro.numeroUnidad }}
-
-                                    </option>
-                                </select>
+                                <v-select v-model="form.unidad"
+                                    :options="unidad.map(carro => ({ label: carro.numeroUnidad, value: carro.idUnidad }))"
+                                    placeholder="Seleccione la unidad"></v-select>
                             </div>
-                            <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}
-                            </div>
+                            <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
                         </div>
                         <div class="sm:col-span-2 px-4">
                             <label for="tipoCorrida" class="block text-sm font-medium leading-6 text-gray-900">Tipo de corrida <span class="text-red-500">*</span></label>
