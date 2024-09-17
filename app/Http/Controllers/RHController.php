@@ -602,7 +602,7 @@ class RHController extends Controller
                 'fechaFin' => 'required',
             ]);
             // Buscar la incapacidad por su id
-            $incapacidad = Incapacidad::find($idIncapacidad);
+            $incapacidad = incapacidad::find($idIncapacidad);
             // Verificar si la incapacidad existe
             if (!$incapacidad) {
                 return redirect()->route('rh.incapacidades')->with(['message' => "Incapacidad no encontrada", "color" => "red"]);
