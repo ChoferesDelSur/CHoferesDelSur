@@ -176,4 +176,12 @@ const save = async () => {
     margin-right: 10px;
     /* Ajusta este valor según lo que necesites */
 }
+
+.v-select .vs__dropdown-menu {
+    z-index: 9999; /* Asegura que el menú desplegable se muestre sobre otros elementos */
+}
+
+.modal-content {
+    overflow: visible !important; /* Permite que el menú desplegable se extienda más allá del modal */
+}
 </style>
