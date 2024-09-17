@@ -24,16 +24,16 @@ class ultimaCorrida extends Model
 
     public function unidad()
     {
-        return $this->belongsTo(Unidad::class, 'idUnidad');
+        return $this->belongsTo(unidad::class, 'idUnidad');
     }
     
     public function operador()
     {
-        return $this->belongsTo(Operador::class, 'idOperador');
+        return $this->belongsTo(operador::class, 'idOperador');
     }
 
     public function tipoUltimaCorrida()
     {
-        return $this->belongsTo(TipoUltimaCorrida::class, 'idTipoUltimaCorrida');
+        return $this->belongsTo(tipoUltimaCorrida::class, 'idTipoUltimaCorrida');
     }
 }

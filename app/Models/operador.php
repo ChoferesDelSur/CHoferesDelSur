@@ -45,7 +45,7 @@ class operador extends Model
 
     public function unidad()
 {
-    return $this->hasOne(Unidad::class, 'idOperador');
+    return $this->hasOne(unidad::class, 'idOperador');
 }
 
 public function direccion(): HasOne

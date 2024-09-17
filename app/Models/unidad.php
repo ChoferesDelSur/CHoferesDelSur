@@ -27,25 +27,25 @@ class unidad extends Model
     }
     public function rolServicio()
     {
-        return $this->hasOne(RolServicio::class, 'idUnidad');
+        return $this->hasOne(rolServicio::class, 'idUnidad');
     }
 
     public function entradas()
     {
-        return $this->hasMany(Entrada::class, 'idUnidad');
+        return $this->hasMany(entrada::class, 'idUnidad');
     }
 
     public function cortes()
     {
-        return $this->hasMany(Corte::class, 'idUnidad');
+        return $this->hasMany(corte::class, 'idUnidad');
     }
     public function ruta()
     {
-        return $this->belongsTo(Ruta::class, 'idRuta');
+        return $this->belongsTo(ruta::class, 'idRuta');
     }
 
     public function directivo()
     {
-        return $this->belongsTo(Directivo::class, 'idDirectivo');
+        return $this->belongsTo(directivo::class, 'idDirectivo');
     }
 }
