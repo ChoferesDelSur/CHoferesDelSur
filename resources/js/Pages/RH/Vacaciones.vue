@@ -287,10 +287,6 @@ const eliminarVacaciones = () => {
                     @click="eliminarVacaciones">
                     <i class="fa fa-trash mr-2"></i> Eliminar Vacaciones
                 </button>
-                <button class="bg-sky-500 hover:bg-sky-500 text-white font-semibold py-2 px-4 rounded"
-                    @click="mostrarModalReincor = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-                    <i class="fa fa-refresh" aria-hidden="true"></i> Restablecer Vacaciones
-                </button>
             </div>
 
             <div class="overflow-x-auto">

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class unidad extends Model
 {
     use HasFactory;
-    use softDeletes;
+    use SoftDeletes;
 
     protected $table = "unidad";
     protected $primaryKey = "idUnidad";

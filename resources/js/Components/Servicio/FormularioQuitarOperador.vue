@@ -121,23 +121,19 @@ const update = async () => {
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Seleccione la unidad a la que le quiere quitar el operador.
                     </p>
-                    <div class="flex flex-wrap -mx-4">
-                        <div class="sm:col-span-2 px-4">
-                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
-                                    class="text-red-500">*</span></label>
+                    <div class="sm:col-span-2 w-56 px-4">
+                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                             <div class="mt-2">
-                                <select name="unidad" :id="'unidad' + op" v-model="form.unidad"
+                                <v-select
+                                    v-model="form.unidad"
+                                    :options="unidadesConOperador.map(carro => ({ label: carro.numeroUnidad, value: carro.idUnidad }))"
                                     placeholder="Seleccione la unidad"
-                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Seleccione la unidad</option>
-                                    <option v-for="carro in unidadesConOperador" :key="carro.idUnidad" :value="carro.idUnidad">
-                                        {{ carro.numeroUnidad }}
-                                    </option>
-                                </select>
+                                    :reduce="unidad => unidad.value"
+                                    class="w-full">
+                                </v-select>
                             </div>
                             <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
                         </div>
-                    </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" :id="'cerrar' + op"
