@@ -94,15 +94,22 @@ const save = async () => {
                         hora de regreso del corte de una unidad.
                     </p>
                     <div class="flex flex-wrap -mx-4">
+                        <!-- Unidad con v-select -->
                         <div class="sm:col-span-2 w-56 px-4">
-                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
-                                    class="text-red-500">*</span></label>
+                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">
+                                Unidad <span class="text-red-500">*</span>
+                            </label>
                             <div class="mt-2">
-                                <v-select v-model="form.unidad"
-                                    :options="unidad.map(carro => ({ label: carro.numeroUnidad, value: carro.idUnidad }))"
-                                    placeholder="Seleccione la unidad"></v-select>
+                                <v-select 
+                                    :options="unidad" 
+                                    label="numeroUnidad" 
+                                    v-model="form.unidad" 
+                                    :reduce="carro => carro.idUnidad"
+                                    :class="{ 'border-red-500': unidadError }"
+                                    placeholder="Seleccione la unidad"
+                                />
                             </div>
-                            <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
+                            <div v-if="unidadError" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
                             <label for="horaRegreso" class="block text-sm font-medium leading-6 text-gray-900">Hora de

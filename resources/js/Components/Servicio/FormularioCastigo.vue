@@ -20,10 +20,6 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    formacionUnidades: {
-        type: Object,
-        default: () => ({}),
-    },
     unidad: {
         type: Object,
         default: () => ({}),
@@ -119,10 +115,13 @@ const save = async () => {
                             <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span class="text-red-500">*</span></label>
                             <div class="mt-2">
                                 <v-select
+                                    :options="unidad"
                                     v-model="form.unidad"
-                                    :options="unidad.map(carro => ({ label: carro.numeroUnidad, value: carro.idUnidad }))"
+                                    :reduce="option => option.idUnidad"
+                                    label="numeroUnidad"
                                     placeholder="Seleccione la unidad"
-                                ></v-select>
+                                    :class="{ 'border-red-500': unidadError }"
+                                />
                             </div>
                             <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
                         </div>
