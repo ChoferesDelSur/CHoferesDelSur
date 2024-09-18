@@ -670,7 +670,7 @@ const actualizarRolServicio = () => {
     showCancelButton: true,
     confirmButtonColor: '#28a745',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'Sí, actualizar',
+    confirmButtonText: 'Sí, Actualizar',
     cancelButtonText: 'Cancelar'
   }).then((result) => {
     if (result.isConfirmed) {
