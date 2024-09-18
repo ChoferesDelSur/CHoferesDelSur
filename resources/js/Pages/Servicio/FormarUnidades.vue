@@ -2,6 +2,7 @@
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
 import { useForm } from '@inertiajs/inertia-vue3';
+import { Inertia } from '@inertiajs/inertia';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import { ref, onMounted, computed, nextTick } from 'vue';
@@ -9,6 +10,7 @@ import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';
 import { jsPDF } from 'jspdf';
+import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import 'jspdf-autotable';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
@@ -661,6 +663,34 @@ const cerrarModalE = () => {
   mostrarModalE.value = false;
 };
 
+const actualizarRolServicio = () => {
+  Swal.fire({
+    title: '¿Seguro de actualizar el Rol de Domingo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#28a745',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, actualizar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Si el usuario confirma, ejecuta la acción de Inertia
+      Inertia.post(route('servicio.cambiarRolServicio'), {}, {
+        onError: (errors) => {
+          // Si ocurre un error, muestra una alerta de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al actualizar el rol de servicio',
+            confirmButtonText: 'OK'
+          });
+          console.error('Error al actualizar el rol de servicio:', errors);
+        }
+      });
+    }
+  });
+};
+
 </script>
 
 <template>
@@ -706,7 +736,11 @@ const cerrarModalE = () => {
 
         <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalDomingo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
-          <i class="fa fa-calendar" aria-hidden="true"></i> Rol domingo
+          <i class="fa fa-calendar" aria-hidden="true"></i> Rol Domingo
+        </button>
+
+        <button class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
+          @click="actualizarRolServicio"> <i class="fa fa-calendar" aria-hidden="true"></i> Actualizar Rol Servicio
         </button>
 
       </div>

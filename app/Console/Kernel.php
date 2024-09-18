@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:cambiar_trabaja_domingo')->weeklyOn(0, '0:00');
+        
     }
 
     /**

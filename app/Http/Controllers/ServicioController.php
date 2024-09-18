@@ -1196,4 +1196,21 @@ class ServicioController extends Controller
             ]);
         }
     }
+
+        public function cambiarRolServicio(Request $request)
+    {
+        // Cambiar el valor de trabajaDomingo para todos los registros
+        $rolServicios = rolServicio::all();
+
+        foreach ($rolServicios as $rolServicio) {
+            $rolServicio->trabajaDomingo = ($rolServicio->trabajaDomingo === 'SI') ? 'NO' : 'SI';
+            $rolServicio->save();
+        }
+
+        return redirect()->route('servicio.formarUni')->with([
+            'message' => "Rol de domingo actualizado correctamente",
+            'color' => 'green'
+        ]);
+    }
+
 }

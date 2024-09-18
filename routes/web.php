@@ -172,6 +172,8 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::post('/servicio/unidades/quitarOper', 'quitarOperador')->name('servicio.quitarOperador');
 
     Route::get('/servicio/reportes', 'reportes')->name('servicio.reportes');
+
+    Route::post('/servicio/formarUnidades/rolServicio', 'cambiarRolServicio')->name('servicio.cambiarRolServicio');
     });
 
 });
