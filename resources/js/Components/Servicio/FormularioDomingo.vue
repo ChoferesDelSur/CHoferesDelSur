@@ -96,6 +96,22 @@ const obtenerProximoDomingo = () => {
 const DomingoAnterior = obtenerDomingoAnterior();
 const proximoDomingo = obtenerProximoDomingo();
 
+// Función para ordenar unidades por la parte numérica
+function ordenarUnidadesPorNumero(unidades) {
+    return unidades.sort((a, b) => {
+        const numA = parseInt(a.numeroUnidad.split('-')[1], 10);
+        const numB = parseInt(b.numeroUnidad.split('-')[1], 10);
+        return numA - numB;
+    });
+}
+
+// Ordenar las unidades cuando cambien
+watch(() => props.unidad, (newUnidades) => {
+    // Solo afecta al orden dentro del select
+    form.unidad = ordenarUnidadesPorNumero([...newUnidades]);  // Crea una copia de newUnidades y ordena
+}, { immediate: true });
+
+
 </script>
 
 <template>
@@ -114,7 +130,7 @@ const proximoDomingo = obtenerProximoDomingo();
                         <select name="unidadesSi" id="unidadesSi" v-model="form.unidadesSi" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
-                            <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
+                            <option v-for="carro in form.unidad" :key="carro.idUnidad" :value="carro.idUnidad">
                                 {{ carro.numeroUnidad }}
                             </option>
                         </select>
@@ -132,7 +148,7 @@ const proximoDomingo = obtenerProximoDomingo();
                         <select name="unidadesNo" id="unidadesNo" v-model="form.unidadesNo" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
-                            <option v-for="carro in unidad" :key="carro.idUnidad" :value="carro.idUnidad">
+                            <option v-for="carro in form.unidad" :key="carro.idUnidad" :value="carro.idUnidad">
                                 {{ carro.numeroUnidad }}
                             </option>
                         </select>
