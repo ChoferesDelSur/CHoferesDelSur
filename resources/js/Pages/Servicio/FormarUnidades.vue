@@ -68,7 +68,6 @@ const exportarExcel = () => {
       console.warn('No hay datos para exportar.');
       return;
     }
-console.log("Tipo Ultima Corrida",props.tipoUltimaCorrida);
     // Obtener la fecha actual en formato YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];
 
