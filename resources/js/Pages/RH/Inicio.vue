@@ -19,7 +19,7 @@ const props = defineProps({
                 <!-- <img :src="'/Imagenes/Logo.jpg'"
                     class="self-start h-20 w-20 md:h-32 md:w-32 ml-4 md:mx-1 object-cover rounded-lg"> -->
                 <div class="flex-1">
-                    <h1 class="font-bold text-center text-xl pt-0"> Bienvenido al sistema de la empresa Choferes del Sur.
+                    <h1 class="font-bold text-center text-xl pt-0"> Bienvenido al sistema de Choferes Del Sur.
                     </h1>
                 </div>
                 <div class="h-full">
