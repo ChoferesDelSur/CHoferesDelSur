@@ -106,6 +106,8 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/Movimientos/directivo/{idDirectivo}/mes/{mes}','obtenerMovimientosPorMes')->name('reportes.MovMes');
     Route::get('/reporte/Movimientos/directivo/{idDirectivo}/dia/{dia}','obtenerMovimientosPorDia')->name('reportes.MovDia');
 
+    Route::get('/reporte/OperadoresSinTrabajar/operadores/semana/{semana}','obtenerOperadoresSinTrabajarPorSemana')->name('reporte.opSinTrabajar');
+
 });
 
 Route::controller(InfoController::class)->group(function () {

@@ -32,7 +32,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $entradas = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -54,7 +54,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
-            $entradas = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -77,7 +77,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
-            $entradas = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -98,7 +98,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $entradasTardes = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradasTardes = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -120,7 +120,7 @@ class ReporteController extends Controller
             $inicioMes = Carbon::create(null, $mes)->startOfMonth();
             $finMes = Carbon::create(null, $mes)->endOfMonth();
 
-            $entradasTardes = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradasTardes = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -141,7 +141,7 @@ class ReporteController extends Controller
             $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
-            $entradasTardes = Entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradasTardes = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -162,7 +162,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $cortes = Corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
+            $cortes = corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                 return $query->where('idUnidad', $idUnidad);
             })
@@ -228,7 +228,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $cortes = Corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
+            $cortes = corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                 return $query->where('idUnidad', $idUnidad);
             })
@@ -297,7 +297,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $cortes = Corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
+            $cortes = corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                 return $query->where('idUnidad', $idUnidad);
             })
@@ -366,7 +366,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $diasTrabajadosQuery = Entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
+            $diasTrabajadosQuery = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
                 ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
                 ->distinct();
 
@@ -378,7 +378,7 @@ class ReporteController extends Controller
                 ->groupBy('idOperador')
                 ->map(function ($dias, $idOperador) {
                     return [
-                        'nombre_completo' => Operador::find($idOperador)->nombre_completo,
+                        'nombre_completo' => operador::find($idOperador)->nombre_completo,
                         'diasTrabajados' => $dias->count()
                     ];
                 })->values();
@@ -396,7 +396,7 @@ class ReporteController extends Controller
             $inicioMes = Carbon::create(null, $mes)->startOfMonth();
             $finMes = Carbon::create(null, $mes)->endOfMonth();
 
-            $diasTrabajadosQuery = Entrada::whereBetween('created_at', [$inicioMes, $finMes])
+            $diasTrabajadosQuery = entrada::whereBetween('created_at', [$inicioMes, $finMes])
                 ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
                 ->distinct();
 
@@ -408,7 +408,7 @@ class ReporteController extends Controller
                 ->groupBy('idOperador')
                 ->map(function ($dias, $idOperador) {
                     return [
-                        'nombre_completo' => Operador::find($idOperador)->nombre_completo,
+                        'nombre_completo' => operador::find($idOperador)->nombre_completo,
                         'diasTrabajados' => $dias->count()
                     ];
                 })->values();
@@ -426,7 +426,7 @@ class ReporteController extends Controller
             $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
-            $diasTrabajadosQuery = Entrada::whereBetween('created_at', [$inicioAnio, $finAnio])
+            $diasTrabajadosQuery = entrada::whereBetween('created_at', [$inicioAnio, $finAnio])
                 ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
                 ->distinct();
 
@@ -438,7 +438,7 @@ class ReporteController extends Controller
                 ->groupBy('idOperador')
                 ->map(function ($dias, $idOperador) {
                     return [
-                        'nombre_completo' => Operador::find($idOperador)->nombre_completo,
+                        'nombre_completo' => operador::find($idOperador)->nombre_completo,
                         'diasTrabajados' => $dias->count()
                     ];
                 })->values();
@@ -666,6 +666,38 @@ class ReporteController extends Controller
             return response()->json($movimientos);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al obtener los movimientos por fecha', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+        public function obtenerOperadoresSinTrabajarPorSemana($semana)
+    {
+        try {
+            // Calcular el inicio y fin de la semana
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+
+            // Obtener todos los operadores
+            $todosOperadores = operador::all();
+
+            // Obtener los operadores que trabajaron durante la semana
+            $operadoresConEntradas = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->pluck('idOperador')
+                ->unique();
+
+            // Filtrar los operadores que no trabajaron
+            $operadoresSinTrabajar = $todosOperadores->filter(function ($operador) use ($operadoresConEntradas) {
+                return !$operadoresConEntradas->contains($operador->idOperador);
+            })->map(function ($operador) {
+                return [
+                    'idOperador' => $operador->idOperador,
+                    'nombre_completo' => $operador->nombre_completo,
+                ];
+            });
+
+            return response()->json($operadoresSinTrabajar);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener operadores sin trabajar por semana', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener operadores sin trabajar por semana', 'details' => $e->getMessage()], 500);
         }
     }
 
