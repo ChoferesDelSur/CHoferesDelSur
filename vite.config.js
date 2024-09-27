@@ -6,7 +6,7 @@ export default defineConfig({
     server: {
         https: true, // Asegúrate de que HTTPS esté habilitado si es necesario
         //port: 5173, // Puedes especificar el puerto que prefieras
-        //host: '0.0.0.0', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
+        //host: '192.168.1.106', // Esto permite que el servidor escuche en todas las interfaces de red disponibles
     },
     resolve: {
         alias: {

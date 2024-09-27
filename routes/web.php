@@ -176,6 +176,7 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::get('/servicio/reportes', 'reportes')->name('servicio.reportes');
 
     Route::post('/servicio/formarUnidades/rolServicio', 'cambiarRolServicio')->name('servicio.cambiarRolServicio');
+    Route::put('/servicio/formarUnidades/rolRutas', 'actualizarRolRuta')->name('servicio.actualizarRolRuta');
     });
 
 });

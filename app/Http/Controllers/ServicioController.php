@@ -1213,4 +1213,42 @@ class ServicioController extends Controller
         ]);
     }
 
+    public function actualizarRolRuta(Request $request)
+{
+    // 1. Buscar las rutas por su nombre
+    $rutaLibramiento = Ruta::where('nombreRuta', 'LIBRAMIENTO - PLAZA DEL VALLE')->first();
+    $rutaEsmeralda = Ruta::where('nombreRuta', 'ESMERALDA - COL. JARDIN')->first();
+
+    // Verificar que las rutas existen
+    if (!$rutaLibramiento || !$rutaEsmeralda) {
+        return redirect()->route('servicio.formarUni')->with([
+            'message' => 'Una o ambas rutas no se encontraron',
+            'color' => 'red',
+            'type' => 'error'
+        ]);
+    }
+
+    // Crear una ruta temporal para evitar que idRuta se quede como null
+    $rutaTemporal = Ruta::create(['nombreRuta' => 'TEMPORAL']);
+
+    // Actualizar las unidades
+    unidad::where('idRuta', $rutaLibramiento->idRuta)
+        ->update(['idRuta' => $rutaTemporal->idRuta]); // Cambia LIBRAMIENTO a ID temporal
+
+    unidad::where('idRuta', $rutaEsmeralda->idRuta)
+        ->update(['idRuta' => $rutaLibramiento->idRuta]); // Cambia ESMERALDA a LIBRAMIENTO
+
+    unidad::where('idRuta', $rutaTemporal->idRuta)
+        ->update(['idRuta' => $rutaEsmeralda->idRuta]); // Cambia el ID temporal a ESMERALDA
+
+    // Eliminar la ruta temporal
+    $rutaTemporal->delete();
+
+    return redirect()->route('servicio.formarUni')->with([
+        'message' => "Rol de rutas actualizadas correctamente",
+        'color' => 'green',
+        'type' => 'success'
+    ]);
+}   
+
 }

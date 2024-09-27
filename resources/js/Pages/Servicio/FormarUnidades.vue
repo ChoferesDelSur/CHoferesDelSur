@@ -693,6 +693,37 @@ const actualizarRolServicio = () => {
   });
 };
 
+const actualizarRolRuta = () => {
+  Swal.fire({
+    title: '¿Seguro de actualizar el Rol de Ruta?',
+    text: 'Las unidades que están en la ruta "LIBRAMIENTO - PLAZA DEL VALLE" se cambiarán a la ruta "ESMERALDA - COL. JARDIN" y viceversa',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#28a745',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, Actualizar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Si el usuario confirma, ejecuta la acción de Inertia con _method: 'PUT'
+      Inertia.post(route('servicio.actualizarRolRuta'), {
+        _method: 'PUT'  // Esto disfrazará la solicitud POST como PUT
+      }, {
+        onError: (errors) => {
+          // Si ocurre un error, muestra una alerta de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al actualizar el rol de rutas',
+            confirmButtonText: 'OK'
+          });
+          console.error('Error al actualizar el rol de rutas:', errors);
+        }
+      });
+    }
+  });
+};
+
 </script>
 
 <template>
@@ -704,26 +735,26 @@ const actualizarRolServicio = () => {
       <Mensaje />
 
       <div class="py-0 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-2">
-        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModal = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-check-circle" aria-hidden="true"></i> Registrar Entrada
         </button>
-        <button class="bg-red-500 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalCorte = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-scissors" aria-hidden="true"></i> Registrar Corte
         </button>
 
-        <button class="bg-green-500 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalRegreso = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-history" aria-hidden="true"></i> Registrar Regreso
         </button>
 
-        <button class="bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar castigo
         </button>
 
-        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalRegUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
         </button>
@@ -731,18 +762,22 @@ const actualizarRolServicio = () => {
 
       <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
 
-        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalRegresoUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
         </button>
 
-        <button class="bg-teal-500 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalDomingo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-calendar" aria-hidden="true"></i> Rol Domingo
         </button>
 
-        <button class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
+        <button class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded"
           @click="actualizarRolServicio"> <i class="fa fa-calendar" aria-hidden="true"></i> Actualizar Rol Servicio
+        </button>
+
+        <button class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded"
+          @click="actualizarRolRuta"> <i class="fa fa-map" aria-hidden="true"></i> Actualizar Rol Rutas
         </button>
 
       </div>
