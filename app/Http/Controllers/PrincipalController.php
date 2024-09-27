@@ -116,7 +116,7 @@ class PrincipalController extends Controller
             /* // Verificar si la unidad existe
             $unidad = Unidad::find($unidadId); */
             // Verificar si la unidad existe y tiene un operador asignado
-            $unidad = Unidad::with('operador')->findOrFail($unidadId);
+            $unidad = unidad::with('operador')->findOrFail($unidadId);
             if (!$unidad) {
                 // La unidad no existe, puedes manejar el error aquí
                 return redirect()->back()->with(['message' => "La unidad no existe", "color" => "yellow", 'type' => 'info']);
@@ -160,7 +160,7 @@ class PrincipalController extends Controller
             }
     
             // Verificar si ya existe una entrada para esta unidad en el día actual
-            $entradaExistente = Entrada::where('idUnidad', $unidadId)
+            $entradaExistente = entrada::where('idUnidad', $unidadId)
             ->whereDate('created_at', Carbon::today())
             ->first();
 
@@ -169,7 +169,7 @@ class PrincipalController extends Controller
             }
 
             // Crear un nuevo registro en la tabla de entrada
-            Entrada::create([
+            entrada::create([
                 'idUnidad' => $unidadId,
                 'horaEntrada' => $horaEntrada,
                 'tipoEntrada' => $tipoEntrada,
@@ -195,7 +195,7 @@ class PrincipalController extends Controller
     try {
         // Obtener el ID de la unidad seleccionada del formulario
         $unidadId = $request->input('unidad');
-        $unidad = Unidad::find($unidadId);
+        $unidad = unidad::find($unidadId);
 
         $numeroUnidad = $unidad->numeroUnidad;
 
@@ -243,7 +243,7 @@ class PrincipalController extends Controller
         }
 
         // Crear un nuevo registro de corte
-        Corte::create([
+        corte::create([
             'idUnidad' => $unidadId,
             'horaCorte' => $request->input('horaCorte'),
             'causa' => $request->input('causa'),
@@ -280,7 +280,7 @@ class PrincipalController extends Controller
     try {
         // Obtener el ID de la unidad seleccionada del formulario
         $unidadId = $validatedData['unidad'];
-        $unidad = Unidad::findOrFail($unidadId);
+        $unidad = unidad::findOrFail($unidadId);
         $numeroUnidad = $unidad->numeroUnidad;
 
         // Obtener el operador asociado con la unidad seleccionada
@@ -300,7 +300,7 @@ class PrincipalController extends Controller
         $fechaActual = Carbon::now()->toDateString();
 
         // Usar created_at para verificar la fecha actual
-        $entrada = Entrada::where('idUnidad', $unidadId)
+        $entrada = entrada::where('idUnidad', $unidadId)
                           ->whereDate('created_at', $fechaActual)
                           ->first();
 
@@ -337,7 +337,7 @@ class PrincipalController extends Controller
         }
 
         // Crear una nueva instancia del modelo castigo
-        $nuevoCastigo = new Castigo();
+        $nuevoCastigo = new castigo();
         $nuevoCastigo->idUnidad = $unidadId;
         $nuevoCastigo->castigo = $validatedData['castigo'];
         $nuevoCastigo->horaInicio = $validatedData['horaInicio'];
@@ -370,7 +370,7 @@ class PrincipalController extends Controller
 
         try {
             $unidadId = $request->input('unidad');
-            $unidad = Unidad::find($unidadId);
+            $unidad = unidad::find($unidadId);
             // Obtener el número de unidad para mostrarlo en el mensaje de éxito
             $numeroUnidad = $unidad->numeroUnidad;
     
@@ -378,7 +378,7 @@ class PrincipalController extends Controller
             /* $corte = Corte::where('idUnidad', $unidadId)->latest()->first(); */
 
             // Verificar si la unidad tiene una entrada de corte para hoy
-            $corte = Corte::where('idUnidad', $unidadId)
+            $corte = corte::where('idUnidad', $unidadId)
             ->whereDate('created_at', Carbon::today())
             ->latest()
             ->first();
@@ -426,7 +426,7 @@ class PrincipalController extends Controller
     
         try {
             $unidadId = $request->input('unidad');
-            $unidad = Unidad::find($unidadId);
+            $unidad = unidad::find($unidadId);
     
             $numeroUnidad = $unidad->numeroUnidad;
 
@@ -484,7 +484,7 @@ class PrincipalController extends Controller
             }
     
             // Crear un nuevo registro en ultimaCorrida
-            UltimaCorrida::create([
+            ultimaCorrida::create([
                 'idUnidad' => $unidadId,
                 'horaInicioUC' => $request->input('horaInicioUC'),
                 'horaFinUC' => $request->input('horaFinUC'),
@@ -517,7 +517,7 @@ class PrincipalController extends Controller
 
     try {
         $unidadId = $request->input('unidad');
-        $unidad = Unidad::find($unidadId);
+        $unidad = unidad::find($unidadId);
 
         if (!$unidad) {
             return redirect()->route('principal.formarUni')->with([
@@ -534,7 +534,7 @@ class PrincipalController extends Controller
         $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)->orderBy('created_at', 'desc')->first(); */
 
         // Buscar el último registro de inicio de la UC para esta unidad hoy
-        $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)
+        $ultimaCorrida = ultimaCorrida::where('idUnidad', $unidadId)
         ->whereDate('created_at', Carbon::today())
         ->orderBy('created_at', 'desc')
         ->first();
@@ -805,8 +805,8 @@ class PrincipalController extends Controller
         $operadorId = $request->input('operador');
         
         // Buscar la unidad y el operador en la base de datos
-        $unidad = Unidad::findOrFail($unidadId);
-        $operador = Operador::findOrFail($operadorId);
+        $unidad = unidad::findOrFail($unidadId);
+        $operador = operador::findOrFail($operadorId);
 
         // Asignar el operador a la unidad
         $unidad->idOperador = $operadorId; // Suponiendo que tienes una columna 'operador_id' en tu tabla de unidades
@@ -822,7 +822,7 @@ class PrincipalController extends Controller
         $unidadId = $request->input('unidad');
 
         // Buscar la unidad en la base de datos
-        $unidad = Unidad::findOrFail($unidadId);
+        $unidad = unidad::findOrFail($unidadId);
 
         // Disociar el operador de la unidad
         $unidad->operador()->dissociate();
@@ -861,7 +861,7 @@ class PrincipalController extends Controller
                 'directivo' => 'required',
             ]);
             // Verificar si el operador ya existe
-            $existingOperador = Operador::where('nombre', $request->nombre)
+            $existingOperador = operador::where('nombre', $request->nombre)
             ->where('apellidoP', $request->apellidoP)
             ->where('apellidoM', $request->apellidoM)
             ->first();
@@ -1258,60 +1258,58 @@ class PrincipalController extends Controller
         return redirect()->route('principal.inicio')->With(["message" => "No tienes acceso a esta función", "color" => "red",'type' => 'error']);
     }
 
-    public function actualizarUsuario(Request $request, $idUsuario)
-{
-    if (Auth::check()) {
-        try {
-            $usuario = usuario::find($idUsuario);
+        public function actualizarUsuario(Request $request, $idUsuario)
+    {
+        if (Auth::check()) {
+            try {
+                $usuario = usuario::find($idUsuario);
 
-            // Validar solo los campos que están presentes en la solicitud
-            $request->validate([
-                'nombre' => 'sometimes|required',
-                'apellidoP' => 'sometimes|required',
-                'apellidoM' => 'sometimes|required',
-                'usuario' => 'sometimes|required',
-                'contrasenia' => 'sometimes|required',
-            ]);
-            // Actualizar solo los campos proporcionados en la solicitud
-            if ($request->has('nombre')) {
-                $usuario->nombre = $request->nombre;
-            }
-            if ($request->has('apellidoP')) {
-                $usuario->apellidoP = $request->apellidoP;
-            }
-            if ($request->has('apellidoM')) {
-                $usuario->apellidoM = $request->apellidoM;
-            }
-            if ($request->has('usuario')) {
-                $usuario->usuario = $request->usuario;
-            }
-            if ($request->has('contrasenia')) {
-                $usuario->contrasenia = $request->contrasenia;
-                $usuario->password = bcrypt($request->contrasenia);
-            }
+                // Validar solo los campos que están presentes en la solicitud
+                $request->validate([
+                    'nombre' => 'sometimes|required',
+                    'apellidoP' => 'sometimes|required',
+                    'apellidoM' => 'sometimes|required',
+                    'usuario' => 'sometimes|required',
+                    'contrasenia' => 'sometimes|required',
+                ]);
+                // Actualizar solo los campos proporcionados en la solicitud
+                if ($request->has('nombre')) {
+                    $usuario->nombre = $request->nombre;
+                }
+                if ($request->has('apellidoP')) {
+                    $usuario->apellidoP = $request->apellidoP;
+                }
+                if ($request->has('apellidoM')) {
+                    $usuario->apellidoM = $request->apellidoM;
+                }
+                if ($request->has('usuario')) {
+                    $usuario->usuario = $request->usuario;
+                }
+                if ($request->has('contrasenia')) {
+                    $usuario->contrasenia = $request->contrasenia;
+                    $usuario->password = bcrypt($request->contrasenia);
+                }
 
-            $usuario->save();
+                $usuario->save();
 
-            return redirect()->route('principal.administrarUsuarios')->with([
-                "message" => "Usuario actualizado correctamente " . $usuario->usuario,
-                "color" => "green",
-                'type' => 'success'
-            ]);
-        } catch (Exception $e) {
-            return redirect()->route('principal.administrarUsuarios')->with([
-                "message" => "Error al actualizar el usuario",
-                "color" => "red",
-                'type' => 'error'
-            ]);
+                return redirect()->route('principal.administrarUsuarios')->with([
+                    "message" => "Usuario actualizado correctamente " . $usuario->usuario,
+                    "color" => "green",
+                    'type' => 'success'
+                ]);
+            } catch (Exception $e) {
+                return redirect()->route('principal.administrarUsuarios')->with([
+                    "message" => "Error al actualizar el usuario",
+                    "color" => "red",
+                    'type' => 'error'
+                ]);
+            }
         }
+
+        return redirect()->route('principal.inicio')->with([
+            "message" => "No tienes acceso a esta función",
+            "color" => "red",
+            'type' => 'error'
+        ]);
     }
-
-    return redirect()->route('principal.inicio')->with([
-        "message" => "No tienes acceso a esta función",
-        "color" => "red",
-        'type' => 'error'
-    ]);
-}
-
-
 }
