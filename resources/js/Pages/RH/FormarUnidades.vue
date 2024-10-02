@@ -32,23 +32,25 @@ const props = defineProps({
   tipoUltimaCorrida: { type: Object },
   usuario: { type: Object },
 });
-// Dentro del bloque <script setup>
-const fechaActual = new Date().toLocaleDateString(); // Obtiene la fecha actual en formato de cadena
-const diaSemana = obtenerDiaSemana(new Date().getDay()); // Obtiene el día de la semana actual
+// Función para obtener el número de la semana
+function obtenerNumeroSemana(fecha) {
+  const fechaActual = new Date(fecha);
+  const diaLunes = new Date(fechaActual.setDate(fechaActual.getDate() - fechaActual.getDay() + 1));
+  const inicioAnio = new Date(fechaActual.getFullYear(), 0, 1);
+  const diasTranscurridos = Math.floor((diaLunes - inicioAnio) / (24 * 60 * 60 * 1000));
+  return Math.ceil((diasTranscurridos + inicioAnio.getDay() + 1) / 7);
+}
+
+// Obtener la fecha actual y el número de semana
+const fechaActual = new Date().toLocaleDateString();
+const diaSemana = obtenerDiaSemana(new Date().getDay());
+const numeroSemanaActual = obtenerNumeroSemana(new Date()) + 1;
+
 // Función para obtener el día de la semana según el número
 function obtenerDiaSemana(diaNumero) {
   const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
   return diasSemana[diaNumero];
 }
-
-const registrosFiltrados = computed(() => {
-  return props.entrada.filter(entrada => {
-    // Obtener la fecha del registro y convertirla al formato de fecha actual
-    const fechaRegistro = new Date(entrada.fechaRegistro).toLocaleDateString();
-    // Comparar la fecha del registro con la fecha actual
-    return fechaRegistro === fechaActual;
-  });
-});
 
 const exportarExcel = () => {
   nextTick(() => {
@@ -635,7 +637,7 @@ const columnas = [
               </th>
               <!-- Celda vacía para la primera columna -->
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
+                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}  --  SEMANA: {{ numeroSemanaActual }}</th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
               </th>
               <!-- Unidad -->

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->time('horaFin')->nullable(true);
             $table->string(column:"observaciones")->nullable(true);
             $table->foreignId(column:'idUnidad')->nullable()->references('idUnidad')->on('unidad');
+            $table->foreignId(column:'idRuta')->nullable()->references('idRuta')->on('ruta');
+            $table->foreignId(column:'idDirectivo')->nullable()->references('idDirectivo')->on('directivo');
             $table->foreignId(column:'idOperador')->nullable()->references('idOperador')->on('operador');
             $table->softDeletes();
             $table->timestamps();

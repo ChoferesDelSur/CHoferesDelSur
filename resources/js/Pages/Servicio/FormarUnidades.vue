@@ -21,6 +21,7 @@ import FormularioCastigo from '../../Components/Servicio/FormularioCastigo.vue';
 import FormularioRegUC from '../../Components/Servicio/FormularioRegUC.vue';
 import FormularioRegresoUC from '../../Components/Servicio/FormularioRegresoUC.vue';
 import FormularioDomingo from '../../Components/Servicio/FormularioDomingo.vue';
+import FormularioFinCastigo from '../../Components/Servicio/FormularioFinCastigo.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -41,23 +42,26 @@ const props = defineProps({
   tipoUltimaCorrida: { type: Object },
   usuario: { type: Object },
 });
-// Dentro del bloque <script setup>
-const fechaActual = new Date().toLocaleDateString(); // Obtiene la fecha actual en formato de cadena
-const diaSemana = obtenerDiaSemana(new Date().getDay()); // Obtiene el día de la semana actual
+
+// Función para obtener el número de la semana
+function obtenerNumeroSemana(fecha) {
+  const fechaActual = new Date(fecha);
+  const diaLunes = new Date(fechaActual.setDate(fechaActual.getDate() - fechaActual.getDay() + 1));
+  const inicioAnio = new Date(fechaActual.getFullYear(), 0, 1);
+  const diasTranscurridos = Math.floor((diaLunes - inicioAnio) / (24 * 60 * 60 * 1000));
+  return Math.ceil((diasTranscurridos + inicioAnio.getDay() + 1) / 7);
+}
+
+// Obtener la fecha actual y el número de semana
+const fechaActual = new Date().toLocaleDateString();
+const diaSemana = obtenerDiaSemana(new Date().getDay());
+const numeroSemanaActual = obtenerNumeroSemana(new Date()) + 1;
+
 // Función para obtener el día de la semana según el número
 function obtenerDiaSemana(diaNumero) {
   const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
   return diasSemana[diaNumero];
 }
-
-const registrosFiltrados = computed(() => {
-  return props.entrada.filter(entrada => {
-    // Obtener la fecha del registro y convertirla al formato de fecha actual
-    const fechaRegistro = new Date(entrada.fechaRegistro).toLocaleDateString();
-    // Comparar la fecha del registro con la fecha actual
-    return fechaRegistro === fechaActual;
-  });
-});
 
 const exportarExcel = () => {
   nextTick(() => {
@@ -617,6 +621,7 @@ const columnas = [
 const mostrarModal = ref(false);
 const mostrarModalCorte = ref(false);
 const mostrarModalCastigo = ref(false);
+const mostrarModalFinCastigo = ref(false);
 const mostrarModalRegreso = ref(false);
 const mostrarModalRegUC = ref(false);
 const mostrarModalRegresoUC = ref(false);
@@ -644,6 +649,10 @@ const cerrarModalCorte = () => {
 const cerrarModalCastigo = () => {
   mostrarModalCastigo.value = false;
 };
+
+const cerrarModalFinCastigo = () => {
+  mostrarModalFinCastigo.value = false;
+}
 
 const cerrarModalRegreso = () => {
   mostrarModalRegreso.value = false;
@@ -754,18 +763,23 @@ const actualizarRolRuta = () => {
           <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar castigo
         </button>
 
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalFinCastigo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
+          <i class="fa fa-bullhorn" aria-hidden="true"></i> Registrar Fin Castigo
+        </button>
+
         <button class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalRegUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> Registrar UC
         </button>
-      </div>
-
-      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
 
         <button class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalRegresoUC = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
           <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Regreso UC
         </button>
+      </div>
+
+      <div class="py-1 flex flex-col md:flex-row md:items-start md:space-x-3 space-y-3 md:space-y-0 mb-1">
 
         <button class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded"
           @click="mostrarModalDomingo = true" data-bs-toggle="modal" data-bs-target="#modalCreate">
@@ -804,7 +818,7 @@ const actualizarRolRuta = () => {
               </th>
               <!-- Celda vacía para la primera columna -->
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }}</th>
+                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }} -- SEMANA: {{ numeroSemanaActual }}</th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
               </th>
               <!-- Unidad -->
@@ -889,7 +903,7 @@ const actualizarRolRuta = () => {
     </div>
     <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
       :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :entrada="props.entrada"
-      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador">
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :ruta="props.ruta">
     </FormularioRegHoraEntrada>
     <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
       :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad"
@@ -897,12 +911,16 @@ const actualizarRolRuta = () => {
     </FormularioRegCorte>
     <FormularioRegRegreso :show="mostrarModalRegreso" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalRegreso" :title="'Registrar hora de regreso de corte'" :op="'1'" :modal="'modalCreate'"
-      :unidad="props.unidad">
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :corte="props.corte">
     </FormularioRegRegreso>
     <FormularioCastigo :show="mostrarModalCastigo" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalCastigo" :title="'Registrar un castigo'" :op="'1'" :modal="'modalCreate'"
-      :unidad="props.unidad" :castigo="props.castigo">
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :castigo="props.castigo">
     </FormularioCastigo>
+    <FormularioFinCastigo :show="mostrarModalFinCastigo" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalFinCastigo" :title="'Registrar Fin De Castigo'" :op="'1'" :modal="'modalCreate'"
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :castigo="props.castigo">
+    </FormularioFinCastigo>
     <FormularioRegUC :show="mostrarModalRegUC" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalUC"
       :title="'Registrar última corrida'" :op="'1'" :modal="'modalCreate'" :ultimaCorrida="props.ultimaCorrida"
       :tipoUltimaCorrida="props.tipoUltimaCorrida" :unidad="props.unidad">

@@ -17,12 +17,22 @@ class castigo extends Model
         'horaInicio',
         'horaFin',
         'idUnidad',
+        'idRuta',
+        'idDirectivo',
         'idOperador'
     ];
 
     public function unidad()
     {
         return $this->belongsTo(Unidad::class, 'idUnidad');
+    }
+
+    public function directivo(){
+        return $this->belongsTo(directivo::class, 'idDirectivo');
+    }
+
+    public function ruta(){
+        return $this->belongsTo(ruta::class, 'idRuta');
     }
     
     public function operador()

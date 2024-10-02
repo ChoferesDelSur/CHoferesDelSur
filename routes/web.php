@@ -154,6 +154,7 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::post('/servicio/formarUnidades/regUC', 'registrarUC')->name('servicio.registrarUC');
     Route::post('/servicio/formarUnidades/regresoUC', 'RegistrarHoraRegresoUC')->name('servicio.regresoUC');
     Route::post('/servicio/formarUnidades/regCastigo', 'registrarCastigo')->name('servicio.registrarCastigo');
+    Route::post('/servicio/formarUnidades/finCastigo', 'RegistrarFinCastigo')->name('servicio.registrarFinCastigo');
     Route::post('/servicio/formarUnidades/trabajaDomingo', 'registrarTrabajanDomingo')->name('servicio.trabDomingo');
 
     Route::get('/servicio/sociosPrestadores', 'sociosPrestadores')->name('servicio.sociosPrestadores');

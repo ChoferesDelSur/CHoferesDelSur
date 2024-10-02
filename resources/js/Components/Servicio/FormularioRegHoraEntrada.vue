@@ -1,6 +1,6 @@
 <script setup>
 import { useForm, put } from '@inertiajs/inertia-vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed} from 'vue';
 import Modal from '../Modal.vue';
 //import { route } from '../../../../vendor/tightenco/ziggy/src/js';
 import { route } from 'ziggy-js';
@@ -31,6 +31,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    ruta: {
+        type: Object,
+        default: () => ({}),
+    },
     unidadesConOperador: {
         type: Object,
         default: () => ({}),
@@ -39,7 +43,6 @@ const props = defineProps({
     modal: { type: String },
     op: { type: String },
 })
-
 const emit = defineEmits(['close']);
 
 const form = useForm({
@@ -47,6 +50,12 @@ const form = useForm({
     unidad: props.entrada.idUnidad,
     horaEntrada: props.entrada.horaEntrada,
     extremo: props.entrada.extremo,
+});
+
+// Computed property para obtener el nombre de la ruta
+const rutaNombre = computed(() => {
+    const unidadSeleccionada = props.unidadesConOperador.find(unidad => unidad.idUnidad === form.unidad);
+    return unidadSeleccionada && unidadSeleccionada.ruta ? unidadSeleccionada.ruta.nombreRuta : 'Nombre de ruta'; // Obtén solo el nombre de la ruta
 });
 
 watch(() => props.entrada, async (newVal) => {
@@ -125,12 +134,9 @@ const save = async () => {
                         <div class="sm:col-span-2 w-56 px-4">
                             <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                             <div class="mt-2">
-                                <v-select
-                                    v-model="form.unidad"
+                                <v-select v-model="form.unidad"
                                     :options="unidadesConOperador.map(carro => ({ label: carro.numeroUnidad, value: carro.idUnidad }))"
-                                    placeholder="Seleccione la unidad"
-                                    :reduce="unidad => unidad.value"
-                                    class="w-full">
+                                    placeholder="Seleccione la unidad" :reduce="unidad => unidad.value" class="w-full">
                                 </v-select>
                             </div>
                             <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
@@ -155,6 +161,14 @@ const save = async () => {
                             </div>
                             <div v-if="extremoError != ''" class="text-red-500 text-xs">{{ extremoError }}</div>
                         </div>
+                        <div class="sm:col-span-2 px-4">
+                            <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta</label>
+                            <div class="mt-2">
+                                <span class="block w-72 rounded-md border border-gray-300 px-1.5 py-1.5 text-gray-900 bg-gray-100 shadow-sm sm:text-sm sm:leading-6">
+                                    {{ rutaNombre }} <!-- Solo se mostrará el nombre de la ruta -->
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -178,10 +192,12 @@ const save = async () => {
 }
 
 .v-select .vs__dropdown-menu {
-    z-index: 9999; /* Asegura que el menú desplegable se muestre sobre otros elementos */
+    z-index: 9999;
+    /* Asegura que el menú desplegable se muestre sobre otros elementos */
 }
 
 .modal-content {
-    overflow: visible !important; /* Permite que el menú desplegable se extienda más allá del modal */
+    overflow: visible !important;
+    /* Permite que el menú desplegable se extienda más allá del modal */
 }
 </style>

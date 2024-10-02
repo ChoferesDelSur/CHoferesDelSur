@@ -633,7 +633,11 @@ class ServicioController extends Controller
         $directivo = directivo::all();
         $unidad = unidad::all();
         // Obtener unidades que tienen operadores asignados
-        $unidadesConOperador = unidad::whereNotNull('idOperador')->with('operador')->get();
+        $unidadesConOperador = unidad::whereNotNull('idOperador')
+        ->with(['operador', 'ruta' => function($query) {
+            $query->select('idRuta', 'nombreRuta'); // Solo selecciona idRuta y nombreRuta
+        }])
+        ->get();
         $operador = operador::all();
         $ruta = ruta::all();
         $castigo = castigo::all();
@@ -732,6 +736,8 @@ class ServicioController extends Controller
                 'tipoEntrada' => $tipoEntrada,
                 'extremo' => $extremo,
                 'idOperador' => $unidad->operador->idOperador, // Registrar el ID del operador asociado
+                'idRuta' => $unidad->ruta->idRuta,  // Registrar idRuta asociado
+                'idDirectivo' => $unidad->directivo->idDirectivo,  // Registrar idDirectivo asociado
             ]);
     
             return redirect()->back()->with(['message' => "Hora de entrada {$horaEntrada} registrada correctamente para la unidad {$unidad->numeroUnidad}", "color" => "green", 'type' => 'success']);
@@ -806,6 +812,8 @@ class ServicioController extends Controller
             'causa' => $request->input('causa'),
             'horaRegreso' => $request->input('horaRegreso'),
             'idOperador' => $idOperador, // Asociar el ID del operador
+            'idRuta' => $unidad->ruta->idRuta,  // Registrar idRuta asociado
+            'idDirectivo' => $unidad->directivo->idDirectivo,  // Registrar idDirectivo asociado
         ]);
 
         // Aquí puedes realizar otras acciones si es necesario, como enviar una respuesta JSON de éxito, etc.
@@ -830,7 +838,7 @@ class ServicioController extends Controller
         'unidad' => 'required|exists:unidad,idUnidad', // Asegúrate de que la unidad existe
         'castigo' => 'required|string|max:255',
         'horaInicio' => 'required',
-        'horaFin' => 'required', // Asegúrate de que la horaFin sea posterior a la horaInicio
+        'horaFin' => 'nullable', // Asegúrate de que la horaFin sea posterior a la horaInicio
         'observaciones' => 'nullable|string|max:1000', // Observaciones opcionales
     ]);
 
@@ -840,8 +848,10 @@ class ServicioController extends Controller
         $unidad = unidad::findOrFail($unidadId);
         $numeroUnidad = $unidad->numeroUnidad;
 
-        // Obtener el operador asociado con la unidad seleccionada
+        // Obtener el operador, la ruta y el directivo asociados con la unidad seleccionada
         $operador = $unidad->operador;
+        $ruta = $unidad->ruta;
+        $directivo = $unidad->directivo;
 
         if (!$operador) {
             return redirect()->route('servicio.formarUni')->with([
@@ -852,6 +862,8 @@ class ServicioController extends Controller
         }
 
         $idOperador = $operador->idOperador;
+        $idRuta = $ruta->idRuta;
+        $idDirectivo = $directivo->idDirectivo;
 
         // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
         $fechaActual = Carbon::now()->toDateString();
@@ -878,19 +890,22 @@ class ServicioController extends Controller
             ]);
         }
 
-        // Obtener la hora de inicio y la hora de fin del request
-        $horaInicio = \Carbon\Carbon::parse($validatedData['horaInicio']);
-        $horaFin = \Carbon\Carbon::parse($validatedData['horaFin']);
+        // Obtener la hora de inicio del request
+        $horaInicio = \Carbon\Carbon::parse($request->input('horaInicio'));
 
-        // Formatear las horas para mostrar solo horas y minutos
-        $horaInicioFormateada = $horaInicio->format('H:i');
-        $horaFinFormateada = $horaFin->format('H:i');
-        if ($horaFin->lessThanOrEqualTo($horaInicio)) {
-            return redirect()->route('servicio.formarUni')->with([
-                'message' => "La hora  de finalización del castigo " . $horaFinFormateada . " no puede ser igual o menor que la hora de inicio del castigo " .$horaInicioFormateada,
-                'color' => 'red',
-                'type' => 'error'
-            ]);
+        // Validar horaFin solo si está presente
+        if ($request->has('horaFin')) {
+            $horaFin = \Carbon\Carbon::parse($request->input('horaFin'));
+
+            if ($horaFin->lessThanOrEqualTo($horaInicio)) {
+                $horaInicioFormateada = $horaInicio->format('H:i');
+                $horaFinFormateada = $horaFin->format('H:i');
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La hora de finalización del castigo " . $horaFinFormateada . " no puede ser igual o menor que la hora de inicio del castigo " . $horaInicioFormateada,
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
         }
 
         // Crear una nueva instancia del modelo castigo
@@ -898,9 +913,15 @@ class ServicioController extends Controller
         $nuevoCastigo->idUnidad = $unidadId;
         $nuevoCastigo->castigo = $validatedData['castigo'];
         $nuevoCastigo->horaInicio = $validatedData['horaInicio'];
-        $nuevoCastigo->horaFin = $validatedData['horaFin'];
+
+        // Solo asignar horaFin si se proporcionó
+        if ($request->has('horaFin')) {
+            $nuevoCastigo->horaFin = $request->input('horaFin');
+        }
         $nuevoCastigo->observaciones = $validatedData['observaciones'] ?? '';
         $nuevoCastigo->idOperador = $idOperador; // Asociar el ID del operador
+        $nuevoCastigo->idRuta = $idRuta; // Asociar el ID de la ruta
+        $nuevoCastigo->idDirectivo = $idDirectivo; // Asociar el ID del directivo
 
         // Guardar el nuevo castigo en la base de datos
         $nuevoCastigo->save();
@@ -917,6 +938,72 @@ class ServicioController extends Controller
             'type' => 'error'
         ]);
     }
+    }
+
+        public function RegistrarFinCastigo(Request $request)
+    {
+        // Validar los datos recibidos del formulario
+        $request->validate([
+            'unidad' => 'required|exists:unidad,idUnidad', // Validar que la unidad exista
+            'horaFin' => 'required', // Asegurarse de que se proporcione la hora de fin
+        ]);
+
+        try {
+            // Obtener el ID de la unidad seleccionada del formulario
+            $unidadId = $request->input('unidad');
+            $unidad = unidad::findOrFail($unidadId);
+            $numeroUnidad = $unidad->numeroUnidad;
+
+            // Verificar si la unidad tiene un castigo registrado sin horaFin
+            $castigo = castigo::where('idUnidad', $unidadId)
+                            ->whereNull('horaFin') // Solo castigos sin hora de fin
+                            ->latest() // Obtener el último castigo en curso
+                            ->first();
+
+            // Si no se encuentra un castigo activo, mostrar error
+            if (!$castigo) {
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La unidad {$numeroUnidad} no tiene castigos pendientes sin hora de finalización.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+
+            // Verificar que la hora de fin no sea menor o igual a la hora de inicio
+            $horaInicio = \Carbon\Carbon::parse($castigo->horaInicio);
+            $horaFin = \Carbon\Carbon::parse($request->input('horaFin'));
+
+            // Definir la hora fin formateada para usarla más adelante
+            $horaFinFormateada = $horaFin->format('H:i');
+
+            if ($horaFin->lessThanOrEqualTo($horaInicio)) {
+                $horaInicioFormateada = $horaInicio->format('H:i');
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La hora de finalización del castigo {$horaFinFormateada} no puede ser igual o menor que la hora de inicio {$horaInicioFormateada}.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+
+            // Actualizar la hora de fin en el castigo existente
+            $castigo->horaFin = $horaFinFormateada;
+            $castigo->save();
+
+            // Respuesta de éxito
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Hora de finalización del castigo {$horaFinFormateada} registrada correctamente para la unidad {$numeroUnidad}.",
+                'color' => 'green',
+                'type' => 'success'
+            ]);
+
+        } catch (Exception $e) {
+            // Manejar cualquier error que ocurra durante la operación
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Error: " . $e->getMessage(),
+                'color' => 'red',
+                'type' => 'error'
+            ]);
+        }
     }
 
     public function RegistrarHoraRegreso(Request $request){
@@ -997,8 +1084,10 @@ class ServicioController extends Controller
                 'type' => 'info'
             ]);
         }
-            // Obtener el operador asociado con la unidad seleccionada
+            // Obtener el idOperador, idRuta, idDirectivo de la unidad actual
         $idOperador = $unidad->operador->idOperador;
+        $idRuta = $unidad->idRuta;
+        $idDirectivo = $unidad->idDirectivo;
     
             // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
         $fechaActual = Carbon::now()->toDateString();
@@ -1047,6 +1136,8 @@ class ServicioController extends Controller
                 'horaFinUC' => $request->input('horaFinUC'),
                 'idTipoUltimaCorrida' => $request->input('tipoUltimaCorrida'),
                 'idOperador' => $idOperador, // Asociar el ID del operador
+                'idRuta' => $idRuta, // Asociar la ruta actual
+                'idDirectivo' => $idDirectivo, // Asociar el directivo actual
             ]);
     
             return redirect()->route('servicio.formarUni')->with([

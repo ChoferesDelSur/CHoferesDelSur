@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string(column:'tipoEntrada')->nullable(true);
             $table->string(column:'extremo')->nullable(true);
             $table->foreignId(column:'idUnidad')->references('idUnidad')->on('unidad');
+            $table->foreignId(column:'idRuta')->references('idRuta')->on('ruta');
+            $table->foreignId(column:'idDirectivo')->references('idDirectivo')->on('directivo');
             $table->foreignId(column:'idOperador')->references('idOperador')->on('operador');
             $table->softDeletes();
             $table->timestamps();

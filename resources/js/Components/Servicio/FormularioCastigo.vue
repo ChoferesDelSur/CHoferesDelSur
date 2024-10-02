@@ -24,6 +24,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    unidadesConOperador: {
+        type: Object,
+        default: () => ({}),
+    },
     castigo: {
         type: Object,
         default: () => ({}),
@@ -82,10 +86,10 @@ const save = async () => {
     horaInicioError.value = validateSelect(form.horaInicio) ? '' : 'Seleccione la hora de inicio del castigo';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
     castigoError.value = validateStringNotEmpty(form.castigo) ? '' : 'Ingrese motivo del castigo';
-    horaFinError.value = validateSelect(form.horaFin) ? '' : 'Seleccione la hora de fin del castigo';
+    //horaFinError.value = validateSelect(form.horaFin) ? '' : 'Seleccione la hora de fin del castigo';
 
     if (
-        horaInicioError.value || unidadError.value || castigoError.value || horaFinError.value
+        horaInicioError.value || unidadError.value || castigoError.value //|| horaFinError.value
     ) {
         return;
     }
@@ -95,7 +99,7 @@ const save = async () => {
             horaInicioError.value = '';
             unidadError.value = '';
             castigoError.value = '';
-            horaFinError.value = '';
+            //horaFinError.value = '';
         }
     })
 }
@@ -148,7 +152,7 @@ const save = async () => {
                             <div v-if="horaInicioError != ''" class="text-red-500 text-xs">{{ horaInicioError }}</div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="horaFin" class="block text-sm font-medium leading-6 text-gray-900">Hora fin <span class="text-red-500">*</span></label>
+                            <label for="horaFin" class="block text-sm font-medium leading-6 text-gray-900">Hora fin </label>
                             <div class="mt-2">
                                 <input type="time" name="horaFin" :id="'horaFin' + op" v-model="form.horaFin"
                                     placeholder="Seleccione la horade finalización"

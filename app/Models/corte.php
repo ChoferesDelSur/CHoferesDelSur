@@ -19,12 +19,22 @@ class corte extends Model
         'causa',
         'horaRegreso',
         'idUnidad',
+        'idRuta',
+        'idDirectivo',
         'idOperador'
     ];
 
     public function unidad()
     {
         return $this->belongsTo(unidad::class, 'idUnidad');
+    }
+
+    public function directivo(){
+        return $this->belongsTo(directivo::class, 'idDirectivo');
+    }
+
+    public function ruta(){
+        return $this->belongsTo(ruta::class, 'idRuta');
     }
     
     public function operador()

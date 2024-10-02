@@ -20,10 +20,6 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    corte: {
-        type: Object,
-        default: () => ({}),
-    },
     unidad: {
         type: Object,
         default: () => ({}),
@@ -32,22 +28,27 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    castigo: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
 })
+
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    idCorte: props.corte.idCorte,
-    unidad: props.corte.idUnidad,
-    horaRegreso: props.corte.horaRegreso,
+    idCastigo: props.castigo.idCastigo,
+    horaFin: props.castigo.horaFin,
+    unidad: props.castigo.idUnidad,
 });
 
-watch(() => props.corte, async (newVal) => {
-    form.idCorte = newVal.idCorte;
-    form.unidad = newVal.unidad;
-    form.horaRegreso = props.corte.horaRegreso;
+watch(() => props.castigo, async (newVal) => {
+    form.idCastigo = newVal.idCastigo;
+    form.horaFin = props.horaFin;
+    form.unidad = props.unidad;
 }, { deep: true }
 );
 
@@ -59,8 +60,13 @@ const validateSelect = (selectedValue) => {
     return true;
 };
 
+// Validación de cadenas no vacias
+const validateStringNotEmpty = (value) => {
+    return typeof value === 'string' && value.trim() !== '';
+}
+
 const unidadError = ref('');
-const horaRegresoError = ref('');
+const horaFinError = ref('');
 
 //Funcion para cerrar el formulario
 const close = async () => {
@@ -69,58 +75,54 @@ const close = async () => {
 }
 
 const save = async () => {
-    horaRegresoError.value = validateSelect(form.horaRegreso) ? '' : 'Seleccione la hora de regreso';
     unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
-
+    horaFinError.value = validateSelect(form.horaFin) ? '' : 'Seleccione la hora de fin del castigo';
 
     if (
-        horaRegresoError.value || unidadError.value
+        unidadError.value || horaFinError.value
     ) {
         return;
     }
-    form.post(route('servicio.registrarHoraRegreso'), {
+    form.post(route('servicio.registrarFinCastigo'), {
         onSuccess: () => {
             close()
-            horaRegresoError.value = '';
             unidadError.value = '';
+            horaFinError.value = '';
         }
     })
 }
 </script>
+
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
             <form @submit.prevent="(op === '1' ? save() : update())">
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar la
-                        hora de regreso del corte de una unidad.
+                    <p class="mt-1 text-sm leading-6 text-gray-600 mb-4">Rellene el formulario para poder registrar el
+                        castigo. Los campos con <span class="text-red-500">*</span> son
+                        obligatorios.
                     </p>
                     <div class="flex flex-wrap -mx-4">
-                        <!-- Unidad con v-select -->
                         <div class="sm:col-span-2 w-56 px-4">
-                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                            <label for="unidad" class="block text-sm font-medium leading-6 text-gray-900">Unidad <span
+                                    class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <v-select
-                                    v-model="form.unidad"
-                                    :options="unidadesConOperador.map(carro => ({ label: carro.numeroUnidad, value: carro.idUnidad }))"
-                                    placeholder="Seleccione la unidad"
-                                    :reduce="unidad => unidad.value"
-                                    class="w-full">
-                                </v-select>
+                                <v-select :options="unidad" v-model="form.unidad" :reduce="option => option.idUnidad"
+                                    label="numeroUnidad" placeholder="Seleccione la unidad"
+                                    :class="{ 'border-red-500': unidadError }" />
                             </div>
                             <div v-if="unidadError != ''" class="text-red-500 text-xs mt-1">{{ unidadError }}</div>
                         </div>
                         <div class="sm:col-span-2 px-4"> <!-- Definir el tamaño del cuadro de texto -->
-                            <label for="horaRegreso" class="block text-sm font-medium leading-6 text-gray-900">Hora de
-                                regreso <span class="text-red-500">*</span></label>
+                            <label for="horaFin" class="block text-sm font-medium leading-6 text-gray-900">Hora fin
+                            </label>
                             <div class="mt-2">
-                                <input type="time" name="horaRegreso" :id="'horaRegreso' + op"
-                                    v-model="form.horaRegreso" placeholder="Seleccione la hora de regreso"
+                                <input type="time" name="horaFin" :id="'horaFin' + op" v-model="form.horaFin"
+                                    placeholder="Seleccione la horade finalización"
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
-                            <div v-if="horaRegresoError != ''" class="text-red-500 text-xs mt-1">{{ horaRegresoError }}
-                            </div>
+                            <div v-if="horaFinError != ''" class="text-red-500 text-xs">{{ horaFinError }}</div>
                         </div>
                     </div>
                 </div>
