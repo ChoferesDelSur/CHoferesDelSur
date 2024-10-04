@@ -19,6 +19,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    corte: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const form = reactive({
@@ -121,10 +125,10 @@ const generarPDF = (tipo, periodoSeleccionado) => {
 
     // Preparar el contenido de la tabla
     const bodyContent = entradas.value.map(entry => {
-        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
+        const ruta = entry.ruta ? entry.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
+        const directivo = entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A';
         const horaCorte = entry.horaCorte ? entry.horaCorte.substring(0, 5) : 'N/A';
         const causa = entry.causa || 'N/A';
         const horaRegreso = entry.horaRegreso ? entry.horaRegreso.substring(0, 5) : 'Sin Regreso';
@@ -175,10 +179,10 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     // Crear datos para el archivo Excel
     const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Corte', 'Causa', 'Hora Regreso', 'Operador']];
     entradas.value.forEach(entry => {
-        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
+        const ruta = entry.ruta ? entry.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
+        const directivo = entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A';
         const horaCorte = entry.horaCorte ? entry.horaCorte.substring(0, 5) : 'N/A';
         const causa = entry.causa || 'N/A';
         const horaRegreso = entry.horaRegreso ? entry.horaRegreso.substring(0, 5) : 'Sin Regreso';

@@ -32,7 +32,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradas = entrada::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -54,7 +54,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
-            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradas = entrada::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -77,7 +77,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener las entradas filtradas por idUnidad y por el rango de fechas en created_at
-            $entradas = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradas = entrada::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -98,7 +98,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $entradasTardes = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradasTardes = entrada::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -120,7 +120,7 @@ class ReporteController extends Controller
             $inicioMes = Carbon::create(null, $mes)->startOfMonth();
             $finMes = Carbon::create(null, $mes)->endOfMonth();
 
-            $entradasTardes = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradasTardes = entrada::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -141,7 +141,7 @@ class ReporteController extends Controller
             $inicioAnio = Carbon::create($anio, 1, 1)->startOfYear();
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
-            $entradasTardes = entrada::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $entradasTardes = entrada::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -162,7 +162,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $cortes = corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
+            $cortes = corte::with(['ruta','directivo','operador','unidad.entradas','unidad'])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                 return $query->where('idUnidad', $idUnidad);
             })
@@ -184,7 +184,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener los cortes filtradas por idUnidad y por el rango de fechas en created_at
-            $cortes = corte::with(['unidad.ruta', 'unidad.directivo', 'unidad.entradas', 'operador'])
+            $cortes = corte::with(['ruta', 'directivo', 'unidad.entradas', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -207,7 +207,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener los cortes filtradas por idUnidad y por el rango de fechas en created_at
-            $cortes = corte::with(['unidad.ruta', 'unidad.directivo', 'unidad.entradas', 'operador'])
+            $cortes = corte::with(['ruta', 'directivo', 'unidad.entradas', 'operador', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -228,7 +228,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $cortes = corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
+            $cortes = corte::with(['ruta','directivo','operador','unidad.entradas', 'unidad'])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                 return $query->where('idUnidad', $idUnidad);
             })
@@ -251,7 +251,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener los cortes filtradas por idUnidad y por el rango de fechas en created_at
-            $cortes = corte::with(['unidad.ruta', 'unidad.directivo', 'unidad.entradas', 'operador'])
+            $cortes = corte::with(['ruta', 'directivo', 'unidad.entradas', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -275,7 +275,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener los cortes filtradas por idUnidad y por el rango de fechas en created_at
-            $cortes = corte::with(['unidad.ruta', 'unidad.directivo', 'unidad.entradas', 'operador'])
+            $cortes = corte::with(['ruta', 'directivo', 'unidad.entradas', 'operador', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -297,7 +297,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $cortes = corte::with(['unidad.ruta','unidad.directivo','operador','unidad.entradas'])
+            $cortes = corte::with(['ruta','directivo','operador','entradas','unidad'])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                 return $query->where('idUnidad', $idUnidad);
             })
@@ -320,7 +320,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener los cortes filtradas por idUnidad y por el rango de fechas en created_at
-            $cortes = corte::with(['unidad.ruta', 'unidad.directivo', 'unidad.entradas', 'operador'])
+            $cortes = corte::with(['ruta', 'directivo', 'unidad.entradas', 'operador', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -344,7 +344,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener los cortes filtradas por idUnidad y por el rango de fechas en created_at
-            $cortes = corte::with(['unidad.ruta', 'unidad.directivo', 'unidad.entradas', 'operador'])
+            $cortes = corte::with(['ruta', 'directivo', 'unidad.entradas', 'operador', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -456,7 +456,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $castigos = castigo::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $castigos = castigo::with(['ruta', 'directivo', 'operador', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -478,7 +478,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener los castigos filtradas por idUnidad y por el rango de fechas en created_at
-            $castigos = castigo::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $castigos = castigo::with(['ruta', 'directivo', 'operador', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -501,7 +501,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener los castigos filtradas por idUnidad y por el rango de fechas en created_at
-            $castigos = castigo::with(['unidad.ruta', 'unidad.directivo', 'operador'])
+            $castigos = castigo::with(['ruta', 'directivo', 'operador','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -522,7 +522,7 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
-            $ultimasCorridas = ultimaCorrida::with(['unidad.ruta', 'unidad.directivo', 'operador', 'tipoUltimaCorrida'])
+            $ultimasCorridas = ultimaCorrida::with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida','unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -544,7 +544,7 @@ class ReporteController extends Controller
             $finMes = Carbon::create(null, $mes)->endOfMonth();
     
             // Obtener las ultimas corridas filtradas por idUnidad y por el rango de fechas en created_at
-            $ultimasCorridas = ultimaCorrida::with(['unidad.ruta', 'unidad.directivo', 'operador', 'tipoUltimaCorrida'])
+            $ultimasCorridas = ultimaCorrida::with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })
@@ -567,7 +567,7 @@ class ReporteController extends Controller
             $finAnio = Carbon::create($anio, 12, 31)->endOfYear();
 
             // Obtener las ultimas corridas filtradas por idUnidad y por el rango de fechas en created_at
-            $ultimasCorridas = ultimaCorrida::with(['unidad.ruta', 'unidad.directivo', 'operador', 'tipoUltimaCorrida'])
+            $ultimasCorridas = ultimaCorrida::with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida', 'unidad'])
                 ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
                     return $query->where('idUnidad', $idUnidad);
                 })

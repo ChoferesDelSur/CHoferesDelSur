@@ -203,13 +203,14 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     // Calcular el total de días del periodo seleccionado
     const totalDiasPeriodo = obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor);
 
-    const data = [['Nombre del Operador', 'Días Trabajados', 'Días no Trabajados', 'Total de Días']];
+    const data = [['Nombre del Operador', 'Días Trabajados', 'Días no Trabajados', 'Total de Días', 'Productividad (%)']];
     entradas.value.forEach(entry => {
         const nombreCompleto = entry.nombre_completo || 'N/A';
         const diasTrabajados = entry.diasTrabajados || 'N/A';
         const diasNoTrabajados = totalDiasPeriodo - (entry.diasTrabajados || 0);
         const totalDias = obtenerTotalDias(periodoSeleccionado.tipo, periodoSeleccionado.valor)
-        data.push([nombreCompleto, diasTrabajados, diasNoTrabajados, totalDias]);
+        const productividad = ((diasTrabajados / totalDiasPeriodo) * 100).toFixed(2);
+        data.push([nombreCompleto, diasTrabajados, diasNoTrabajados, totalDias,productividad]);
     });
 
     const workbook = XLSX.utils.book_new();

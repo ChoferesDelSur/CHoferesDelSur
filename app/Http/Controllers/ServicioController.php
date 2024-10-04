@@ -573,7 +573,8 @@ class ServicioController extends Controller
 
     public function asignarOperador(Request $request)
     {
-        // Obtener los IDs de la unidad y el operador del request
+        try{
+            // Obtener los IDs de la unidad y el operador del request
         $unidadId = $request->input('unidad');
         $operadorId = $request->input('operador');
         
@@ -587,11 +588,15 @@ class ServicioController extends Controller
 
         // Puedes retornar algún mensaje de éxito si lo deseas
         return redirect()->route('servicio.unidades')->with(['message' => 'Operador asignado correctamente a la unidad.', "color" => "green", 'type' => 'success']);
+        }catch(Exception $e){
+            return redirect()->route('servicio.unidades')->with(['message' => 'Error al asignar operador', 'color' => 'red', 'type' => 'error']);
+        }
     }
 
     public function quitarOperador(Request $request)
     {
-        // Obtener el ID de la unidad del request
+        try{
+            // Obtener el ID de la unidad del request
         $unidadId = $request->input('unidad');
 
         // Buscar la unidad en la base de datos
@@ -603,6 +608,9 @@ class ServicioController extends Controller
 
         // Puedes retornar algún mensaje de éxito si lo deseas
         return redirect()->route('servicio.unidades')->with(['message' => 'Operador eliminado correctamente de la unidad.', "color" => "green", 'type' => 'success']);
+        }catch(Exception $e){
+            return redirect()->route('servicio.unidades')->with(['message' => 'Error al quitar operador', 'color' => 'red', 'type' => 'success']);
+        }
     }
 
     public function reportes()
@@ -615,6 +623,10 @@ class ServicioController extends Controller
         $ruta = ruta::all();
         $tipoUltimaCorrida = tipoUltimaCorrida::all();
         $usuario = $this->obtenerInfoUsuario();
+        $entrada = entrada::all();
+        $corte = corte::all();
+        $ultimaCorrida = ultimaCorrida::all();
+        $castigo = castigo::all();
         return Inertia::render('Servicio/Reportes',[
             'usuario' => $usuario,
             'unidad' => $unidad,
@@ -623,6 +635,10 @@ class ServicioController extends Controller
             'estado' => $estado,
             'ruta' => $ruta,
             'tipoUltimaCorrida' => $tipoUltimaCorrida,
+            'entrada' => $entrada,
+            'corte' => $corte,
+            'ultimaCorrida' => $ultimaCorrida,
+            'castigo' => $castigo,
             'message' => session('message'),
             'color' => session('color'),
             'type' => session('type'),

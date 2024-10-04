@@ -209,6 +209,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -232,6 +233,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       const carro = props.unidad.find(carro => carro.idUnidad === data);
       return carro ? carro.numeroUnidad : '';
@@ -251,6 +253,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -273,6 +276,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -295,6 +299,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -317,6 +322,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -348,6 +354,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -379,6 +386,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -413,6 +421,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -438,6 +447,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -460,6 +470,7 @@ const columnas = [
   },
   {
     data: "idUnidad",
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
@@ -486,6 +497,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
       const castigosUnidadHoy = props.castigo.filter(castigo =>
@@ -518,6 +530,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
       const castigosUnidadHoy = props.castigo.filter(castigo =>
@@ -550,6 +563,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
       const castigosUnidadHoy = props.castigo.filter(castigo =>
@@ -576,6 +590,7 @@ const columnas = [
   },
   {
     data: 'idUnidad',
+    className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
       const castigosUnidadHoy = props.castigo.filter(castigo =>
@@ -733,12 +748,18 @@ const actualizarRolRuta = () => {
   });
 };
 
+const contarRegistrosHrEnt = () => {
+  return props.entrada.filter(entrada => {
+    // Comprobar si la entrada tiene 'horaEntrada' y si la fecha coincide con 'fechaActual'
+    return entrada.horaEntrada && new Date(entrada.created_at).toLocaleDateString() === fechaActual;
+  }).length;
+};
 </script>
 
 <template>
   <ServicioLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
-      <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
+      <h3 class="font-bold text-center text-xl pt-0"> Formar Unidades</h3>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
       <Mensaje />
@@ -797,6 +818,7 @@ const actualizarRolRuta = () => {
       </div>
 
       <div class="overflow-x-auto">
+        <h3 class="text-center">Formaciones registradas: <strong>{{ contarRegistrosHrEnt() }}</strong></h3>
         <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
           id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
@@ -810,7 +832,7 @@ const actualizarRolRuta = () => {
             }, buttons: [botonesPersonalizados],
 
             paging: false,// Esto es para quitar la paginacion
-            lengthMenu: [] // Este es donde se pone sin limite de filas
+            lengthMenu: [], // Este es donde se pone sin limite de filas
           }">
           <thead>
             <tr class="text-sm leading-normal border-b border-gray-300">
@@ -846,7 +868,7 @@ const actualizarRolRuta = () => {
                 Ruta
               </th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Trab. DOMINGO
+                Dom
               </th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Unidad
@@ -855,13 +877,13 @@ const actualizarRolRuta = () => {
                 Socio / Prestador
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. entrada
+                Hr. Ent
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo entrada
+                Tip. Ent
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Extremo
+                Ext
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hr. Corte
@@ -870,22 +892,22 @@ const actualizarRolRuta = () => {
                 Causa
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. regreso
+                Hr. reg
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo de Corrida
+                Tipo
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. inicio
+                Hr. ini
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. regreso
+                Hr. reg
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. inicio
+                Hr. Ini
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. finaliza
+                Hr. Fin
               </th>
               <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Motivo
@@ -947,4 +969,10 @@ const actualizarRolRuta = () => {
   transition: transform 0.2s ease-in-out;
   transform: translateY(-3px);
 }
+
+.dataTables_wrapper td.text-center {
+  text-align: center;
+  width: 100px; /* Ajusta este valor según sea necesario */
+}
+
 </style>

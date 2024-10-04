@@ -26,6 +26,22 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    entrada: {
+        type: Object,
+        default: () => ({}),
+    },
+    corte: {
+        type: Object,
+        default: () => ({}),
+    },
+    ultimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
+    castigo: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 </script>
@@ -36,19 +52,19 @@ const props = defineProps({
             <h2 class="font-bold text-center text-xl pt-0 mb-2">Reportes</h2>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
 
-            <ReportesEntrada :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesEntrada :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada"/>
 
-            <ReportesEntradasTardes :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesEntradasTardes :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada"/>
 
-            <ReportesCortes :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesCortes :unidad="props.unidad" :operador="props.operador" :corte="props.corte"/>
 
-            <ReportesCortesConRegreso :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesCortesConRegreso :unidad="props.unidad" :operador="props.operador" :corte="props.corte"/>
 
-            <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador" :corte="props.corte"/>
 
-            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador" :tipoUltimaCorrida="props.tipoUltimaCorrida"/>
+            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador" :tipoUltimaCorrida="props.tipoUltimaCorrida" :ultimaCorrida="props.ultimaCorrida"/>
 
-            <ReportesCastigos :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesCastigos :unidad="props.unidad" :operador="props.operador" :castigo="props.castigo"/>
 
             <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador"/>
 

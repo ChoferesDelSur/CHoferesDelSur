@@ -19,6 +19,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    entrada: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const form = reactive({
@@ -127,10 +131,10 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     ];
     // Formatear datos para jsPDF
     const rows = entradas.value.map(entry => ({
-        ruta: entry.unidad?.ruta?.nombreRuta || 'N/A',
+        ruta: entry.ruta?.nombreRuta || 'N/A',
         fecha: entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A',
         numeroUnidad: entry.unidad?.numeroUnidad || 'N/A',
-        socioPrestador: entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A',
+        socioPrestador: entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A',
         horaEntrada: entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A',
         tipoEntrada: entry.tipoEntrada || "Tarde",//Agregué retardo
         extremo: entry.extremo || 'N/A',
@@ -177,10 +181,10 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     // Crear datos para el archivo Excel
     const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Entrada', 'Tipo Entrada', 'Extremo', 'Operador']];
     entradas.value.forEach(entry => {
-        const ruta = entry.unidad?.ruta ? entry.unidad.ruta.nombreRuta : 'N/A';
+        const ruta = entry.ruta ? entry.ruta.nombreRuta : 'N/A';
         const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
         const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.unidad?.directivo ? `${entry.unidad.directivo.nombre_completo}` : 'N/A';
+        const directivo = entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A';
         const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
         const tipoEntrada = entry.tipoEntrada;
         const extremo = entry.extremo || 'N/A';

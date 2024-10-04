@@ -120,11 +120,9 @@ const update = async () => {
     }
 
     var idUnidad = document.getElementById('idUnidad2').value;
-    console.log("idUnidad:" + idUnidad);
     form.put(route('principal.actualizarUnidad', idUnidad), {
         onSuccess: () => {
             close()
-            console.log("idUnidad Editando:" + idUnidad);
             unidadError.value = '';
             operadorError.value = '';
         }
