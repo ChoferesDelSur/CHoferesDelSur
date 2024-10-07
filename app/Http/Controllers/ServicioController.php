@@ -1353,5 +1353,33 @@ class ServicioController extends Controller
             'color' => 'green',
             'type' => 'success'
         ]);
-    }   
+    }  
+    
+    public function obtenerRegistros($tipoRegistro, Request $request)
+    {
+        $idUnidad = $request->query('idUnidad'); // Obtiene el idUnidad de la solicitud
+
+        switch ($tipoRegistro) {
+            case 'entradas':
+                $registros = entrada::where('idUnidad', $idUnidad)->get();
+                break;
+            case 'cortes':
+                $registros = corte::where('idUnidad', $idUnidad)->get();
+                break;
+            case 'castigos':
+                $registros = castigo::where('idUnidad', $idUnidad)->get();
+                break;
+            case 'ultima_corrida':
+                $registros = ultimaCorrida::where('idUnidad', $idUnidad)->get();
+                break;
+            default:
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Tipo de registro no válido",
+                'color' => 'red',
+                'type' => 'error'
+            ]);
+        }
+
+        return response()->json($registros);
+    }
 }

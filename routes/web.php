@@ -178,6 +178,8 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
 
     Route::post('/servicio/formarUnidades/rolServicio', 'cambiarRolServicio')->name('servicio.cambiarRolServicio');
     Route::put('/servicio/formarUnidades/rolRutas', 'actualizarRolRuta')->name('servicio.actualizarRolRuta');
+    
+    Route::get('/servicio/registros/{tipoRegistro}', 'obtenerRegistros')->name('servicio.obtenerRegistros');
     });
 
 });

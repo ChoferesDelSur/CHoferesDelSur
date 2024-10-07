@@ -22,6 +22,7 @@ import FormularioRegUC from '../../Components/Servicio/FormularioRegUC.vue';
 import FormularioRegresoUC from '../../Components/Servicio/FormularioRegresoUC.vue';
 import FormularioDomingo from '../../Components/Servicio/FormularioDomingo.vue';
 import FormularioFinCastigo from '../../Components/Servicio/FormularioFinCastigo.vue';
+import FormularioEditarRegistro from '../../Components/Servicio/FormularioEditarRegistro.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -642,6 +643,7 @@ const mostrarModalRegUC = ref(false);
 const mostrarModalRegresoUC = ref(false);
 const mostrarModalDomingo = ref(false);
 const mostrarModalE = ref(false);
+const mostrarModalEditar = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
@@ -651,6 +653,10 @@ var formacionE = ({});
 const abrirE = ($formacioness) => {
   formacionE = $formacioness;
   mostrarModalE.value = true;
+}
+
+const cerrarModalEditar = () => {
+  mostrarModalEditar.value = false;
 }
 
 const cerrarModal = () => {
@@ -815,6 +821,11 @@ const contarRegistrosHrEnt = () => {
           @click="actualizarRolRuta"> <i class="fa fa-map" aria-hidden="true"></i> Actualizar Rol Rutas
         </button>
 
+        <button class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalEditar = true" data-bs-toggle="modal" data-bs-target="#modalCreate"> <i
+            class="fa fa-pencil" aria-hidden="true"></i> Editar Registro
+        </button>
+
       </div>
 
       <div class="overflow-x-auto">
@@ -955,7 +966,11 @@ const contarRegistrosHrEnt = () => {
       @close="cerrarModalDomingo" :title="'Registrar las unidades que trabajaran domingo'" :op="'1'"
       :modal="'modalCreate'" :rolServicio="props.rolServicio" :unidad="props.unidad">
     </FormularioDomingo>
-
+    <FormularioEditarRegistro :show="mostrarModalEditar" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalEditar" :title="'Editar Registro'" :op="'1'" :modal="'modalCreate'"
+      :unidadesConOperador="props.unidadesConOperador" :entrada="props.entrada" :corte="props.corte"
+      :castigo="props.castigo" :ultimaCorrida="props.ultimaCorrida">
+    </FormularioEditarRegistro>
 
   </ServicioLayout>
 </template>
@@ -972,7 +987,7 @@ const contarRegistrosHrEnt = () => {
 
 .dataTables_wrapper td.text-center {
   text-align: center;
-  width: 100px; /* Ajusta este valor según sea necesario */
+  width: 100px;
+  /* Ajusta este valor según sea necesario */
 }
-
 </style>
