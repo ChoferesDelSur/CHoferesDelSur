@@ -53,13 +53,16 @@ const form = useForm({
     idEntrada: props.entrada.idEntrada,
     horaEntrada: props.entrada.horaEntrada,
     extremo: props.entrada.extremo,
+    idCorte: props.corte.idCorte,
     horaCorte: props.corte.horaCorte,
     causa: props.corte.causa,
     horaRegreso: props.corte.horaRegreso,
+    idCastigo: props.castigo.idCastigo,
     castigo: props.castigo.castigo,
     observaciones: props.castigo.observaciones,
     horaInicio: props.castigo.horaInicio,
     horaFin: props.castigo.horaFin,
+    idUltimaCorrida: props.ultimaCorrida.idUltimaCorrida,
     horaInicioUC: props.ultimaCorrida.horaInicioUC,
     horaFinUC: props.ultimaCorrida.horaFinUC,
     tipoUltimaCorrida: props.ultimaCorrida.idTipoUltimaCorrida,
@@ -69,6 +72,8 @@ const selectedUnidad = ref(null);
 const selectedRegistro = ref(null);
 const camposFormulario = ref([]);
 const formData = ref({});
+const registrosDisponibles = ref([]);
+const registroSeleccionado = ref(null);
 
 // Función para definir campos del formulario según el tipo de registro
 const definirCamposForm = (tipoRegistro) => {
@@ -100,6 +105,13 @@ const definirCamposForm = (tipoRegistro) => {
     }
 };
 
+watch(() => registroSeleccionado.value, (newVal) => {
+    if (newVal) {
+        console.log('Registro seleccionado:', newVal);
+        cargarDatosRegistro(newVal);
+    }
+});
+
 const cargarDatosRegistro = (registro) => {
     // Asigna los valores del registro a los campos del formulario
     form.horaEntrada = registro.horaEntrada;
@@ -128,7 +140,8 @@ watch(() => props.entrada, async (newVal) => {
 );
 
 watch(() => props.corte, async (newVal) => {
-    form.horaCorte = newVal.horaCorte;
+    form.
+        form.horaCorte = newVal.horaCorte;
     form.causa = newVal.causa;
     form.horaRegreso = newVal.horaRegreso;
 })
@@ -174,31 +187,29 @@ const close = async () => {
 }
 
 const obtenerRegistros = async () => {
-    console.log('Unidad seleccionada:', selectedUnidad.value);
-    console.log('Tipo Registro seleccionado:', selectedRegistro.value);
     if (selectedUnidad.value && selectedRegistro.value) {
-        console.log('Llamando a la API...');
         try {
             const response = await axios.get(route('servicio.obtenerRegistros', {
-                tipoRegistro: selectedRegistro.value.value // Aquí va el tipo de registro en la URL
+                tipoRegistro: selectedRegistro.value.value
             }), {
                 params: {
-                    idUnidad: selectedUnidad.value.value   // Aquí envías el idUnidad como query parameter
+                    idUnidad: selectedUnidad.value.value
                 }
             });
-            console.log('Fetched Records:', response.data);
-            formData.value = response.data;
-            if (response.data.length > 0) {
-                cargarDatosRegistro(response.data[0]); // Carga datos del primer registro
+            registrosDisponibles.value = response.data;
+
+            // Si solo hay un registro, selecciona automáticamente
+            if (registrosDisponibles.value.length === 1) {
+                registroSeleccionado.value = registrosDisponibles.value[0];
+                cargarDatosRegistro(registroSeleccionado.value);
+            } else {
+                registroSeleccionado.value = null; // Reinicia la selección si hay más de uno
             }
-            camposFormulario.value = definirCamposForm(selectedRegistro.value.value); // Asigna campos dinámicos
-            (selectedRegistro.value.value);
-            console.log('camposFormulario después de la carga:', camposFormulario.value);
+
+            camposFormulario.value = definirCamposForm(selectedRegistro.value.value);
         } catch (error) {
             console.error('Error fetching records:', error);
         }
-    } else {
-        console.warn('Faltan datos: unidad o tipo de registro no seleccionados.');
     }
 };
 
@@ -278,6 +289,17 @@ const save = async () => {
                         </div>
                     </div>
                 </div>
+
+                <!-- Registros Disponibles -->
+                <div class="mt-4" v-if="registrosDisponibles.length > 1">
+                    <label class="block text-sm font-medium leading-6 text-gray-900">Registros Disponibles</label>
+                    <div v-for="registro in registrosDisponibles" :key="registro.idEntrada"
+                        class="flex items-center mb-2">
+                        <input type="radio" :value="registro" v-model="registroSeleccionado" class="mr-2">
+                        <span>{{ registro.horaCorte }} - {{ registro.causa }}</span>
+                    </div>
+                </div>
+
 
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button"

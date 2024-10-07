@@ -1355,29 +1355,38 @@ class ServicioController extends Controller
         ]);
     }  
     
-    public function obtenerRegistros($tipoRegistro, Request $request)
+        public function obtenerRegistros($tipoRegistro, Request $request)
     {
         $idUnidad = $request->query('idUnidad'); // Obtiene el idUnidad de la solicitud
+        $fechaActual = Carbon::today(); // Obtiene la fecha actual
 
         switch ($tipoRegistro) {
             case 'entradas':
-                $registros = entrada::where('idUnidad', $idUnidad)->get();
+                $registros = entrada::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $fechaActual) // Filtra por created_at
+                    ->get();
                 break;
             case 'cortes':
-                $registros = corte::where('idUnidad', $idUnidad)->get();
+                $registros = corte::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $fechaActual) // Filtra por created_at
+                    ->get();
                 break;
             case 'castigos':
-                $registros = castigo::where('idUnidad', $idUnidad)->get();
+                $registros = castigo::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $fechaActual) // Filtra por created_at
+                    ->get();
                 break;
             case 'ultima_corrida':
-                $registros = ultimaCorrida::where('idUnidad', $idUnidad)->get();
+                $registros = ultimaCorrida::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $fechaActual) // Filtra por created_at
+                    ->get();
                 break;
             default:
-            return redirect()->route('servicio.formarUni')->with([
-                'message' => "Tipo de registro no válido",
-                'color' => 'red',
-                'type' => 'error'
-            ]);
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "Tipo de registro no válido",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
         }
 
         return response()->json($registros);
