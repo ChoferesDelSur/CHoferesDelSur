@@ -826,6 +826,11 @@ const contarRegistrosHrEnt = () => {
             class="fa fa-pencil" aria-hidden="true"></i> Editar Registro
         </button>
 
+        <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
+          @click="mostrarModalEditar = true" data-bs-toggle="modal" data-bs-target="#modalCreate"> <i
+            class="fa fa-trash" aria-hidden="true"></i> Eliminar Registro
+        </button>
+
       </div>
 
       <div class="overflow-x-auto">
@@ -897,7 +902,7 @@ const contarRegistrosHrEnt = () => {
                 Ext
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. Corte
+                Hr. Cor
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Causa
@@ -969,7 +974,7 @@ const contarRegistrosHrEnt = () => {
     <FormularioEditarRegistro :show="mostrarModalEditar" :max-width="maxWidth" :closeable="closeable"
       @close="cerrarModalEditar" :title="'Editar Registro'" :op="'1'" :modal="'modalCreate'"
       :unidadesConOperador="props.unidadesConOperador" :entrada="props.entrada" :corte="props.corte"
-      :castigo="props.castigo" :ultimaCorrida="props.ultimaCorrida">
+      :castigo="props.castigo" :ultimaCorrida="props.ultimaCorrida" :tipoUltimaCorrida="props.tipoUltimaCorrida">
     </FormularioEditarRegistro>
 
   </ServicioLayout>

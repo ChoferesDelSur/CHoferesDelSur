@@ -42,14 +42,18 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    tipoUltimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
     title: { type: String },
     modal: { type: String },
     op: { type: String },
 })
 const emit = defineEmits(['close']);
-console.log("Estoy en el formulario editar registro"
-);
+
 const form = useForm({
+    _method: 'PUT',
     idEntrada: props.entrada.idEntrada,
     horaEntrada: props.entrada.horaEntrada,
     extremo: props.entrada.extremo,
@@ -100,35 +104,43 @@ const definirCamposForm = (tipoRegistro) => {
             return {
                 horaInicioUC: { label: 'Hora de Inicio de Última Corrida', type: 'time' },
                 horaFinUC: { label: 'Hora de Fin de Última Corrida', type: 'time' },
-                idTipoUltimaCorrida: { label: 'Tipo de Última Corrida', type: 'select', options: [] },
+                tipoUltimaCorrida: {
+                    label: 'Tipo de Última Corrida',
+                    type: 'select',
+                    options: props.tipoUltimaCorrida.map(tipo => ({ value: tipo.idTipoUltimaCorrida, label: tipo.tipoUltimaCorrida })),
+                },
             };
     }
 };
 
 watch(() => registroSeleccionado.value, (newVal) => {
     if (newVal) {
-        console.log('Registro seleccionado:', newVal);
         cargarDatosRegistro(newVal);
+        console.log("Registro seleccionado:", registroSeleccionado.value);
     }
 });
 
 const cargarDatosRegistro = (registro) => {
     // Asigna los valores del registro a los campos del formulario
+    form.idEntrada = registro.idEntrada;
     form.horaEntrada = registro.horaEntrada;
     form.extremo = registro.extremo;
 
+    form.idCorte = registro.idCorte;
     form.horaCorte = registro.horaCorte;
     form.causa = registro.causa;
     form.horaRegreso = registro.horaRegreso;
 
+    form.idCastigo = registro.idCastigo;
     form.castigo = registro.castigo;
     form.observaciones = registro.observaciones;
     form.horaInicio = registro.horaInicio;
     form.horaFin = registro.horaFin;
 
+    form.idUltimaCorrida = registro.idUltimaCorrida;
     form.horaInicioUC = registro.horaInicioUC;
     form.horaFinUC = registro.horaFinUC;
-    form.tipoUltimaCorrida = registro.tipoUltimaCorrida;
+    form.tipoUltimaCorrida = registro.idTipoUltimaCorrida;
     // Si hay más campos para asignar, hazlo aquí
 };
 
@@ -140,18 +152,31 @@ watch(() => props.entrada, async (newVal) => {
 );
 
 watch(() => props.corte, async (newVal) => {
-    form.
-        form.horaCorte = newVal.horaCorte;
+    form.idCorte = newVal.idCorte;
+    form.horaCorte = newVal.horaCorte;
     form.causa = newVal.causa;
     form.horaRegreso = newVal.horaRegreso;
 })
 
+watch(() => props.castigo, async (newVal) => {
+    form.idCastigo = newVal.idCastigo;
+    form.castigo = newVal.castigo;
+    form.observaciones = newVal.observaciones;
+    form.horaInicio = newVal.horaInicio;
+    form.horaFin = newVal.horaFin;
+})
+
+watch(() => props.ultimaCorrida, async (newVal) => {
+    form.idUltimaCorrida = newVal.idUltimaCorrida;
+    form.horaInicioUC = newVal.horaInicioUC;
+    form.horaFinUC = newVal.horaFinUC;
+    form.idTipoUltimaCorrida = newVal.idTipoUltimaCorrida;
+})
+
 watch(() => selectedRegistro, (newVal) => {
-    console.log('Tipo de Registro seleccionado:', newVal);
     if (newVal) {
         camposFormulario.value = definirCamposForm
             (newVal);
-        console.log('Form Fields después de la selección:', camposFormulario.value);
     }
 });
 
@@ -213,29 +238,53 @@ const obtenerRegistros = async () => {
     }
 };
 
-const save = async () => {
-    unidadError.value = validateSelect(form.unidad) ? '' : 'Seleccione una unidad';
-
-    if (
-        unidadError.value
-    ) {
-        return;
+const editarRegistro = async () => {
+    console.log("Estoy dentro de la funcion editarRegistro");
+    // Determina la ruta de actualización según el tipo de registro seleccionado
+    let ruta;
+    // Obtén el valor correcto
+    const tipoRegistro = selectedRegistro.value.value; // Ajuste aquí
+    console.log("Tipo registo:", tipoRegistro);
+    switch (tipoRegistro) {
+        case 'entradas':
+            ruta = route('servicio.actualizarEntrada', { id: form.idEntrada });
+            break;
+        case 'cortes':
+            ruta = route('servicio.actualizarCorte', { id: form.idCorte });
+            break;
+        case 'castigos':
+            ruta = route('servicio.actualizarCastigo', { id: form.idCastigo });
+            break;
+        case 'ultima_corrida':
+            ruta = route('servicio.actualizarUltimaCorrida', { id: form.idUltimaCorrida });
+            break;
+        default:
+            console.error('Tipo de registro no válido');
+            return;
     }
-    form.post(route('servicio.registarHoraEntrada'), {
-        onSuccess: () => {
-            close()
-            unidadError.value = '';
-        }
-    })
-}
+
+    try {
+        // Envía la solicitud como POST, simulando PUT con _method: 'PUT'
+        form.post(ruta, {
+            onSuccess: () => {
+                close(); // Cierra el modal después de la actualización
+                // Puedes mostrar un mensaje de éxito o manejar la respuesta aquí
+            }
+        });
+    } catch (error) {
+        console.error('Error al actualizar el registro:', error);
+        // Maneja el error, por ejemplo mostrando un mensaje al usuario
+    }
+};
+
 </script>
 
 <template>
     <Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
         <div class="mt-2 bg-white p-4 shadow rounded-lg">
-            <form @submit.prevent="save">
+            <form @submit.prevent="editarRegistro">
                 <div class="border-b border-gray-900/10 pb-12">
-                    <h2 class="text-base font-semibold leading-7 text-gray-900">{{ title }}</h2>
+                    <h2 class="text-base font-bold leading-7 text-gray-900">{{ title }}</h2>
 
                     <div class="flex flex-wrap -mx-4">
                         <!-- Campo Unidad -->
@@ -260,6 +309,16 @@ const save = async () => {
                                 </v-select>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Registros Disponibles -->
+                <div class="mt-4" v-if="registrosDisponibles.length > 1">
+                    <label class="block text-md font-bold leading-6 text-gray-900">Registros Disponibles</label>
+                    <div v-for="registro in registrosDisponibles" :key="registro.idEntrada"
+                        class="flex items-center mb-2">
+                        <input type="radio" :value="registro" v-model="registroSeleccionado" class="mr-2">
+                        <span>{{ registro.horaCorte }} - {{ registro.causa }}</span>
                     </div>
                 </div>
 
@@ -289,17 +348,6 @@ const save = async () => {
                         </div>
                     </div>
                 </div>
-
-                <!-- Registros Disponibles -->
-                <div class="mt-4" v-if="registrosDisponibles.length > 1">
-                    <label class="block text-sm font-medium leading-6 text-gray-900">Registros Disponibles</label>
-                    <div v-for="registro in registrosDisponibles" :key="registro.idEntrada"
-                        class="flex items-center mb-2">
-                        <input type="radio" :value="registro" v-model="registroSeleccionado" class="mr-2">
-                        <span>{{ registro.horaCorte }} - {{ registro.causa }}</span>
-                    </div>
-                </div>
-
 
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button"

@@ -1391,4 +1391,183 @@ class ServicioController extends Controller
 
         return response()->json($registros);
     }
+
+    public function actualizarEntrada(Request $request, $id)
+    {
+        try {
+            // Obtener la entrada existente
+            $entrada = entrada::findOrFail($id);
+
+            // Obtener la unidad asociada
+            $unidad = $entrada->unidad;
+            
+            // Obtener el día de la semana
+            $fecha = Carbon::now();
+            $diaSemana = $fecha->dayOfWeek;
+    
+            // Definir los límites de tiempo según el día de la semana y el valor de extremo
+            if ($diaSemana === 6 && $request->input('extremo') === 'si') { // Sábado y extremo es 'si'
+                $limiteNormal = Carbon::createFromTime(6, 45);
+                $limiteMulta = Carbon::createFromTime(7, 0);
+            } elseif ($diaSemana === 6) { // Sábado (sin considerar extremo)
+                $limiteNormal = Carbon::createFromTime(6, 30);
+                $limiteMulta = Carbon::createFromTime(7, 0);
+            } elseif ($diaSemana === 0) { // Domingo
+                $limiteNormal = Carbon::createFromTime(7, 30);
+                $limiteMulta = Carbon::createFromTime(7, 45);
+            } else { // Lunes a viernes
+                $limiteNormal = Carbon::createFromTime(6, 15);
+                $limiteMulta = Carbon::createFromTime(6, 30);
+            }
+    
+            // Convertir la nueva hora de entrada a un objeto Carbon
+            $horaEntradaNueva = Carbon::parse($request->input('horaEntrada'))->format('H:i');
+            $horaEntradaCarbon = Carbon::createFromFormat('H:i', $horaEntradaNueva);
+    
+            // Determinar el nuevo tipo de entrada
+            $tipoEntradaNuevo = '';
+            if ($horaEntradaCarbon < $limiteNormal) {
+                $tipoEntradaNuevo = 'Normal';
+            } elseif ($horaEntradaCarbon >= $limiteNormal && $horaEntradaCarbon <= $limiteMulta) {
+                $tipoEntradaNuevo = 'Multa';
+            }
+    
+            // Actualizar los campos de la entrada
+            $entrada->horaEntrada = $horaEntradaNueva;
+            $entrada->extremo = $request->input('extremo');
+            $entrada->tipoEntrada = $tipoEntradaNuevo; // Actualiza el tipo de entrada si es necesario
+            $entrada->save();
+    
+            // Mensaje de éxito con los datos actualizados
+        return redirect()->route('servicio.formarUni')->with([
+            'message' => "Entrada actualizada correctamente para la unidad {$unidad->numeroUnidad}, Formación: {$horaEntradaNueva}, Ext: {$entrada->extremo}",
+            'color' => 'green',
+            'type' => 'success'
+        ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with([
+                'message' => "Error al actualizar la entrada: " . $e->getMessage(),
+                'color' => 'red',
+                'type' => 'error'
+            ]);
+        }
+    }    
+
+        public function actualizarCorte(Request $request, $id)
+    {
+        // Buscar el corte por ID
+        $corte = corte::with('unidad')->findOrFail($id);
+        
+        // Validar que la horaRegreso no sea menor que la horaCorte, si se proporciona
+        $horaCorte = Carbon::parse($request->input('horaCorte'));
+        
+        if ($request->has('horaRegreso')) {
+            $horaRegreso = Carbon::parse($request->input('horaRegreso'));
+            
+            // Comprobar si la horaRegreso es menor que la horaCorte
+            if ($horaRegreso->lessThan($horaCorte)) {
+                $horaCorteFormateada = $horaCorte->format('H:i');
+                $horaRegresoFormateada = $horaRegreso->format('H:i');
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La hora de regreso {$horaRegresoFormateada} no puede ser menor que la hora de corte {$horaCorteFormateada}.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+        }
+
+        // Actualizar los campos del corte
+        $corte->horaCorte = $request->input('horaCorte');
+        $corte->causa = $request->input('causa');
+        $corte->horaRegreso = $request->input('horaRegreso'); // Esto está bien, ya que puede ser null o un valor válido
+        $corte->save();
+
+        // Obtener el número de unidad
+        $numeroUnidad = $corte->unidad->numeroUnidad;
+
+        return redirect()->route('servicio.formarUni')->with([
+            'message' => "Corte actualizado correctamente para la unidad {$numeroUnidad}.",
+            'color' => 'green',
+            'type' => 'success'
+        ]);
+    }
+
+        public function actualizarCastigo(Request $request, $id)
+    {
+        // Buscar el castigo por ID
+        $castigo = castigo::findOrFail($id);
+
+        // Obtener la unidad asociada al castigo
+        $unidad = $castigo->unidad; // Asumiendo la relación está definida
+        $numeroUnidad = $unidad ? $unidad->numeroUnidad : 'desconocida';
+
+        // Obtener la hora de inicio del request
+        $horaInicio = \Carbon\Carbon::parse($request->input('horaInicio'));
+
+        // Validar horaFin solo si está presente
+        if ($request->has('horaFin')) {
+            $horaFin = \Carbon\Carbon::parse($request->input('horaFin'));
+
+            if ($horaFin->lessThanOrEqualTo($horaInicio)) {
+                $horaInicioFormateada = $horaInicio->format('H:i');
+                $horaFinFormateada = $horaFin->format('H:i');
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La hora de finalización del castigo {$horaFinFormateada} no puede ser igual o menor que la hora de inicio del castigo {$horaInicioFormateada}.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+        }
+
+        // Actualizar los datos del castigo
+        $castigo->castigo = $request->input('castigo');
+        $castigo->observaciones = $request->input('observaciones');
+        $castigo->horaInicio = $request->input('horaInicio');
+
+        // Actualizar horaFin solo si se proporciona
+        if ($request->has('horaFin')) {
+            $castigo->horaFin = $request->input('horaFin');
+        }
+
+        // Guardar los cambios
+        $castigo->save();
+
+        // Devolver mensaje de éxito incluyendo el número de unidad
+        return redirect()->route('servicio.formarUni')->with([
+            'message' => "Castigo actualizado correctamente para la unidad " . $numeroUnidad,
+            'color' => 'green',
+            'type' => 'success'
+        ]);
+    }
+
+        public function actualizarUltimaCorrida(Request $request, $id)
+    {
+        dd($request->all());
+
+        // Encontrar la última corrida por ID
+        $ultimaCorrida = ultimaCorrida::findOrFail($id);
+
+        // Validar que horaFinUC no sea menor que horaInicioUC si se proporciona
+        $request->validate([
+            'horaFinUC' => 'nullable|date|after_or_equal:horaInicioUC',
+        ], [
+            'horaFinUC.after_or_equal' => 'La hora de fin no puede ser menor que la hora de inicio.'
+        ]);
+
+        // Actualizar los campos
+        $ultimaCorrida->horaInicioUC = $request->input('horaInicioUC');
+        $ultimaCorrida->horaFinUC = $request->input('horaFinUC'); // Se actualizará incluso si no se proporciona un valor
+        $ultimaCorrida->idTipoUltimaCorrida = $request->input('idTipoUltimaCorrida');
+        $ultimaCorrida->save();
+
+        // Obtener el numeroUnidad de la unidad relacionada
+        $numeroUnidad = $ultimaCorrida->unidad->numeroUnidad; // Asegúrate de que la relación unidad esté definida en tu modelo
+
+        return redirect()->route('servicio.formarUni')->with([
+            'message' => "Última corrida actualizada correctamente para la unidad: $numeroUnidad",
+            'color' => 'green',
+            'type' => 'success'
+        ]);
+    }
+
 }
