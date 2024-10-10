@@ -6,6 +6,8 @@ import { route } from 'ziggy-js';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import 'vue-select';
+import Swal from 'sweetalert2';
+import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
 
 const props = defineProps({
@@ -53,7 +55,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
-    _method: 'PUT',
+    _method: 'DELETE',
     idEntrada: props.entrada.idEntrada,
     horaEntrada: props.entrada.horaEntrada,
     extremo: props.entrada.extremo,
@@ -192,6 +194,9 @@ const tiposRegistro = [
 const close = async () => {
     emit('close');
     form.reset();
+    selectedUnidad.value = null;
+    selectedRegistro.value = null;
+    registrosDisponibles.value = [];
 }
 
 const obtenerRegistros = async () => {
@@ -204,17 +209,15 @@ const obtenerRegistros = async () => {
                     idUnidad: selectedUnidad.value.value
                 }
             });
+            console.log(response.data); // Ver los datos
             registrosDisponibles.value = response.data;
 
-            if (registrosDisponibles.value.length === 1) {
-                registroSeleccionado.value = registrosDisponibles.value[0];
-                cargarDatosRegistro(registroSeleccionado.value);
+            // Evitar la selección automática si solo hay un registro
+            if (response.data.length === 1) {
+                registroSeleccionado.value = null; // No seleccionar automáticamente
             } else {
-                registroSeleccionado.value = null; 
-                form.reset(); // Limpia el formulario al cambiar de unidad o registro
+                registroSeleccionado.value = null; // Limpiar la selección si hay varios
             }
-
-            camposFormulario.value = definirCamposForm(selectedRegistro.value.value);
         } catch (error) {
             console.error('Error fetching records:', error);
         }
@@ -224,60 +227,83 @@ const obtenerRegistros = async () => {
 const unidadError = ref('');
 const tipoRegistroError = ref('');
 
-const editarRegistro = async () => {
-    // Reiniciar los errores
-    unidadError.value = '';
-    tipoRegistroError.value = '';
-
-    // Validar Unidad
-    if (!selectedUnidad.value) {
-        unidadError.value = 'La unidad es obligatoria';
-    }
-
-    // Validar Tipo de Registro
-    if (!selectedRegistro.value) {
-        tipoRegistroError.value = 'El tipo de registro es obligatorio';
-    }
-
-    // Si hay errores, no continuar con el envío del formulario
-    if (unidadError.value || tipoRegistroError.value) {
+const eliminarRegistro = async () => {
+    if (!registroSeleccionado.value) {
+        alert('Debes seleccionar un registro para eliminar.');
         return;
     }
-    // Determina la ruta de actualización según el tipo de registro seleccionado
-    let ruta;
-    // Obtén el valor correcto
-    const tipoRegistro = selectedRegistro.value.value; // Ajuste aquí
 
-    switch (tipoRegistro) {
-        case 'entradas':
-            ruta = route('servicio.actualizarEntrada', { id: form.idEntrada });
-            break;
-        case 'cortes':
-            ruta = route('servicio.actualizarCorte', { id: form.idCorte });
-            break;
-        case 'castigos':
-            ruta = route('servicio.actualizarCastigo', { id: form.idCastigo });
-            break;
-        case 'ultima_corrida':
-            ruta = route('servicio.actualizarUltimaCorrida', { id: form.idUltimaCorrida });
-            break;
-        default:
-            console.error('Tipo de registro no válido');
-            return;
-    }
+    Swal.fire({
+        title: '¿Estás seguro de que deseas eliminar este registro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                let registroId = null;
+                let tipoRegistro = null;
 
-    try {
-        // Envía la solicitud como POST, simulando PUT con _method: 'PUT'
-        form.post(ruta, {
-            onSuccess: () => {
-                close(); // Cierra el modal después de la actualización
-                // Puedes mostrar un mensaje de éxito o manejar la respuesta aquí
+                // Verifica el tipo de registro seleccionado y asigna el ID y tipo correctos
+                if (registroSeleccionado.value.idCorte) {
+                    registroId = registroSeleccionado.value.idCorte;
+                    tipoRegistro = 'cortes';
+                } else if (registroSeleccionado.value.idCastigo) {
+                    registroId = registroSeleccionado.value.idCastigo;
+                    tipoRegistro = 'castigos';
+                } else if (registroSeleccionado.value.idEntrada) {
+                    registroId = registroSeleccionado.value.idEntrada;
+                    tipoRegistro = 'entradas';
+                } else if (registroSeleccionado.value.idUltimaCorrida) {
+                    registroId = registroSeleccionado.value.idUltimaCorrida;
+                    tipoRegistro = 'ultima_corrida';
+                }
+
+                if (!registroId || !tipoRegistro) {
+                    console.error('No se pudo determinar el ID o tipo de registro');
+                    return;
+                }
+
+                console.log("ID del registro:", registroId);
+                console.log("Tipo de registro:", tipoRegistro);
+
+                // Enviar la solicitud DELETE con Inertia.js
+                await Inertia.post(route('servicio.eliminarRegistro', { id: registroId }), {
+                    tipoRegistro,  // Enviar el tipo de registro al backend
+                    _method: 'DELETE'  // Indicar que es una petición DELETE
+                });
+
+                // Mostrar mensaje de éxito y actualizar registros
+                Swal.fire({
+                    title: 'Registro eliminado exitosamente',
+                    icon: 'success'
+                });
+
+                registroSeleccionado.value = null;  // Limpiar la selección
+                obtenerRegistros();  // Actualizar la lista de registros
+
+            } catch (error) {
+                console.error('Error al eliminar el registro:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrió un error al eliminar el registro',
+                    icon: 'error'
+                });
             }
-        });
-    } catch (error) {
-        console.error('Error al actualizar el registro:', error);
-        // Maneja el error, por ejemplo mostrando un mensaje al usuario
-    }
+        }
+    });
+};
+
+const formatearHora = (hora) => {
+    if (!hora) return ''; // Retornar cadena vacía si no hay hora
+
+    // Supongamos que la hora está en formato HH:mm:ss o HH:mm
+    const partes = hora.split(':'); // Separa la hora en partes
+    if (partes.length < 2) return 'Formato de hora inválido'; // Validación básica
+
+    // Retorna solo las horas y minutos
+    return `${partes[0]}:${partes[1]}`; // Formato HH:mm
 };
 
 </script>
@@ -319,52 +345,45 @@ const editarRegistro = async () => {
                 </div>
 
                 <!-- Registros Disponibles -->
-                <div class="mt-4" v-if="registrosDisponibles.length > 1">
-                    <label class="block text-md font-bold leading-6 text-gray-900">Registros Disponibles</label>
-                    <div v-for="registro in registrosDisponibles" :key="registro.idEntrada"
-                        class="flex items-center mb-2">
-                        <input type="radio" :value="registro" v-model="registroSeleccionado" class="mr-2">
-                        <span>{{ registro.horaCorte }} - {{ registro.causa }}</span>
-                    </div>
-                </div>
-
-                <!-- Campos dinámicos según el tipo de registro -->
                 <div class="mt-4">
-                    <div v-if="camposFormulario">
-                        <div v-for="(campo, key) in camposFormulario" :key="key" class="mb-4">
-                            <label :for="key" class="block text-sm font-medium leading-6 text-gray-900">{{ campo.label
-                                }}</label>
-                            <div class="mt-2">
-                                <input v-if="campo.type === 'time'" type="time" v-model="form[key]"
-                                    class="border rounded p-1 w-full">
-                                <input v-if="campo.type === 'text'" type="text" v-model="form[key]"
-                                    class="border rounded p-1 w-full">
-                                <div v-if="campo.type === 'radio'">
-                                    <div v-for="option in campo.options" :key="option" class="flex items-center">
-                                        <input type="radio" :value="option" v-model="form[key]" class="mr-2">
-                                        <label>{{ option }}</label>
-                                    </div>
-                                </div>
-                                <select v-if="campo.type === 'select'" v-model="form[key]"
-                                    class="border rounded p-1 w-full">
-                                    <option v-for="option in campo.options" :key="option.value" :value="option.value">{{
-                                        option.label }}</option>
-                                </select>
-                            </div>
+                    <label class="block text-md font-bold leading-6 text-gray-900">Registros Disponibles</label>
+                    <div v-if="registrosDisponibles.length">
+                        <div v-for="registro in registrosDisponibles"
+                            :key="registro.idEntrada || registro.idCorte || registro.idCastigo || registro.idUltimaCorrida">
+                            <input type="radio" :value="registro" v-model="registroSeleccionado" class="mr-2">
+
+                            <span>
+                                <template v-if="registro.idCorte">
+                                    {{ formatearHora(registro.horaCorte) }} - {{ registro.causa }}
+                                </template>
+                                <template v-else-if="registro.idCastigo">
+                                    {{ registro.castigo }} - Inicio: {{ formatearHora(registro.horaInicio) }}, Fin: {{
+                                    formatearHora(registro.horaFin) }}
+                                </template>
+                                <template v-else-if="registro.idUltimaCorrida">
+                                    Última Corrida: Inicio: {{ formatearHora(registro.horaInicioUC) }}, Fin: {{
+                                    formatearHora(registro.horaFinUC) }}, Tipo: {{ registro.idTipoUltimaCorrida }}
+                                </template>
+                                <template v-else-if="registro.idEntrada">
+                                    Entrada: {{ formatearHora(registro.horaEntrada) }} - Extremo: {{ registro.extremo }}
+                                </template>
+                            </span>
                         </div>
+                    </div>
+                    <div v-else>
+                        <p>No hay registros disponibles.</p>
                     </div>
                 </div>
 
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button"
-                        class="text-sm font-semibold leading-6 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+                        class="text-sm font-semibold leading-6 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
                         @click="close">
-                        <i class="fa-solid fa-ban"></i> Cancelar
+                        <i class="fa-solid fa-ban"></i> Cerrar Formulario
                     </button>
-                    <button type="submit"
-                        class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
-                        :disabled="form.processing">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i>Guardar
+                    <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
+                        @click="eliminarRegistro">
+                        <i class="fa-solid fa-trash mr-2"></i> Eliminar
                     </button>
                 </div>
             </form>

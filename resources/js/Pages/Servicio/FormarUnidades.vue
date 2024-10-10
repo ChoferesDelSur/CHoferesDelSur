@@ -23,6 +23,7 @@ import FormularioRegresoUC from '../../Components/Servicio/FormularioRegresoUC.v
 import FormularioDomingo from '../../Components/Servicio/FormularioDomingo.vue';
 import FormularioFinCastigo from '../../Components/Servicio/FormularioFinCastigo.vue';
 import FormularioEditarRegistro from '../../Components/Servicio/FormularioEditarRegistro.vue';
+import FormularioEliminarRegistro from '../../Components/Servicio/FormularioEliminarRegistro.vue';
 
 DataTable.use(DataTablesLib);
 DataTable.use(Select);
@@ -644,6 +645,7 @@ const mostrarModalRegresoUC = ref(false);
 const mostrarModalDomingo = ref(false);
 const mostrarModalE = ref(false);
 const mostrarModalEditar = ref(false);
+const mostrarModalEliminar = ref(false);
 const maxWidth = 'xl';
 const closeable = true;
 
@@ -657,6 +659,10 @@ const abrirE = ($formacioness) => {
 
 const cerrarModalEditar = () => {
   mostrarModalEditar.value = false;
+}
+
+const cerrarModalEliminar = () => {
+  mostrarModalEliminar.value = false;
 }
 
 const cerrarModal = () => {
@@ -827,7 +833,7 @@ const contarRegistrosHrEnt = () => {
         </button>
 
         <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
-          @click="mostrarModalEditar = true" data-bs-toggle="modal" data-bs-target="#modalCreate"> <i
+          @click="mostrarModalEliminar = true" data-bs-toggle="modal" data-bs-target="#modalCreate"> <i
             class="fa fa-trash" aria-hidden="true"></i> Eliminar Registro
         </button>
 
@@ -976,6 +982,11 @@ const contarRegistrosHrEnt = () => {
       :unidadesConOperador="props.unidadesConOperador" :entrada="props.entrada" :corte="props.corte"
       :castigo="props.castigo" :ultimaCorrida="props.ultimaCorrida" :tipoUltimaCorrida="props.tipoUltimaCorrida">
     </FormularioEditarRegistro>
+    <FormularioEliminarRegistro :show="mostrarModalEliminar" :max-width="maxWidth" :closeable="closeable"
+      @close="cerrarModalEliminar" :title="'Eliminar Registro'" :op="'1'" :modal="'modalCreate'"
+      :unidadesConOperador="props.unidadesConOperador" :entrada="props.entrada" :corte="props.corte"
+      :castigo="props.castigo" :ultimaCorrida="props.ultimaCorrida" :tipoUltimaCorrida="props.tipoUltimaCorrida">
+    </FormularioEliminarRegistro>
 
   </ServicioLayout>
 </template>

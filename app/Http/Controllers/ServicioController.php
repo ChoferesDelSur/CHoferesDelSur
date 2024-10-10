@@ -1540,34 +1540,89 @@ class ServicioController extends Controller
         ]);
     }
 
-        public function actualizarUltimaCorrida(Request $request, $id)
-    {
-        dd($request->all());
-
+    public function actualizarUltimaCorrida(Request $request, $id) {
         // Encontrar la última corrida por ID
         $ultimaCorrida = ultimaCorrida::findOrFail($id);
-
-        // Validar que horaFinUC no sea menor que horaInicioUC si se proporciona
+        // Validar los datos de entrada
         $request->validate([
-            'horaFinUC' => 'nullable|date|after_or_equal:horaInicioUC',
-        ], [
-            'horaFinUC.after_or_equal' => 'La hora de fin no puede ser menor que la hora de inicio.'
+            'horaInicioUC' => 'required',
+            'horaFinUC' => 'nullable', // Esto permite que horaFinUC sea nulo
         ]);
-
+    
+        // Obtener horaInicioUC del request
+        $horaInicioUC = \Carbon\Carbon::parse($request->input('horaInicioUC'));
+    
+        // Validar que horaFinUC no sea menor que horaInicioUC si se proporciona
+        if ($request->has('horaFinUC')) {
+            $horaFinUC = \Carbon\Carbon::parse($request->input('horaFinUC'));
+            if ($horaFinUC->lessThan($horaInicioUC)) {
+                $horaInicioUCFormateada = $horaInicioUC->format('H:i');
+                $horaFinUCFormateada = $horaFinUC->format('H:i');
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La hora de fin " . $horaFinUCFormateada . " no puede ser menor que la hora de inicio " . $horaInicioUCFormateada . ".",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+        }
+    
         // Actualizar los campos
-        $ultimaCorrida->horaInicioUC = $request->input('horaInicioUC');
+        $ultimaCorrida->horaInicioUC = $horaInicioUC; // Asegurarse de que horaInicioUC se actualice correctamente
         $ultimaCorrida->horaFinUC = $request->input('horaFinUC'); // Se actualizará incluso si no se proporciona un valor
-        $ultimaCorrida->idTipoUltimaCorrida = $request->input('idTipoUltimaCorrida');
+        $ultimaCorrida->idTipoUltimaCorrida = $request->input('tipoUltimaCorrida');
         $ultimaCorrida->save();
-
+    
         // Obtener el numeroUnidad de la unidad relacionada
         $numeroUnidad = $ultimaCorrida->unidad->numeroUnidad; // Asegúrate de que la relación unidad esté definida en tu modelo
-
+    
         return redirect()->route('servicio.formarUni')->with([
             'message' => "Última corrida actualizada correctamente para la unidad: $numeroUnidad",
             'color' => 'green',
             'type' => 'success'
         ]);
-    }
+    }   
+    
+    public function eliminarRegistro($id, Request $request)
+    {
+        // Detectar el tipo de registro (puede que lo estés enviando desde el frontend)
+        $tipoRegistro = $request->input('tipoRegistro'); // Suponiendo que 'tipoRegistro' se envía desde el formulario
 
+        try {
+            switch ($tipoRegistro) {
+                case 'entradas':
+                    $registro = Entrada::findOrFail($id);
+                    break;
+                case 'cortes':
+                    $registro = Corte::findOrFail($id);
+                    break;
+                case 'castigos':
+                    $registro = Castigo::findOrFail($id);
+                    break;
+                case 'ultima_corrida':
+                    $registro = UltimaCorrida::findOrFail($id);
+                    break;
+                default:
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "Tipo de registro no válido",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+
+            // Eliminar el registro
+            $registro->delete();
+
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Registro eliminado correctamente",
+                'color' => 'green',
+                'type' => 'success'
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Error al eliminar registro",
+                'color' => 'red',
+                'type' => 'error'
+            ]);
+        }
+    }
 }

@@ -185,6 +185,8 @@ Route::middleware([ServicioMiddleware::class])->group(function () {
     Route::put('/servicio/actualizarCorte/{id}','actualizarCorte')->name('servicio.actualizarCorte');
     Route::put('/servicio/actualizarCastigo/{id}','actualizarCastigo')->name('servicio.actualizarCastigo');
     Route::put('/servicio/actualizarUC/{id}','actualizarUltimaCorrida')->name('servicio.actualizarUltimaCorrida');
+
+    Route::delete('/servicio/eliminarRegistro/{id}','eliminarRegistro')->name('servicio.eliminarRegistro');
     });
 
 });
