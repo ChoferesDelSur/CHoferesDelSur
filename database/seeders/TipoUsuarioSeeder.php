@@ -24,5 +24,9 @@ class TipoUsuarioSeeder extends Seeder
         $tipoUsuario3 = new tipoUsuario();
         $tipoUsuario3->tipoUsuario = "RH";
         $tipoUsuario3->save();
+
+        $tipoUsuario4 = new tipoUsuario();
+        $tipoUsuario4->tipoUsuario = "Directivo";
+        $tipoUsuario4->save();
     }
 }

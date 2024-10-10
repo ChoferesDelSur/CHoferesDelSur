@@ -24,4 +24,10 @@ class directivo extends Model
         'numOperadores',
         'nombre_completo',
     ];
+
+        public function unidades()
+    {
+        return $this->hasMany(unidad::class, 'idDirectivo');
+    }
+
 }

@@ -10,10 +10,12 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\RHController;
+use App\http\Controllers\DirectivoController;
 use App\Http\Controllers\DireccionesApiController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ServicioMiddleware;
 use App\Http\Middleware\RHMiddleware;
+use App\Http\Middleware\DirectivoMiddleware;
 use App\Http\Middleware\RedurectToHttps;
 
 Route::controller(LoginController::class)->group(function () {
@@ -228,5 +230,15 @@ Route::middleware([RHMiddleware::class])->group(function () {
 
     Route::get('/RecursosHumanos/vacaciones', 'vacaciones')->name('rh.vacaciones');
     Route::post('/RecursosHumanos/agregarVacaciones', 'addVacaciones')->name('rh.addVacaciones');
+    });
+});
+
+Route::middleware([DirectivoMiddleware::class])->group(function () {
+    Route::controller(DirectivoController::class)->group(function(){
+    Route::get('/Directivo', 'inicio')->name('directivo.inicio');
+    Route::get('/Directivo/perfil', 'perfil')->name('directivo.perfil');
+    Route::put('/Directivo/perfil/actualizar/contrasenia/{idUsuario}','actualizarContrasenia')->name('directivo.actualizarContrasenia');
+
+    Route::get('/Directivo/formUnidades', 'formarUnidades')->name('directivo.formarUnidades');
     });
 });

@@ -29,6 +29,8 @@ class LoginController extends Controller
                     return redirect()->route('servicio.inicio');
                 case "RH":
                     return redirect()->route('rh.inicio');
+                case "Directivo":
+                    return redirect()->route('directivo.inicio');
             }
         }
         }
@@ -83,6 +85,8 @@ class LoginController extends Controller
                                 return redirect()->intended(route('servicio.inicio'));
                             case "RH":
                                 return redirect()->intended(route('rh.inicio'));
+                            case "Directivo":
+                                return redirect()->intended(route('directivo.inicio'));
                         }
                     } else {
                         $user->intentos = $user->intentos - 1;

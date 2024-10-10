@@ -1198,10 +1198,9 @@ class PrincipalController extends Controller
                     $prefijo = 'Serv';
                 } elseif ($request->tipoUsuario == 3) {
                     $prefijo = 'RH'; // Puedes ajustar el prefijo según tu convención
-                } /* else {
-                    // Manejo de otros casos si es necesario
-                    $prefijo = 'Otro';
-                } */
+                } elseif ($request->tipoUsuario == 4) {
+                    $prefijo = 'Dir'; // Puedes ajustar el prefijo según tu convención
+                }
 
                 // Generar usuario
                 $nombreParte = substr($this->quitarAcentos($request->nombre), 0, 2);
