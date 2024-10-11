@@ -30,7 +30,6 @@ const props = defineProps({
   tipoUltimaCorrida: { type: Object },
   usuario: { type: Object },
 });
-console.log("Unidades", props.unidades);
 const nombreCompleto = `${props.usuario.apellidoP} ${props.usuario.apellidoM} ${props.usuario.nombre}`;
 // Función para obtener el número de la semana
 function obtenerNumeroSemana(fecha) {
@@ -541,7 +540,6 @@ const columnas = [
 
 const unidadesFiltradas = computed(() => {
   const filtradas = props.unidades.filter(unidad => unidad.directivo.nombre_completo === nombreCompleto);
-  console.log('Unidades Filtradas:', filtradas); // Verifica el resultado filtrado
   return filtradas;
 });
 
