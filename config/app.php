@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://choferesdelsur.com'),
+    'url' => env('APP_URL', 'https://choferesdelsur.com/'),
     
     'asset_url' => env('ASSET_URL'),
 
