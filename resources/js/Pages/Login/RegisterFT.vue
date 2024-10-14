@@ -38,7 +38,7 @@ const submit = () => {
             <div class="p-4 mb-4 text-sm text-justify rounded-lg">
                 <span class="">Bienvenido al sistema de control y gestión de la empresa Sociedad Cooperativa de Choferes
                     del Sur S.C.L.. Al ser el primer ingreso al sistema es necesario que cree las credenciales del
-                    usuario administrador.</span>
+                    usuario Administrador.</span>
             </div>
         </div>
         <!-- <Mensaje /> -->
