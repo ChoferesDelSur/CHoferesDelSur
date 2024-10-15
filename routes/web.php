@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\RHController;
-use App\http\Controllers\DirectivoController;
+use App\Http\Controllers\DirectivoController;
 use App\Http\Controllers\DireccionesApiController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ServicioMiddleware;
