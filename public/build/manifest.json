@@ -3,26 +3,26 @@
     "file": "assets/DirectivoLayout-B5c5mB6U.css",
     "src": "_DirectivoLayout-!~{00A}~.js"
   },
-  "_DirectivoLayout-BXTpDPbb.js": {
-    "file": "assets/DirectivoLayout-BXTpDPbb.js",
+  "_DirectivoLayout-DrQw7j1s.js": {
+    "file": "assets/DirectivoLayout-DrQw7j1s.js",
     "name": "DirectivoLayout",
     "imports": [
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/DirectivoLayout-B5c5mB6U.css"
     ]
   },
-  "_InputLabel-D3cYTjCz.js": {
-    "file": "assets/InputLabel-D3cYTjCz.js",
+  "_InputLabel-HXdO_cpZ.js": {
+    "file": "assets/InputLabel-HXdO_cpZ.js",
     "name": "InputLabel",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_Mensaje-BFSGHBKc.js": {
-    "file": "assets/Mensaje-BFSGHBKc.js",
+  "_Mensaje-CC0bEoik.js": {
+    "file": "assets/Mensaje-CC0bEoik.js",
     "name": "Mensaje",
     "imports": [
       "resources/js/app.js"
@@ -35,8 +35,8 @@
     "file": "assets/Mensaje-BCnomaqz.css",
     "src": "_Mensaje.vue_vue_type_style_index_0_lang-!~{00C}~.js"
   },
-  "_Modal-Bjp9fFBa.js": {
-    "file": "assets/Modal-Bjp9fFBa.js",
+  "_Modal-BIqAe5cN.js": {
+    "file": "assets/Modal-BIqAe5cN.js",
     "name": "Modal",
     "imports": [
       "resources/js/app.js"
@@ -46,8 +46,8 @@
     "file": "assets/PrimaryButton-B1h9Ufmx.css",
     "src": "_PrimaryButton-!~{00E}~.js"
   },
-  "_PrimaryButton-CNU-BCWe.js": {
-    "file": "assets/PrimaryButton-CNU-BCWe.js",
+  "_PrimaryButton-hwz7cc8j.js": {
+    "file": "assets/PrimaryButton-hwz7cc8j.js",
     "name": "PrimaryButton",
     "imports": [
       "resources/js/app.js"
@@ -60,12 +60,12 @@
     "file": "assets/DirectivoLayout-B5c5mB6U.css",
     "src": "_DirectivoLayout-!~{00A}~.js"
   },
-  "_PrincipalLayout-BEzDkHmH.js": {
-    "file": "assets/PrincipalLayout-BEzDkHmH.js",
+  "_PrincipalLayout-BDKnuH8s.js": {
+    "file": "assets/PrincipalLayout-BDKnuH8s.js",
     "name": "PrincipalLayout",
     "imports": [
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/DirectivoLayout-B5c5mB6U.css"
@@ -75,12 +75,12 @@
     "file": "assets/RHLayout-CGvxUS8k.css",
     "src": "_RHLayout-!~{00L}~.js"
   },
-  "_RHLayout-MA2Mw-dC.js": {
-    "file": "assets/RHLayout-MA2Mw-dC.js",
+  "_RHLayout-BCIpm4c1.js": {
+    "file": "assets/RHLayout-BCIpm4c1.js",
     "name": "RHLayout",
     "imports": [
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/RHLayout-CGvxUS8k.css"
@@ -94,14 +94,14 @@
     "file": "assets/Reportes-C4TkVVYL.css",
     "src": "resources/js/Pages/Principal/Reportes.vue"
   },
-  "_ReportesUltimasCorridas-C0DPzGJE.js": {
-    "file": "assets/ReportesUltimasCorridas-C0DPzGJE.js",
+  "_ReportesUltimasCorridas-B1wlkmtV.js": {
+    "file": "assets/ReportesUltimasCorridas-B1wlkmtV.js",
     "name": "ReportesUltimasCorridas",
     "imports": [
       "resources/js/app.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
       "_xlsx-DjuO7_Ju.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Reportes-C4TkVVYL.css"
@@ -111,26 +111,26 @@
     "file": "assets/DirectivoLayout-B5c5mB6U.css",
     "src": "_DirectivoLayout-!~{00A}~.js"
   },
-  "_ServicioLayout-2iSDgjFc.js": {
-    "file": "assets/ServicioLayout-2iSDgjFc.js",
+  "_ServicioLayout-Dsi-3PP6.js": {
+    "file": "assets/ServicioLayout-Dsi-3PP6.js",
     "name": "ServicioLayout",
     "imports": [
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/DirectivoLayout-B5c5mB6U.css"
     ]
   },
-  "_buttons.print-CeO9JwKC.js": {
-    "file": "assets/buttons.print-CeO9JwKC.js",
+  "_buttons.print-BXfVNE5J.js": {
+    "file": "assets/buttons.print-BXfVNE5J.js",
     "name": "buttons.print",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_jspdf.plugin.autotable-BTe9mpkE.js": {
-    "file": "assets/jspdf.plugin.autotable-BTe9mpkE.js",
+  "_jspdf.plugin.autotable-CSGy4KJx.js": {
+    "file": "assets/jspdf.plugin.autotable-CSGy4KJx.js",
     "name": "jspdf.plugin.autotable",
     "imports": [
       "resources/js/app.js"
@@ -154,13 +154,13 @@
     "name": "xlsx"
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-BlMPpxdI.js",
+    "file": "assets/index.es-DC7-IdOU.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ]
   },
   "node_modules/dompurify/dist/purify.es.js": {
@@ -181,30 +181,30 @@
     "isEntry": true
   },
   "resources/js/Pages/Directivo/FormarUnidades.vue": {
-    "file": "assets/FormarUnidades-D1GuXjhh.js",
+    "file": "assets/FormarUnidades-PZ41FybC.js",
     "name": "FormarUnidades",
     "src": "resources/js/Pages/Directivo/FormarUnidades.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
-      "_DirectivoLayout-BXTpDPbb.js"
+      "_buttons.print-BXfVNE5J.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
+      "_DirectivoLayout-DrQw7j1s.js"
     ],
     "css": [
       "assets/FormarUnidades-qQhA_3wV.css"
     ]
   },
   "resources/js/Pages/Directivo/Inicio.vue": {
-    "file": "assets/Inicio-CEWe2QXk.js",
+    "file": "assets/Inicio-Bw5yofdo.js",
     "name": "Inicio",
     "src": "resources/js/Pages/Directivo/Inicio.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_Mensaje-BFSGHBKc.js",
-      "_DirectivoLayout-BXTpDPbb.js",
+      "_Mensaje-CC0bEoik.js",
+      "_DirectivoLayout-DrQw7j1s.js",
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Inicio-BS1lABqT.css",
@@ -212,61 +212,61 @@
     ]
   },
   "resources/js/Pages/Directivo/Perfil.vue": {
-    "file": "assets/Perfil-BQ4jUHSN.js",
+    "file": "assets/Perfil-DxxtDYHw.js",
     "name": "Perfil",
     "src": "resources/js/Pages/Directivo/Perfil.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_InputLabel-D3cYTjCz.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_DirectivoLayout-BXTpDPbb.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_InputLabel-HXdO_cpZ.js",
+      "_Mensaje-CC0bEoik.js",
+      "_DirectivoLayout-DrQw7j1s.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Mensaje-BCnomaqz.css"
     ]
   },
   "resources/js/Pages/Login/Login.vue": {
-    "file": "assets/Login-DIUpv4b9.js",
+    "file": "assets/Login-Cdww3-1W.js",
     "name": "Login",
     "src": "resources/js/Pages/Login/Login.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_PrimaryButton-CNU-BCWe.js",
-      "_InputLabel-D3cYTjCz.js",
-      "_Mensaje-BFSGHBKc.js"
+      "_PrimaryButton-hwz7cc8j.js",
+      "_InputLabel-HXdO_cpZ.js",
+      "_Mensaje-CC0bEoik.js"
     ],
     "css": [
       "assets/Mensaje-BCnomaqz.css"
     ]
   },
   "resources/js/Pages/Login/RegisterFT.vue": {
-    "file": "assets/RegisterFT-wnxQEyET.js",
+    "file": "assets/RegisterFT-DGnmdmvi.js",
     "name": "RegisterFT",
     "src": "resources/js/Pages/Login/RegisterFT.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_PrimaryButton-CNU-BCWe.js",
-      "_InputLabel-D3cYTjCz.js"
+      "_PrimaryButton-hwz7cc8j.js",
+      "_InputLabel-HXdO_cpZ.js"
     ]
   },
   "resources/js/Pages/Principal/AdminUsuarios.vue": {
-    "file": "assets/AdminUsuarios-cwRZlSg3.js",
+    "file": "assets/AdminUsuarios-DXzCn9Oi.js",
     "name": "AdminUsuarios",
     "src": "resources/js/Pages/Principal/AdminUsuarios.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_buttons.print-BXfVNE5J.js",
+      "_Mensaje-CC0bEoik.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Modal-Bjp9fFBa.js",
-      "_InputLabel-D3cYTjCz.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Modal-BIqAe5cN.js",
+      "_InputLabel-HXdO_cpZ.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -275,17 +275,17 @@
     ]
   },
   "resources/js/Pages/Principal/FormarUnidades.vue": {
-    "file": "assets/FormarUnidades-CRIk5g1c.js",
+    "file": "assets/FormarUnidades-DtiAkB0U.js",
     "name": "FormarUnidades",
     "src": "resources/js/Pages/Principal/FormarUnidades.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
-      "_Modal-Bjp9fFBa.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_buttons.print-BXfVNE5J.js",
+      "_Modal-BIqAe5cN.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -294,15 +294,15 @@
     ]
   },
   "resources/js/Pages/Principal/Inicio.vue": {
-    "file": "assets/Inicio-CJAFCYai.js",
+    "file": "assets/Inicio-289LEYiH.js",
     "name": "Inicio",
     "src": "resources/js/Pages/Principal/Inicio.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_Mensaje-BFSGHBKc.js",
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_Mensaje-CC0bEoik.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Inicio-BS1lABqT.css",
@@ -310,18 +310,18 @@
     ]
   },
   "resources/js/Pages/Principal/Operadores.vue": {
-    "file": "assets/Operadores-Bs9fS4ZG.js",
+    "file": "assets/Operadores-BAvlCzV2.js",
     "name": "Operadores",
     "src": "resources/js/Pages/Principal/Operadores.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Modal-Bjp9fFBa.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Modal-BIqAe5cN.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -330,15 +330,15 @@
     ]
   },
   "resources/js/Pages/Principal/Reportes.vue": {
-    "file": "assets/Reportes-BiJ9Kd5g.js",
+    "file": "assets/Reportes-DiC6s3gh.js",
     "name": "Reportes",
     "src": "resources/js/Pages/Principal/Reportes.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_PrincipalLayout-BEzDkHmH.js",
-      "_ReportesUltimasCorridas-C0DPzGJE.js",
+      "_PrincipalLayout-BDKnuH8s.js",
+      "_ReportesUltimasCorridas-B1wlkmtV.js",
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
       "_xlsx-DjuO7_Ju.js"
     ],
@@ -347,18 +347,18 @@
     ]
   },
   "resources/js/Pages/Principal/Rutas.vue": {
-    "file": "assets/Rutas-DN1GI2E_.js",
+    "file": "assets/Rutas-teEGGunU.js",
     "name": "Rutas",
     "src": "resources/js/Pages/Principal/Rutas.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Modal-Bjp9fFBa.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Modal-BIqAe5cN.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -367,18 +367,18 @@
     ]
   },
   "resources/js/Pages/Principal/SociosPrestadores.vue": {
-    "file": "assets/SociosPrestadores-BM57VM_Q.js",
+    "file": "assets/SociosPrestadores-DPcFClji.js",
     "name": "SociosPrestadores",
     "src": "resources/js/Pages/Principal/SociosPrestadores.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Modal-Bjp9fFBa.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Modal-BIqAe5cN.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -387,18 +387,18 @@
     ]
   },
   "resources/js/Pages/Principal/Unidades.vue": {
-    "file": "assets/Unidades-B0hhRhvC.js",
+    "file": "assets/Unidades-DUosWQsS.js",
     "name": "Unidades",
     "src": "resources/js/Pages/Principal/Unidades.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_PrincipalLayout-BEzDkHmH.js",
+      "_PrincipalLayout-BDKnuH8s.js",
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Modal-Bjp9fFBa.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Modal-BIqAe5cN.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -407,16 +407,16 @@
     ]
   },
   "resources/js/Pages/RH/FormarUnidades.vue": {
-    "file": "assets/FormarUnidades-Bx78pe-D.js",
+    "file": "assets/FormarUnidades-CDA4gGuZ.js",
     "name": "FormarUnidades",
     "src": "resources/js/Pages/RH/FormarUnidades.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_buttons.print-BXfVNE5J.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js",
-      "_RHLayout-MA2Mw-dC.js"
+      "_RHLayout-BCIpm4c1.js"
     ],
     "css": [
       "assets/FormarUnidades-qQhA_3wV.css",
@@ -424,18 +424,18 @@
     ]
   },
   "resources/js/Pages/RH/Incapacidades.vue": {
-    "file": "assets/Incapacidades-BEN4f2uZ.js",
+    "file": "assets/Incapacidades-CdgYLmQW.js",
     "name": "Incapacidades",
     "src": "resources/js/Pages/RH/Incapacidades.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -444,15 +444,15 @@
     ]
   },
   "resources/js/Pages/RH/Inicio.vue": {
-    "file": "assets/Inicio-Hm2o_qEa.js",
+    "file": "assets/Inicio-BJhbhGhY.js",
     "name": "Inicio",
     "src": "resources/js/Pages/RH/Inicio.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Inicio-BS1lABqT.css",
@@ -460,18 +460,18 @@
     ]
   },
   "resources/js/Pages/RH/Movimientos.vue": {
-    "file": "assets/Movimientos-CmCgPdU3.js",
+    "file": "assets/Movimientos-D0YWCMPa.js",
     "name": "Movimientos",
     "src": "resources/js/Pages/RH/Movimientos.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Movimientos-DtaVCdIr.css",
@@ -479,19 +479,19 @@
     ]
   },
   "resources/js/Pages/RH/Operadores.vue": {
-    "file": "assets/Operadores-Dd_2bzE7.js",
+    "file": "assets/Operadores-OANuJknG.js",
     "name": "Operadores",
     "src": "resources/js/Pages/RH/Operadores.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_Modal-Bjp9fFBa.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_Modal-BIqAe5cN.js",
       "_xlsx-DjuO7_Ju.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Operadores-D7yMtnnj.css",
@@ -499,34 +499,34 @@
     ]
   },
   "resources/js/Pages/RH/Perfil.vue": {
-    "file": "assets/Perfil-YRUT-tA7.js",
+    "file": "assets/Perfil-B-RVkl_m.js",
     "name": "Perfil",
     "src": "resources/js/Pages/RH/Perfil.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_InputLabel-D3cYTjCz.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_InputLabel-HXdO_cpZ.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Mensaje-BCnomaqz.css"
     ]
   },
   "resources/js/Pages/RH/PersonalAdministrativo.vue": {
-    "file": "assets/PersonalAdministrativo-sdvnBr2w.js",
+    "file": "assets/PersonalAdministrativo-D8SfzrU2.js",
     "name": "PersonalAdministrativo",
     "src": "resources/js/Pages/RH/PersonalAdministrativo.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -535,34 +535,34 @@
     ]
   },
   "resources/js/Pages/RH/Reportes.vue": {
-    "file": "assets/Reportes-BM7bZsbp.js",
+    "file": "assets/Reportes-DE7HK2-X.js",
     "name": "Reportes",
     "src": "resources/js/Pages/RH/Reportes.vue",
     "isDynamicEntry": true,
     "imports": [
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "resources/js/app.js",
       "_xlsx-DjuO7_Ju.js",
-      "_RHLayout-MA2Mw-dC.js"
+      "_RHLayout-BCIpm4c1.js"
     ],
     "css": [
       "assets/Reportes-C4TkVVYL.css"
     ]
   },
   "resources/js/Pages/RH/SociosPrestadores.vue": {
-    "file": "assets/SociosPrestadores-Dupzy4Up.js",
+    "file": "assets/SociosPrestadores-12uxpR-3.js",
     "name": "SociosPrestadores",
     "src": "resources/js/Pages/RH/SociosPrestadores.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -571,18 +571,18 @@
     ]
   },
   "resources/js/Pages/RH/Vacaciones.vue": {
-    "file": "assets/Vacaciones-BQjCk8sM.js",
+    "file": "assets/Vacaciones-CtfMY8fh.js",
     "name": "Vacaciones",
     "src": "resources/js/Pages/RH/Vacaciones.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_RHLayout-MA2Mw-dC.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Mensaje-CC0bEoik.js",
+      "_RHLayout-BCIpm4c1.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -591,19 +591,19 @@
     ]
   },
   "resources/js/Pages/Servicio/FormarUnidades.vue": {
-    "file": "assets/FormarUnidades-j38E7wCL.js",
+    "file": "assets/FormarUnidades-C1MJZVJP.js",
     "name": "FormarUnidades",
     "src": "resources/js/Pages/Servicio/FormarUnidades.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_buttons.print-BXfVNE5J.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
       "_xlsx-DjuO7_Ju.js",
-      "_ServicioLayout-2iSDgjFc.js",
-      "_Modal-Bjp9fFBa.js"
+      "_ServicioLayout-Dsi-3PP6.js",
+      "_Modal-BIqAe5cN.js"
     ],
     "css": [
       "assets/FormarUnidades-Bn46L3y8.css",
@@ -612,15 +612,15 @@
     ]
   },
   "resources/js/Pages/Servicio/Inicio.vue": {
-    "file": "assets/Inicio-CFbN3hmF.js",
+    "file": "assets/Inicio-Bt0MYLH5.js",
     "name": "Inicio",
     "src": "resources/js/Pages/Servicio/Inicio.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_Mensaje-BFSGHBKc.js",
-      "_ServicioLayout-2iSDgjFc.js",
+      "_Mensaje-CC0bEoik.js",
+      "_ServicioLayout-Dsi-3PP6.js",
       "resources/js/app.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Inicio-BS1lABqT.css",
@@ -628,17 +628,17 @@
     ]
   },
   "resources/js/Pages/Servicio/Operadores.vue": {
-    "file": "assets/Operadores-Cm57G3So.js",
+    "file": "assets/Operadores-B6L16JWZ.js",
     "name": "Operadores",
     "src": "resources/js/Pages/Servicio/Operadores.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_ServicioLayout-2iSDgjFc.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_ServicioLayout-Dsi-3PP6.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -647,51 +647,51 @@
     ]
   },
   "resources/js/Pages/Servicio/Perfil.vue": {
-    "file": "assets/Perfil-Bme4bRnq.js",
+    "file": "assets/Perfil-_jod0bC0.js",
     "name": "Perfil",
     "src": "resources/js/Pages/Servicio/Perfil.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_InputLabel-D3cYTjCz.js",
-      "_ServicioLayout-2iSDgjFc.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_InputLabel-HXdO_cpZ.js",
+      "_ServicioLayout-Dsi-3PP6.js",
+      "_Mensaje-CC0bEoik.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Mensaje-BCnomaqz.css"
     ]
   },
   "resources/js/Pages/Servicio/Reportes.vue": {
-    "file": "assets/Reportes-D3jw7hLx.js",
+    "file": "assets/Reportes-Bx_1i7Kc.js",
     "name": "Reportes",
     "src": "resources/js/Pages/Servicio/Reportes.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_ReportesUltimasCorridas-C0DPzGJE.js",
-      "_ServicioLayout-2iSDgjFc.js",
+      "_ReportesUltimasCorridas-B1wlkmtV.js",
+      "_ServicioLayout-Dsi-3PP6.js",
       "resources/js/app.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
       "_xlsx-DjuO7_Ju.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js"
+      "_jspdf.plugin.autotable-CSGy4KJx.js"
     ],
     "css": [
       "assets/Reportes-C4TkVVYL.css"
     ]
   },
   "resources/js/Pages/Servicio/Rutas.vue": {
-    "file": "assets/Rutas-xj1KkH8X.js",
+    "file": "assets/Rutas-BOZws-wR.js",
     "name": "Rutas",
     "src": "resources/js/Pages/Servicio/Rutas.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_ServicioLayout-2iSDgjFc.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Mensaje-CC0bEoik.js",
+      "_ServicioLayout-Dsi-3PP6.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -700,17 +700,17 @@
     ]
   },
   "resources/js/Pages/Servicio/SociosPrestadores.vue": {
-    "file": "assets/SociosPrestadores-BY1l6Nyr.js",
+    "file": "assets/SociosPrestadores-CTV1KtCP.js",
     "name": "SociosPrestadores",
     "src": "resources/js/Pages/Servicio/SociosPrestadores.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_ServicioLayout-2iSDgjFc.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_ServicioLayout-Dsi-3PP6.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -719,18 +719,18 @@
     ]
   },
   "resources/js/Pages/Servicio/Unidades.vue": {
-    "file": "assets/Unidades-CqJaLDM4.js",
+    "file": "assets/Unidades-DOX8UZit.js",
     "name": "Unidades",
     "src": "resources/js/Pages/Servicio/Unidades.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_buttons.print-CeO9JwKC.js",
+      "_buttons.print-BXfVNE5J.js",
       "_sweetalert2.esm.all-BGf-Fe8G.js",
-      "_Mensaje-BFSGHBKc.js",
-      "_ServicioLayout-2iSDgjFc.js",
-      "_Modal-Bjp9fFBa.js",
-      "_jspdf.plugin.autotable-BTe9mpkE.js",
+      "_Mensaje-CC0bEoik.js",
+      "_ServicioLayout-Dsi-3PP6.js",
+      "_Modal-BIqAe5cN.js",
+      "_jspdf.plugin.autotable-CSGy4KJx.js",
       "_xlsx-DjuO7_Ju.js"
     ],
     "css": [
@@ -740,7 +740,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-2xp5whC9.js",
+    "file": "assets/app-Bz4fJZhJ.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
