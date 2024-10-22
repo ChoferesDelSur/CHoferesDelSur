@@ -9,6 +9,7 @@ import ReportesCastigos from '../../Components/Reportes/ReportesCastigos.vue';
 import ReportesUltimasCorridas from '../../Components/Reportes/ReportesUltimasCorridas.vue';
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 import ReporteOperadoresSinTrabajar from '../../Components/Reportes/ReporteOperadoresSinTrabajar.vue';
+import ReportesMultasDominicales from '../../Components/Reportes/ReportesMultasDominicales.vue';
 
 const props = defineProps({
     message: { String, default: '' },
@@ -69,6 +70,8 @@ const props = defineProps({
             <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador"/>
 
             <ReporteOperadoresSinTrabajar :unidad="props.unidad" :operador="props.operador"/>
+
+            <ReportesMultasDominicales :unidad="props.unidad" :entrada="props.entrada" :corte="props.corte"/>
 
         </div>
     </ServicioLayout>

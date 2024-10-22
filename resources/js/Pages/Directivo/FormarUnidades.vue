@@ -548,7 +548,7 @@ const unidadesFiltradas = computed(() => {
 <template>
   <DirectivoLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
-      <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
+      <h2 class="font-bold text-center text-xl pt-0"> Formación de Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
       <div class="overflow-x-auto relative">

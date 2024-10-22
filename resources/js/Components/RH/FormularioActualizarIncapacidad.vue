@@ -68,7 +68,7 @@ watch([() => form.numeroDias, () => form.fechaInicio], ([newNumeroDias, newFecha
     if (newNumeroDias && newFechaInicio) {
         const startDate = new Date(newFechaInicio);
         const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + parseInt(newNumeroDias, 10));
+        endDate.setDate(startDate.getDate() + parseInt(newNumeroDias, 10)-1);
         form.fechaFin = endDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     }
 });

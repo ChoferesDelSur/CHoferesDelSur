@@ -571,7 +571,7 @@ class ServicioController extends Controller
         }
     }
 
-    public function asignarOperador(Request $request)
+    /* public function asignarOperador(Request $request)
     {
         try{
             // Obtener los IDs de la unidad y el operador del request
@@ -591,7 +591,69 @@ class ServicioController extends Controller
         }catch(Exception $e){
             return redirect()->route('servicio.unidades')->with(['message' => 'Error al asignar operador', 'color' => 'red', 'type' => 'error']);
         }
-    }
+    } */
+
+    public function asignarOperador(Request $request)
+    {
+        try {
+            // Obtener los IDs de la unidad y el operador del request
+            $unidadId = $request->input('unidad');
+            $operadorId = $request->input('operador');
+            
+            // Buscar la unidad y el operador en la base de datos
+            $unidad = unidad::findOrFail($unidadId);
+            $operador = operador::findOrFail($operadorId);
+    
+            // Asignar el operador a la unidad
+            $unidad->idOperador = $operadorId; 
+            $unidad->save();
+    
+            // Actualizar los registros de 'entrada' para hoy
+            $entradasHoy = entrada::where('idUnidad', $unidadId)
+                ->whereDate('created_at', Carbon::today())
+                ->get();
+    
+            foreach ($entradasHoy as $entrada) {
+                $entrada->idOperador = $operadorId;
+                $entrada->save();
+            }
+    
+            // Actualizar los registros de 'corte' para hoy
+            $cortesHoy = corte::where('idUnidad', $unidadId)
+                ->whereDate('created_at', Carbon::today())
+                ->get();
+    
+            foreach ($cortesHoy as $corte) {
+                $corte->idOperador = $operadorId;
+                $corte->save();
+            }
+    
+            // Actualizar los registros de 'castigo' para hoy
+            $castigosHoy = castigo::where('idUnidad', $unidadId)
+                ->whereDate('created_at', Carbon::today())
+                ->get();
+    
+            foreach ($castigosHoy as $castigo) {
+                $castigo->idOperador = $operadorId;
+                $castigo->save();
+            }
+    
+            // Actualizar los registros de 'ultimaCorrida' para hoy
+            $ultimaCorridaHoy = ultimaCorrida::where('idUnidad', $unidadId)
+                ->whereDate('created_at', Carbon::today())
+                ->get();
+    
+            foreach ($ultimaCorridaHoy as $uc) {
+                $uc->idOperador = $operadorId;
+                $uc->save();
+            }
+    
+            // Retornar un mensaje de éxito
+            return redirect()->route('servicio.unidades')->with(['message' => 'Operador asignado correctamente a la unidad y actualizado en todos los registros.', "color" => "green", 'type' => 'success']);
+        } catch (\Exception $e) {
+            return redirect()->route('servicio.unidades')->with(['message' => 'Error al asignar operador: ' . $e->getMessage(), 'color' => 'red', 'type' => 'error']);
+        }
+    }    
 
     public function quitarOperador(Request $request)
     {
@@ -1590,16 +1652,16 @@ class ServicioController extends Controller
         try {
             switch ($tipoRegistro) {
                 case 'entradas':
-                    $registro = Entrada::findOrFail($id);
+                    $registro = entrada::findOrFail($id);
                     break;
                 case 'cortes':
-                    $registro = Corte::findOrFail($id);
+                    $registro = corte::findOrFail($id);
                     break;
                 case 'castigos':
-                    $registro = Castigo::findOrFail($id);
+                    $registro = castigo::findOrFail($id);
                     break;
                 case 'ultima_corrida':
-                    $registro = UltimaCorrida::findOrFail($id);
+                    $registro = ultimaCorrida::findOrFail($id);
                     break;
                 default:
                 return redirect()->route('servicio.formarUni')->with([

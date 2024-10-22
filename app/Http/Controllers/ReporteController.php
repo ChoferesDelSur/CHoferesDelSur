@@ -701,4 +701,67 @@ class ReporteController extends Controller
         }
     }
 
+    public function reporteMultasDominicales()
+{
+    try {
+        // Obtener el domingo más reciente
+        $domingoReciente = Carbon::now()->previous(Carbon::SUNDAY);
+        // Obtener el sábado anterior al domingo reciente
+        $sabadoAnterior = $domingoReciente->copy()->subDay();
+        
+        // Paso 1: Obtener unidades que no trabajaron o no registraron entrada el domingo
+        $unidadesSinEntradaDomingo = DB::table('unidad')
+            ->leftJoin('entrada', function($join) use ($domingoReciente) {
+                $join->on('unidad.idUnidad', '=', 'entrada.idUnidad')
+                    ->whereDate('entrada.created_at', '=', $domingoReciente); // Comparamos con la fecha de creación
+            })
+            ->whereNull('entrada.idEntrada') // Unidades que no registraron entrada
+            ->pluck('unidad.idUnidad');
+        
+        // Paso 2: Filtrar las unidades que sí deberían haber trabajado el domingo
+        $unidadesTrabajanDomingo = DB::table('rolServicio')
+            ->whereIn('idUnidad', $unidadesSinEntradaDomingo)
+            ->where('trabajaDomingo', 'SI')
+            ->pluck('idUnidad'); // Obtenemos solo los IDs de las unidades que sí trabajan el domingo
+        
+        // Paso 3: Obtener unidades sancionables con relaciones
+        $unidadesSancionables = unidad::with(['operador', 'rolServicio', 'entradas', 'cortes', 'ruta', 'directivo'])
+            ->leftJoin('entrada as entradaSabado', function($join) use ($sabadoAnterior) {
+                $join->on('unidad.idUnidad', '=', 'entradaSabado.idUnidad')
+                    ->whereDate('entradaSabado.created_at', '=', $sabadoAnterior); // Comparar con la fecha de creación
+            })
+            ->leftJoin('corte', function($join) use ($sabadoAnterior) {
+                $join->on('unidad.idUnidad', '=', 'corte.idUnidad')
+                    ->whereDate('corte.created_at', '=', $sabadoAnterior); // Usamos la fecha de creación del corte
+            })
+            ->whereIn('unidad.idUnidad', $unidadesTrabajanDomingo) // Solo consideramos las que trabajan el domingo
+            ->where(function($query) {
+                $query->whereNull('entradaSabado.idEntrada') // No registraron entrada el sábado
+                    ->orWhere(function($query) {
+                        $query->whereNotNull('corte.horaCorte') // Tuvieron corte
+                                ->whereNull('corte.horaRegreso'); // Pero no regresaron
+                    });
+            })
+            ->get(['unidad.*']); // Obtener todos los datos de las unidades
+        
+        // Paso 4: Filtrar unidades que tuvieron entrada el lunes después del domingo antes de las 10 am
+        $lunesDespuesDelDomingo = $domingoReciente->copy()->addDay(); // Obtener el lunes después del domingo reciente
+        
+        $unidadesConEntradaTemprana = entrada::whereIn('idUnidad', $unidadesSancionables->pluck('idUnidad'))
+            ->whereDate('created_at', '=', $lunesDespuesDelDomingo) // Comparar la fecha de creación (lunes)
+            ->whereTime('horaEntrada', '<', '10:00:00') // Hora antes de las 10 am
+            ->pluck('idUnidad');
+        
+        // Obtener la lista final de unidades sancionables
+        $unidadesMulta = $unidadesSancionables->merge($unidadesConEntradaTemprana)->unique('idUnidad');
+        
+        // Devolver la lista de unidades que recibirán multa
+        return response()->json($unidadesMulta);
+    } catch (Exception $e) {
+        // Capturamos el error y lo mostramos como respuesta JSON
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500); // Retornamos el error con código 500
+    }
+}   
 }

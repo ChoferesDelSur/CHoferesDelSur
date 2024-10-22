@@ -60,7 +60,7 @@ const validateSelect = (unidadesSi, unidadesNo) => {
 const unidadError = ref('');
 
 const save = async () => {
-    unidadError.value = validateSelect(form.unidadesSi, form.unidadesNo) ? '' : 'Seleccione al menos una unidad en cualquiera de los select.';
+    unidadError.value = validateSelect(form.unidadesSi, form.unidadesNo) ? '' : 'Seleccione al menos una unidad en cualquiera de las opciones.';
 
     if (unidadError.value) {
         return;
@@ -125,9 +125,9 @@ watch(() => props.unidad, (newUnidades) => {
                 </p>
 
                 <div class="sm:col-span-2 px-4">
-                    <label for="unidadesSi" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                    <label for="unidadesNo" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                     <div class="mt-2">
-                        <select name="unidadesSi" id="unidadesSi" v-model="form.unidadesSi" multiple size="10"
+                        <select name="unidadesNo" id="unidadesNo" v-model="form.unidadesNo" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
                             <option v-for="carro in form.unidad" :key="carro.idUnidad" :value="carro.idUnidad">
@@ -143,9 +143,9 @@ watch(() => props.unidad, (newUnidades) => {
                 </p>
 
                 <div class="sm:col-span-2 px-4">
-                    <label for="unidadesNo" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
+                    <label for="unidadesSi" class="block text-sm font-medium leading-6 text-gray-900">Unidad</label>
                     <div class="mt-2">
-                        <select name="unidadesNo" id="unidadesNo" v-model="form.unidadesNo" multiple size="10"
+                        <select name="unidadesSi" id="unidadesSi" v-model="form.unidadesSi" multiple size="10"
                             class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             <option disabled>Seleccione una o más unidades</option>
                             <option v-for="carro in form.unidad" :key="carro.idUnidad" :value="carro.idUnidad">
