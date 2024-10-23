@@ -577,6 +577,14 @@ class RHController extends Controller
                 // Actualizar el estado del operador a 'incapacidad' (idEstado = 3)
                 $operador->update(['idEstado' => 3]);
                 $nombreCompleto = $operador->nombre_completo;
+
+                // Disociar el operador de la unidad si está asociado
+                $unidad = $operador->unidad;
+                if ($unidad) {
+                    $unidad->operador()->dissociate(); // Disociar el operador de la unidad
+                    $unidad->save(); // Guardar cambios en la unidad
+                }
+
             } else {
                 $nombreCompleto = 'desconocido';
             }    
@@ -952,6 +960,14 @@ class RHController extends Controller
                 case 2: // Baja
                     $operador->idEstado = 2; // Estado de Baja
                     $operador->fechaBaja = $fechaMovimiento; // Actualizar fechaBaja
+
+                    // Disociar el operador de la unidad si está asociado
+                    $unidad = $operador->unidad;
+                    if ($unidad) {
+                        $unidad->operador()->dissociate(); // Disociar el operador de la unidad
+                        $unidad->save(); // Guardar cambios en la unidad
+                    }
+                    
                     // Restar 1 de numOperadores
                     if ($directivo->numOperadores > 0) {
                         $directivo->numOperadores -= 1; // Evitar números negativos
