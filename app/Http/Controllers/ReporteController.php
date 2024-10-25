@@ -672,20 +672,26 @@ class ReporteController extends Controller
         public function obtenerOperadoresSinTrabajarPorSemana($semana)
     {
         try {
-            // Calcular el inicio y fin de la semana
+            // Calcular el inicio y fin de la semana (lunes a viernes)
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
-            $finSemana = $inicioSemana->copy()->endOfWeek();
+            $finSemana = $inicioSemana->copy()->addDays(4); // Solo hasta el viernes
 
-            // Obtener todos los operadores
-            $todosOperadores = operador::all();
+            // Obtener el id del estado "Alta"
+            $estadoAlta = estado::where('estado', 'Alta')->first();
 
-            // Obtener los operadores que trabajaron durante la semana
+            // Obtener operadores en estado Alta que trabajaron al menos un día de lunes a viernes
             $operadoresConEntradas = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->whereHas('operador', function ($query) use ($estadoAlta) {
+                    $query->where('idEstado', $estadoAlta->idEstado);
+                })
                 ->pluck('idOperador')
                 ->unique();
 
-            // Filtrar los operadores que no trabajaron
-            $operadoresSinTrabajar = $todosOperadores->filter(function ($operador) use ($operadoresConEntradas) {
+            // Obtener todos los operadores en estado Alta
+            $todosOperadoresAlta = operador::where('idEstado', $estadoAlta->idEstado)->get();
+
+            // Filtrar los operadores que no trabajaron de lunes a viernes
+            $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {
                 return !$operadoresConEntradas->contains($operador->idOperador);
             })->map(function ($operador) {
                 return [
@@ -699,69 +705,59 @@ class ReporteController extends Controller
             Log::error('Error al obtener operadores sin trabajar por semana', ['details' => $e->getMessage()]);
             return response()->json(['error' => 'Error al obtener operadores sin trabajar por semana', 'details' => $e->getMessage()], 500);
         }
-    }
+    }    
 
-    public function reporteMultasDominicales()
-{
-    try {
-        // Obtener el domingo más reciente
-        $domingoReciente = Carbon::now()->previous(Carbon::SUNDAY);
-        // Obtener el sábado anterior al domingo reciente
-        $sabadoAnterior = $domingoReciente->copy()->subDay();
-        
-        // Paso 1: Obtener unidades que no trabajaron o no registraron entrada el domingo
-        $unidadesSinEntradaDomingo = DB::table('unidad')
-            ->leftJoin('entrada', function($join) use ($domingoReciente) {
-                $join->on('unidad.idUnidad', '=', 'entrada.idUnidad')
-                    ->whereDate('entrada.created_at', '=', $domingoReciente); // Comparamos con la fecha de creación
-            })
-            ->whereNull('entrada.idEntrada') // Unidades que no registraron entrada
-            ->pluck('unidad.idUnidad');
-        
-        // Paso 2: Filtrar las unidades que sí deberían haber trabajado el domingo
-        $unidadesTrabajanDomingo = DB::table('rolServicio')
-            ->whereIn('idUnidad', $unidadesSinEntradaDomingo)
-            ->where('trabajaDomingo', 'SI')
-            ->pluck('idUnidad'); // Obtenemos solo los IDs de las unidades que sí trabajan el domingo
-        
-        // Paso 3: Obtener unidades sancionables con relaciones
-        $unidadesSancionables = unidad::with(['operador', 'rolServicio', 'entradas', 'cortes', 'ruta', 'directivo'])
-            ->leftJoin('entrada as entradaSabado', function($join) use ($sabadoAnterior) {
-                $join->on('unidad.idUnidad', '=', 'entradaSabado.idUnidad')
-                    ->whereDate('entradaSabado.created_at', '=', $sabadoAnterior); // Comparar con la fecha de creación
-            })
-            ->leftJoin('corte', function($join) use ($sabadoAnterior) {
-                $join->on('unidad.idUnidad', '=', 'corte.idUnidad')
-                    ->whereDate('corte.created_at', '=', $sabadoAnterior); // Usamos la fecha de creación del corte
-            })
-            ->whereIn('unidad.idUnidad', $unidadesTrabajanDomingo) // Solo consideramos las que trabajan el domingo
-            ->where(function($query) {
-                $query->whereNull('entradaSabado.idEntrada') // No registraron entrada el sábado
-                    ->orWhere(function($query) {
-                        $query->whereNotNull('corte.horaCorte') // Tuvieron corte
-                                ->whereNull('corte.horaRegreso'); // Pero no regresaron
-                    });
-            })
-            ->get(['unidad.*']); // Obtener todos los datos de las unidades
-        
-        // Paso 4: Filtrar unidades que tuvieron entrada el lunes después del domingo antes de las 10 am
-        $lunesDespuesDelDomingo = $domingoReciente->copy()->addDay(); // Obtener el lunes después del domingo reciente
-        
-        $unidadesConEntradaTemprana = entrada::whereIn('idUnidad', $unidadesSancionables->pluck('idUnidad'))
-            ->whereDate('created_at', '=', $lunesDespuesDelDomingo) // Comparar la fecha de creación (lunes)
-            ->whereTime('horaEntrada', '<', '10:00:00') // Hora antes de las 10 am
-            ->pluck('idUnidad');
-        
-        // Obtener la lista final de unidades sancionables
-        $unidadesMulta = $unidadesSancionables->merge($unidadesConEntradaTemprana)->unique('idUnidad');
-        
-        // Devolver la lista de unidades que recibirán multa
-        return response()->json($unidadesMulta);
-    } catch (Exception $e) {
-        // Capturamos el error y lo mostramos como respuesta JSON
-        return response()->json([
-            'error' => $e->getMessage()
-        ], 500); // Retornamos el error con código 500
+        public function reporteMultasDominicales()
+    {
+        try {
+            // Obtener el domingo más reciente
+            $domingoReciente = Carbon::now()->previous(Carbon::SUNDAY);
+            // Obtener el sábado anterior y el lunes después del domingo
+            $sabadoAnterior = $domingoReciente->copy()->subDay();
+            $lunesDespuesDelDomingo = $domingoReciente->copy()->addDay();
+
+            // Obtener unidades que deberían trabajar el domingo pero no lo hicieron
+            $unidadesSancionables = unidad::with(['operador', 'rolServicio', 'ruta', 'directivo'])
+                ->whereHas('rolServicio', function($query) {
+                    $query->where('trabajaDomingo', 'SI'); // Unidades que trabajan los domingos
+                })
+                ->whereDoesntHave('entradas', function($query) use ($domingoReciente) {
+                    $query->whereDate('created_at', '=', $domingoReciente); // No registraron entrada el domingo
+                })
+                ->get();
+
+            // Filtrar unidades sancionables basándose en las entradas del sábado y del lunes
+            $unidadesFiltradas = $unidadesSancionables->filter(function($unidad) use ($sabadoAnterior, $lunesDespuesDelDomingo) {
+                // Verificar si la unidad registró entrada el sábado y obtener el registro
+                $entradaSabado = $unidad->entradas()
+                ->with('operador') // Cargar también la relación operador
+                ->with('ruta')
+                ->whereDate('created_at', '=', $sabadoAnterior)->first();
+                // Verificar si la unidad registró entrada el lunes antes de las 10 a.m. y obtener el registro
+                $entradaLunesTemprana = $unidad->entradas()
+                    ->with('operador') // Cargar también la relación operador
+                    ->with('ruta')
+                    ->whereDate('created_at', '=', $lunesDespuesDelDomingo)
+                    ->whereTime('horaEntrada', '<', '10:00:00')
+                    ->first();
+
+                // Si existen las entradas, las almacenamos en la unidad
+                if ($entradaSabado) {
+                    $unidad->entradaSabado = $entradaSabado; // Guardar entrada del sábado en la unidad
+                }
+
+                if ($entradaLunesTemprana) {
+                    $unidad->entradaLunesTemprana = $entradaLunesTemprana; // Guardar entrada del lunes en la unidad
+                }
+
+                // Mantener en el listado solo si cumple con ambas condiciones
+                return $entradaSabado && $entradaLunesTemprana;
+            });
+
+            // Devolver el resultado
+            return response()->json($unidadesFiltradas);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
-}   
 }

@@ -28,13 +28,10 @@ const form = reactive({
 
 const fetchEntradas = async (semana) => {
     const url = route('reporte.opSinTrabajar', { semana });
-    console.log("URL de la API:", url); // Verifica la URL
 
     try {
         const response = await axios.get(url);
         entradas.value = Object.values(response.data);  // Convertir el objeto en un array de entradas
-        console.log("Entradas.value", entradas.value);
-        console.log("response.data", response.data);
     } catch (error) {
         console.error("Error al obtener los datos:", error.response ? error.response.data : error.message);
         Swal.fire({
@@ -163,8 +160,6 @@ const startYear = 2024; // Año inicial deseado
 const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
 
 let semanaSeleccionada = 1; // Por defecto, la primera semana
-let mesSeleccionado = 1; // Por defecto, enero
-let anioSeleccionado = currentYear; // Por defecto, el año actual
 
 const reportes = [
     { titulo: 'Operadores Sin Trabajar', periodo: 'semana', periodoSeleccionado: 'semana' },
@@ -176,21 +171,6 @@ const reportes = [
 
         <h3 class="text-lg font-bold ">{{ reporte.titulo }}</h3>
         <div class="bg-gradient-to-r from-cyan-500 to-cyan-500 h-px mb-2"></div>
-        <!-- <div class="flex flex-wrap gap-4 mb-3">
-            <h2 class="font-semibold text-l pt-0">Operador: </h2>
-            <div>
-                <div>
-                    <select name="operador" id="operador" v-model="form.operador"
-                        class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="" disabled selected>----------- Operador -----------</option>
-                        <option value="todas">Todos los operadores</option>
-                        <option v-for="chofer in operador" :key="chofer.idOperador" :value="chofer.idOperador">
-                            {{ chofer.nombre_completo }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-        </div> -->
         <div class="flex flex-wrap gap-4 mb-3">
             <div class="flex flex-wrap space-x-3 mb-2">
                 <h2 class="font-semibold text-l pt-0">Periodo: </h2>
