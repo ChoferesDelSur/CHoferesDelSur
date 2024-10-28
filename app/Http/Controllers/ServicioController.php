@@ -1395,7 +1395,11 @@ class ServicioController extends Controller
         }
 
         // Crear una ruta temporal para evitar que idRuta se quede como null
-        $rutaTemporal = ruta::create(['nombreRuta' => 'TEMPORAL']);
+        /* $rutaTemporal = ruta::create(['nombreRuta' => 'TEMPORAL']); */
+
+        // Buscar o crear una ruta temporal para evitar duplicados
+        $rutaTemporal = ruta::firstOrCreate(['nombreRuta' => 'TEMPORAL']);
+
 
         // Actualizar las unidades
         unidad::where('idRuta', $rutaLibramiento->idRuta)
@@ -1408,7 +1412,7 @@ class ServicioController extends Controller
             ->update(['idRuta' => $rutaEsmeralda->idRuta]); // Cambia el ID temporal a ESMERALDA
 
         // Eliminar la ruta temporal
-        $rutaTemporal->delete();
+        /* $rutaTemporal->delete(); */
 
         return redirect()->route('servicio.formarUni')->with([
             'message' => "Rol de rutas actualizadas correctamente",
