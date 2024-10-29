@@ -497,6 +497,7 @@ class ServicioController extends Controller
 
             // Guardar el id del directivo actual antes de realizar cambios
             $directivoAnteriorId = $unidad->idDirectivo;
+            $rutaAnteriorId = $unidad->idRuta;
 
             // Verificar si la combinación de número de unidad, ruta y directivo ya existe
             $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
@@ -519,6 +520,32 @@ class ServicioController extends Controller
             $unidad->idDirectivo = $request->directivo;
 
             $unidad->save();
+
+            // Verificar si la ruta ha cambiado
+            if ($rutaAnteriorId != $request->ruta) {
+                // Actualizar idRuta en registros de entrada, corte, castigo y ultimaCorrida para la unidad y fecha actual
+                $hoy = Carbon::today();
+
+                // Actualizar en tabla entrada
+                entrada::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $hoy)
+                    ->update(['idRuta' => $request->ruta]);
+
+                // Actualizar en tabla corte
+                corte::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $hoy)
+                    ->update(['idRuta' => $request->ruta]);
+
+                // Actualizar en tabla castigo
+                castigo::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $hoy)
+                    ->update(['idRuta' => $request->ruta]);
+
+                // Actualizar en tabla ultimaCorrida
+                ultimaCorrida::where('idUnidad', $idUnidad)
+                    ->whereDate('created_at', $hoy)
+                    ->update(['idRuta' => $request->ruta]);
+            }
 
             // Verificar si el directivo ha cambiado
             if ($directivoAnteriorId != $request->directivo) {
@@ -570,28 +597,6 @@ class ServicioController extends Controller
             return redirect()->route('servicio.unidades')->with(['message' => "No se pudo eliminar la unidad", "color" => "red"]);
         }
     }
-
-    /* public function asignarOperador(Request $request)
-    {
-        try{
-            // Obtener los IDs de la unidad y el operador del request
-        $unidadId = $request->input('unidad');
-        $operadorId = $request->input('operador');
-        
-        // Buscar la unidad y el operador en la base de datos
-        $unidad = unidad::findOrFail($unidadId);
-        $operador = operador::findOrFail($operadorId);
-
-        // Asignar el operador a la unidad
-        $unidad->idOperador = $operadorId; // Suponiendo que tienes una columna 'operador_id' en tu tabla de unidades
-        $unidad->save();
-
-        // Puedes retornar algún mensaje de éxito si lo deseas
-        return redirect()->route('servicio.unidades')->with(['message' => 'Operador asignado correctamente a la unidad.', "color" => "green", 'type' => 'success']);
-        }catch(Exception $e){
-            return redirect()->route('servicio.unidades')->with(['message' => 'Error al asignar operador', 'color' => 'red', 'type' => 'error']);
-        }
-    } */
 
     public function asignarOperador(Request $request)
     {
@@ -1394,9 +1399,6 @@ class ServicioController extends Controller
             ]);
         }
 
-        // Crear una ruta temporal para evitar que idRuta se quede como null
-        /* $rutaTemporal = ruta::create(['nombreRuta' => 'TEMPORAL']); */
-
         // Buscar o crear una ruta temporal para evitar duplicados
         $rutaTemporal = ruta::firstOrCreate(['nombreRuta' => 'TEMPORAL']);
 
@@ -1411,6 +1413,60 @@ class ServicioController extends Controller
         unidad::where('idRuta', $rutaTemporal->idRuta)
             ->update(['idRuta' => $rutaEsmeralda->idRuta]); // Cambia el ID temporal a ESMERALDA
 
+        // Actualizar registros de entrada, corte, castigo y última corrida del día actual
+        $hoy = Carbon::now()->format('Y-m-d');
+
+        // Actualizar ruta en los registros de entrada
+        entrada::where('idRuta', $rutaLibramiento->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaTemporal->idRuta]);
+
+        entrada::where('idRuta', $rutaEsmeralda->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaLibramiento->idRuta]);
+
+        entrada::where('idRuta', $rutaTemporal->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaEsmeralda->idRuta]);
+
+        // Realizar la misma actualización para la tabla corte
+        corte::where('idRuta', $rutaLibramiento->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaTemporal->idRuta]);
+
+        corte::where('idRuta', $rutaEsmeralda->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaLibramiento->idRuta]);
+
+        corte::where('idRuta', $rutaTemporal->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaEsmeralda->idRuta]);
+
+        // Realizar la misma actualización para la tabla castigo
+        castigo::where('idRuta', $rutaLibramiento->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaTemporal->idRuta]);
+
+        castigo::where('idRuta', $rutaEsmeralda->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaLibramiento->idRuta]);
+
+        castigo::where('idRuta', $rutaTemporal->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaEsmeralda->idRuta]);
+
+        // Realizar la misma actualización para la tabla ultimaCorrida
+        ultimaCorrida::where('idRuta', $rutaLibramiento->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaTemporal->idRuta]);
+
+        ultimaCorrida::where('idRuta', $rutaEsmeralda->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaLibramiento->idRuta]);
+
+        ultimaCorrida::where('idRuta', $rutaTemporal->idRuta)
+            ->whereDate('created_at', $hoy)
+            ->update(['idRuta' => $rutaEsmeralda->idRuta]);
         // Eliminar la ruta temporal
         /* $rutaTemporal->delete(); */
 

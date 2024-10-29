@@ -164,6 +164,36 @@ const columnas = [
         }
     },
     {
+        data: 'fechaAlta',
+        render: function (data, type, row, meta) {
+            // Verifica si el dato es válido
+            if (data) {
+                // Asume que la fecha está en formato yyyy-mm-dd
+                const parts = data.split('-'); // Divide la fecha en partes
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}-${month}-${year}`;
+            }
+            return '';
+        }
+    },
+    {
+        data: 'fechaBaja',
+        render: function (data, type, row, meta) {
+            // Verifica si el dato es válido
+            if (data) {
+                // Asume que la fecha está en formato yyyy-mm-dd
+                const parts = data.split('-'); // Divide la fecha en partes
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return `${day}-${month}-${year}`;
+            }
+            return '';
+        }
+    },
+    {
         data: 'idDirectivo',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
@@ -348,6 +378,14 @@ const eliminarOperadores = () => {
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Estado
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha Alta
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fecha Baja
                             </th>
                             <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
