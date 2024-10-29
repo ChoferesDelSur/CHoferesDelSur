@@ -48,4 +48,9 @@ class unidad extends Model
     {
         return $this->belongsTo(directivo::class, 'idDirectivo');
     }
+
+        public function castigos()
+    {
+        return $this->hasMany(castigo::class, 'idUnidad');
+    }
 }

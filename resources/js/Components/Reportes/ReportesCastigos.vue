@@ -43,6 +43,7 @@ const fetchEntradas = async (idUnidad, periodo) => {
     try {
         const response = await axios.get(url);
         entradas.value = response.data;
+        console.log("Datos obtenidos:",entradas.value);
     } catch (error) {
         /* console.error(error); */
         Swal.fire({
@@ -76,10 +77,12 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
     try {
         await fetchEntradas(idUnidad, periodo);
+        console.log("Estoy despues del await fetchEntradas");
         if (reporte.titulo === 'Castigos') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
+                console.log("Estoy en la opcion de formato Excel");
                 generarExcel(reporte.titulo, periodo);
             } else if (formato === 'imprimir') {
                 imprimirReporte(reporte.titulo, periodo);
@@ -164,7 +167,7 @@ const generarPDF = (tipo, periodoSeleccionado) => {
 
 const generarExcel = (tipo, periodoSeleccionado) => {
     let periodoTexto;
-
+    console.log("Estoy en generar Excel");
     // Ajustar el texto del periodo según el tipo
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;

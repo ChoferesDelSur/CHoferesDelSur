@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class castigo extends Model
 {
     use HasFactory;
+    use SoftDeletes;
+    
     protected $table = "castigo";
     protected $primaryKey = "idCastigo";
 
@@ -24,7 +27,7 @@ class castigo extends Model
 
     public function unidad()
     {
-        return $this->belongsTo(Unidad::class, 'idUnidad');
+        return $this->belongsTo(unidad::class, 'idUnidad');
     }
 
     public function directivo(){
@@ -37,6 +40,6 @@ class castigo extends Model
     
     public function operador()
     {
-        return $this->belongsTo(Operador::class, 'idOperador');
+        return $this->belongsTo(operador::class, 'idOperador');
     }
 }
