@@ -366,6 +366,9 @@ class ReporteController extends Controller
             $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
             $finSemana = $inicioSemana->copy()->endOfWeek();
 
+            // Obtener todos los operadores
+            $operadores = operador::all();
+
             $diasTrabajadosQuery = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
                 ->select(DB::raw('DATE(created_at) as date'), 'idOperador')
                 ->distinct();
@@ -679,16 +682,22 @@ class ReporteController extends Controller
             // Obtener el id del estado "Alta"
             $estadoAlta = estado::where('estado', 'Alta')->first();
 
-            // Obtener operadores en estado Alta que trabajaron al menos un día de lunes a viernes
-            $operadoresConEntradas = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
-                ->whereHas('operador', function ($query) use ($estadoAlta) {
-                    $query->where('idEstado', $estadoAlta->idEstado);
-                })
-                ->pluck('idOperador')
-                ->unique();
+            // Obtener el id del tipo de operador "Base"
+            $tipoOperadorBase = tipoOperador::where('tipOperador', 'Base')->first();
 
-            // Obtener todos los operadores en estado Alta
-            $todosOperadoresAlta = operador::where('idEstado', $estadoAlta->idEstado)->get();
+            // Obtener operadores en estado Alta y tipo Base que trabajaron al menos un día de lunes a viernes
+            $operadoresConEntradas = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
+            ->whereHas('operador', function ($query) use ($estadoAlta, $tipoOperadorBase) {
+                $query->where('idEstado', $estadoAlta->idEstado)
+                    ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador);
+            })
+            ->pluck('idOperador')
+            ->unique();
+
+            // Obtener todos los operadores en estado Alta y tipo Base
+            $todosOperadoresAlta = operador::where('idEstado', $estadoAlta->idEstado)
+            ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador)
+            ->get();
 
             // Filtrar los operadores que no trabajaron de lunes a viernes
             $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {

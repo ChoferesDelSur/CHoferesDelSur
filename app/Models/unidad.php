@@ -53,4 +53,10 @@ class unidad extends Model
     {
         return $this->hasMany(castigo::class, 'idUnidad');
     }
+
+        public function ultimaCorridas()
+    {
+        return $this->hasMany(ultimaCorrida::class, 'idUnidad');
+    }
+
 }

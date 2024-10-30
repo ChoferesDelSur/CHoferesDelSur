@@ -74,6 +74,7 @@ const exportarExcel = () => {
       console.warn('No hay datos para exportar.');
       return;
     }
+
     // Obtener la fecha actual en formato YYYY-MM-DD
     const today = new Date().toISOString().split('T')[0];
 
@@ -87,7 +88,6 @@ const exportarExcel = () => {
     const ultimaCorridaMap = Object.fromEntries(props.ultimaCorrida.map(uc => [uc.idUnidad, { tipoCorrida: uc.idTipoUltimaCorrida, horaInicioUC: uc.horaInicioUC, horaFinUC: uc.horaFinUC, created_at: uc.created_at }]));
     const castigoMap = Object.fromEntries(props.castigo.map(c => [c.idUnidad, []])); // Cambiado a lista de castigos
     const operadorMap = Object.fromEntries(props.operador.map(o => [o.idOperador, o.nombre_completo]));
-    // Mapa para los tipos de última corrida
     const tipoUltimaCorridaMap = Object.fromEntries(props.tipoUltimaCorrida.map(tuc => [tuc.idTipoUltimaCorrida, tuc.tipoUltimaCorrida]));
 
     // Función para formatear hora a "HH:mm"
@@ -101,30 +101,31 @@ const exportarExcel = () => {
     const groupedData = data.toArray().reduce((acc, row) => {
       const entrada = entradaMap[row.idUnidad] || {};
       const corte = props.corte.filter(c => c.idUnidad === row.idUnidad && c.created_at.split('T')[0] === today);
-      const ultimaCorrida = ultimaCorridaMap[row.idUnidad] || {};
+      const ultimaCorrida = ultimaCorridaMap[row.idUnidad];
       const castigos = props.castigo.filter(c => c.idUnidad === row.idUnidad && c.created_at.split('T')[0] === today);
-      const rol = rolServicioMap[row.idUnidad] || {};
+      const rol = rolServicioMap[row.idUnidad] || 'Sin Asignar';
 
       const isEntradaValid = entrada.created_at?.split('T')[0] === today;
-      const isUltimaCorridaValid = ultimaCorrida.created_at?.split('T')[0] === today;
+      const isUltimaCorridaValid = ultimaCorrida?.created_at?.split('T')[0] === today; // Verifica que la fecha sea hoy
       const isCastigoValid = castigos.length > 0;
 
+      // Inicializa el objeto para la unidad si no existe
       if (!acc[row.idUnidad]) {
         acc[row.idUnidad] = {
           ID: row.idUnidad,
           'Ruta': rutasMap[row.idRuta] || 'N/A',
-          'Trab. Domingo': rolServicioMap[row.idUnidad] || 'Sin Asignar',
+          'Trab. Domingo': rol || 'Sin Asignar',
           'Unidad': unidadMap[row.idUnidad] || '',
           'Socio/Prestador': directivoMap[row.idDirectivo] || '',
-          'Hr. Entrada': isEntradaValid ? formatTime(entrada.horaEntrada) || '' : '',
-          'Tipo Entrada': isEntradaValid ? entrada.tipoEntrada || '' : '',
-          'Extremo': isEntradaValid ? entrada.extremo || '' : '',
+          'Hr. Entrada': isEntradaValid ? formatTime(entrada.horaEntrada) : '',
+          'Tipo Entrada': isEntradaValid ? entrada.tipoEntrada : '',
+          'Extremo': isEntradaValid ? entrada.extremo : '',
           'Hr. Corte': '',
           'Causa': '',
           'Hr. Regreso': '',
           'Tipo De Corrida': isUltimaCorridaValid ? (tipoUltimaCorridaMap[ultimaCorrida.tipoCorrida] || '') : '',
-          'Hr. Inicio UC': isUltimaCorridaValid ? formatTime(ultimaCorrida.horaInicioUC) || '' : '',
-          'Hr. Regreso UC': isUltimaCorridaValid ? formatTime(ultimaCorrida.horaFinUC) || '' : '',
+          'Hr. Inicio UC': isUltimaCorridaValid ? formatTime(ultimaCorrida.horaInicioUC) : '',
+          'Hr. Regreso UC': isUltimaCorridaValid ? formatTime(ultimaCorrida.horaFinUC) : '',
           'Hr. Inicio': '',
           'Hr. Finaliza': '',
           'Motivo': '',

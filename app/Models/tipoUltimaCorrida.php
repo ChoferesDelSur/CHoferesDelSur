@@ -15,6 +15,7 @@ class tipoUltimaCorrida extends Model
     protected $fillable = [
         'tipoUltimaCorrida'
     ];
+    
     public function ultimaCorrida(): BelongsToMany
     {
         return $this->belongsToMany(ultimaCorrida::class, 'idTipoUltimaCorrida', 'idTipoUltimaCorrida');
