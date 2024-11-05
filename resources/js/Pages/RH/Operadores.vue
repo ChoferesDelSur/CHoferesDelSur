@@ -5,7 +5,7 @@ import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import Swal from 'sweetalert2';
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';
@@ -111,7 +111,7 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-            columns: [2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28] // Índices de las columnas que deseas imprimir 
+            columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28] // Índices de las columnas que deseas imprimir 
         }
     }
 ];
@@ -121,16 +121,33 @@ const columnas = [
         data: null,
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="operador-checkboxes" data-id="${row.idOperador}" ">`;
-        }
+        },
+        visible: true,
     },
     {
-        data: null, render: function (data, type, row, meta) { return meta.row + 1 }
+        data: null, render: function (data, type, row, meta) { return meta.row + 1 },
+        //title: 'No.',
+        visible: true,
     },
-    { data: 'apellidoP' },
-    { data: 'apellidoM' },
-    { data: 'nombre' },
+    {
+        data: 'apellidoP',
+        title: 'APELLIDO PATERNO',
+        visible: true,
+    },
+    {
+        data: 'apellidoM',
+        title: 'APELLIDO MATERNO',
+        visible: true,
+    },
+    {
+        data: 'nombre',
+        title: 'NOMBRE',
+        visible: true,
+    },
     {
         data: 'fechaNacimiento',
+        title: 'FECHA DE NACIMIENTO',
+        visible: true,
         render: function (data, type, row, meta) {
             // Verifica si el dato es válido
             if (data) {
@@ -142,36 +159,60 @@ const columnas = [
                 return `${day}-${month}-${year}`;
             }
             return '';
-        }
+        },
     },
     {
         data: 'edad',
+        title: 'EDAD',
+        visible: true,
         render: function (data, type, row, meta) {
             return data + ' años';
-        }
+        },
     },
-    { data: 'CURP' },
-    { data: 'RFC' },
-    { data: 'numTelefono' },
-    { data: 'NSS' },
+    {
+        data: 'CURP',
+        title: 'CURP',
+        visible: true,
+    },
+    {
+        data: 'RFC',
+        title: 'RFC',
+        visible: true,
+    },
+    {
+        data: 'numTelefono',
+        title: 'TELÉFONO',
+        visible: true,
+    },
+    {
+        data: 'NSS',
+        title: 'NSS',
+        visible: true,
+    },
     {
         data: 'idTipoOperador',
+        title: 'TIPO OPERADOR',
+        visible: true,
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const tipOp = props.tipoOperador.find(tipOp => tipOp.idTipoOperador === data);
             return tipOp ? tipOp.tipOperador : '';
-        }
+        },
     },
     {
         data: 'idEstado',
+        title: 'ESTADO',
+        visible: true,
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const estad = props.estado.find(estad => estad.idEstado === data);
             return estad ? estad.estado : '';
-        }
+        },
     },
     {
         data: 'fechaAlta',
+        title: 'FECHA ALTA',
+        visible: true,
         render: function (data, type, row, meta) {
             // Verifica si el dato es válido
             if (data) {
@@ -183,10 +224,12 @@ const columnas = [
                 return `${day}-${month}-${year}`;
             }
             return '';
-        }
+        },
     },
     {
         data: 'fechaBaja',
+        title: 'FECHA BAJA',
+        visible: true,
         render: function (data, type, row, meta) {
             // Verifica si el dato es válido
             if (data) {
@@ -198,39 +241,53 @@ const columnas = [
                 return `${day}-${month}-${year}`;
             }
             return '';
-        }
+        },
     },
     {
         data: 'idEmpresa',
+        title: 'EMPRESA',
+        visible: true,
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const emp = props.empresa.find(emp => emp.idEmpresa === data);
             return emp ? emp.empresa : '';
-        }
+        },
     },
     {
         data: 'idConvenioPago',
+        title: 'CONVENIO DE PAGO',
+        visible: true,
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const convenio = props.convenioPago.find(convenio => convenio.idConvenioPago === data);
             return convenio ? convenio.convenioPago : '';
-        }
+        },
     },
     {
         data: 'antiguedad',
+        title: 'ANTIGUEDAD',
+        visible: true,
         render: function (data, type, row, meta) {
             return data + ' años';
-        }
+        },
     },
     {
         data: 'domicilio', // Cambiar 'direccion' a 'domicilio'
+        title: 'DOMICILIO',
+        visible: true,
         render: function (data, type, row, meta) {
             return data ? data : '';
-        }
+        },
     },
-    { data: 'numLicencia' },
+    {
+        data: 'numLicencia',
+        title: 'NÚM. LICENCIA',
+        visible: true,
+    },
     {
         data: 'vigenciaLicencia',
+        title: 'VIGENCIA DE LICENCIA',
+        visible: true,
         render: function (data, type, row, meta) {
             if (data) {
                 const parts = data.split('-');
@@ -253,11 +310,17 @@ const columnas = [
                 return `<div style="background-color: ${backgroundColor}; color: ${backgroundColor === '#f56565' ? '#ffffff' : 'inherit'}; width: 100%; height: 100%; box-sizing: border-box;">${formattedDate}</div>`;
             }
             return '';
-        }
+        },
     },
-    { data: 'numINE' },
+    {
+        data: 'numINE',
+        title: 'NÚM. DE INE',
+        visible: true,
+    },
     {
         data: 'vigenciaINE',
+        title: 'VIGENCIA DE INE',
+        visible: true,
         render: function (data, type, row, meta) {
             if (data) {
                 const anioActual = new Date().getFullYear();
@@ -267,34 +330,44 @@ const columnas = [
                 return `<div style="background-color: ${estaVencido ? '#f56565' : 'transparent'}; color: ${estaVencido ? '#ffffff' : 'inherit'}; width: 100%; height: 100%; box-sizing: border-box;">${data}</div>`;
             }
             return '';
-        }
+        },
     },
     {
         data: 'constanciaSF',
+        title: 'CONSTANCIA DE SITUACIÓN FISCAL',
+        visible: true,
         render: function (data, type, row, meta) {
             return data ? 'SI' : 'NO';
-        }
+        },
     },
     {
         data: 'cursoSemovi',
+        title: 'CURSO SEMOVI',
+        visible: true,
         render: function (data, type, row, meta) {
             return data ? 'SI' : 'NO';
-        }
+        },
     },
     {
         data: 'constanciaSemovi',
+        title: 'CONSTANCIA SEMOVI',
+        visible: true,
         render: function (data, type, row, meta) {
             return data ? 'SI' : 'NO';
-        }
+        },
     },
     {
         data: 'cursoPsicologico',
+        title: 'CURSO PSICOLÓGICO',
+        visible: true,
         render: function (data, type, row, meta) {
             return data ? 'SI' : 'NO';
-        }
+        },
     },
     {
         data: 'ultimoContrato',
+        title: 'ÚLTIMO CONTRATO',
+        visible: true,
         render: function (data, type, row, meta) {
             // Verifica si el dato es válido
             if (data) {
@@ -306,20 +379,24 @@ const columnas = [
                 return `${day}-${month}-${year}`;
             }
             return '';
-        }
+        },
     },
     {
         data: 'idDirectivo',
+        title: 'JEFE',
+        visible: true,
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
             const jefe = props.directivo.find(jefe => jefe.idDirectivo === data);
             return jefe ? jefe.nombre_completo : '';
-        }
+        },
     },
     {
+        title: 'EDITAR',
         data: null, render: function (data, type, row, meta) {
             return `<button class="editar-button" data-id="${row.idOperador}" style="display: flex; justify-content: center;"><i class="fa fa-pencil"></i></button>`;
-        }
+        },
+        visible: true,
     },
 ]
 
@@ -332,6 +409,8 @@ const operadoresSeleccionados = ref([]);
 const form = useForm({
     _method: 'DELETE',
 });
+
+const col = ref([]);
 
 var operadorE = ({});
 const abrirE = ($operadoress) => {
@@ -390,6 +469,7 @@ onMounted(() => {
     });
 });
 
+
 const eliminarOperadores = () => {
     const swal = Swal.mixin({
         buttonsStyling: true
@@ -439,10 +519,46 @@ const eliminarOperadores = () => {
     });
 };
 
+
+// Configuración de opciones para DataTable
+const dataTableOptions = {
+    responsive: false,
+    autoWidth: false,
+    dom: 'Bftrip',
+    language: {
+        search: 'Buscar',
+        zeroRecords: 'No hay registros para mostrar',
+        info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+        infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+        infoFiltered: '(filtrado de un total de _MAX_ registros)',
+    },
+    buttons: [botonesPersonalizados],
+    paging: false, // Esto es para quitar la paginación
+};
+
+// Computed para filtrar columnas visibles
+const filteredColumnas = computed(() => columnas.filter(col => col.visible));
+
+// Función para actualizar la tabla
+const updateTable = () => {
+    console.log("Estoy dentro de updateTable");
+    nextTick(() => {
+        console.log("Estoy despues de nextTick");
+        const table = $('#operadoresTablaId').DataTable();
+
+        // Actualiza la visibilidad de las columnas según el estado de `visible`
+        filteredColumnas.value.forEach((col, index) => {
+            table.column(index).visible(col.visible);
+        });
+
+        // Recarga la tabla con los datos actuales
+        table.ajax.reload();
+    });
+};
+
 </script>
 
 <template>
-
     <RHLayout title="Operadores" :usuario="props.usuario">
         <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6">
             <h2 class="font-bold text-center text-xl pt-0">Operadores</h2>
@@ -464,159 +580,29 @@ const eliminarOperadores = () => {
             </div>
 
             <div class="overflow-x-auto">
+                <!-- Checkbox para controlar columnas -->
+                <div class="checkbox-container">
+                    <label v-for="(col, index) in filteredColumnas" :key="index" class="checkbox-label">
+                        <input type="checkbox" v-model="col.visible" @change="updateTable" />
+                        {{ col.title }}
+                    </label>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <!-- DataTable con visibilidad de columnas controlada por v-if -->
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-                    id="operadoresTablaId" name="operadoresTablaId" :columns="columnas" :data="operador" :options="{
-                        responsive: false, autoWidth: false, dom: 'Bftrip', language: {
-                            search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
-                            info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-                            infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-                            infoFiltered: '(filtrado de un total de _MAX_ registros)',
-                        }, buttons: [botonesPersonalizados],
-                        paging: false,// Esto es para quitar la paginacion
-                    }">
+                    id="operadoresTablaId" name="operadoresTablaId" :columns="filteredColumnas" :data="operador"
+                    :options="dataTableOptions">
                     <thead>
                         <tr class="text-sm leading-normal border-b border-gray-300">
-                            <th
+                            <th v-for="col in filteredColumnas" :key="col.title" v-if="col.visible" :class="col.class"
                                 class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                            </th>
-                            <th class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                                colspan="9">INFORMACIÓN PERSONAL</th>
-                            <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                                colspan="7">INFORMACIÓN LABORAL</th>
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                                INFORMACIÓN DE DOMICILIO
-                            </th>
-                            <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                                colspan="8">INFORMACIÓN DE DOCUMENTACIÓN</th>
-                            <th class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                                colspan="2">INFORMACIÓN ADICIONAL</th>
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                            </th>
-                        </tr>
-                        <tr class="text-sm leading-normal">
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                ID
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido Paterno
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Apellido Materno
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Nombre
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha de Nacimiento
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Edad
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                CURP
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                RFC
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Teléfono
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                NSS
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Tipo de operador
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Estado
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha Alta
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha Baja
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Empresa
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Convenio de Pago
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Antiguedad
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Dirección
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Número de Licencia
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Vigencia de Licencia
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Número de INE
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Vigencia de INE
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Constancia de Situación Fiscal
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Curso SEMOVI
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Constancia SEMOVI
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Curso Psicologico
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Fecha de Último Contrato
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-orange-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-                                Jefe
-                            </th>
-                            <th
-                                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
-
+                                {{ col.title }}
+                                <!-- Input de filtro para cada columna -->
+                                <div>
+                                    <input type="text" v-model="filters[col.key]" placeholder="Filtrar"
+                                           class="mt-1 p-1 text-xs w-full border rounded"/>
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -659,5 +645,18 @@ const eliminarOperadores = () => {
 
 .text-white {
     color: #ffffff;
+}
+
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permite que los checkboxes se ajusten en filas si hay muchos */
+    gap: 2px;
+    /* Espacio entre cada checkbox */
+}
+
+.checkbox-label {
+    margin-right: 5px;
+    /* Espacio adicional entre cada checkbox */
 }
 </style>

@@ -439,6 +439,9 @@ class RHController extends Controller
                 }
             }
 
+            // Desasocia al operador de cualquier unidad asignada antes de eliminarlo
+             unidad::whereIn('idOperador', $operadoresIdsArray)->update(['idOperador' => null]);
+
             // Elimina los operadores
             operador::whereIn('idOperador', $operadoresIdsArray)->delete();
 

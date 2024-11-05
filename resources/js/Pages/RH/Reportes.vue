@@ -1,4 +1,5 @@
 <script setup>
+import ReporteOperadoresSinTrabajar from '../../Components/Reportes/ReporteOperadoresSinTrabajar.vue';
 import ReportesDiasTrabajados from '../../Components/Reportes/ReportesDiasTrabajados.vue';
 import ReportesMovimientos from '../../Components/Reportes/ReportesMovimientos.vue';
 import RHLayout from '../../Layouts/RHLayout.vue';
@@ -44,7 +45,10 @@ const props = defineProps({
             <!-- <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador" /> -->
 
             <ReportesMovimientos :unidad="props.unidad" :operador="props.operador" :directivo="props.directivo"
-                :movimiento="props.movimiento" :tipoMovimiento="props.tipoMovimiento"/>
+                :movimiento="props.movimiento" :tipoMovimiento="props.tipoMovimiento" />
+
+            <ReporteOperadoresSinTrabajar :unidad="props.unidad" :operador="props.operador">
+            </ReporteOperadoresSinTrabajar>
 
         </div>
     </RHLayout>

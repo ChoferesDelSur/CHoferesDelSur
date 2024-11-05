@@ -1,14 +1,11 @@
 <script setup>
 import { DataTable } from 'datatables.net-vue3';
 import DataTablesLib from 'datatables.net';
-import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import { ref, onMounted, computed, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
-import Mensaje from '../../Components/Mensaje.vue';
-import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import 'jspdf-autotable';
 import RHLayout from '../../Layouts/RHLayout.vue';
@@ -612,7 +609,7 @@ const columnas = [
 <template>
   <RHLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
-      <h2 class="font-bold text-center text-xl pt-0"> Formar Unidades</h2>
+      <h2 class="font-bold text-center text-xl pt-0"> Formación de Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
       <div class="overflow-x-auto">
