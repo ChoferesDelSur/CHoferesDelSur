@@ -1156,46 +1156,60 @@ class ServicioController extends Controller
             $unidad = unidad::find($unidadId);
     
             $numeroUnidad = $unidad->numeroUnidad;
-
+    
             // Obtener el operador asociado con la unidad seleccionada
-        $operador = $unidad->operador;
-
-        if (!$operador) {
-            return redirect()->route('servicio.formarUni')->with([
-                'message' => "No se encontró un operador asociado con la unidad " . $numeroUnidad . ".",
-                'color' => 'yellow',
-                'type' => 'info'
-            ]);
-        }
+            $operador = $unidad->operador;
+    
+            if (!$operador) {
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "No se encontró un operador asociado con la unidad " . $numeroUnidad . ".",
+                    'color' => 'yellow',
+                    'type' => 'info'
+                ]);
+            }
+    
             // Obtener el idOperador, idRuta, idDirectivo de la unidad actual
-        $idOperador = $unidad->operador->idOperador;
-        $idRuta = $unidad->idRuta;
-        $idDirectivo = $unidad->idDirectivo;
+            $idOperador = $unidad->operador->idOperador;
+            $idRuta = $unidad->idRuta;
+            $idDirectivo = $unidad->idDirectivo;
     
             // Verificar si la unidad tiene registrada la hora de entrada en la tabla entradas
-        $fechaActual = Carbon::now()->toDateString();
-
-        // Usar created_at para verificar la fecha actual
-        $entrada = entrada::where('idUnidad', $unidadId)
-                          ->whereDate('created_at', $fechaActual)
-                          ->first();
-
-        if (!$entrada) {
-            return redirect()->route('servicio.formarUni')->with([
-                'message' => "La unidad " . $numeroUnidad . " no tiene registrada la hora de entrada el día de hoy.",
-                'color' => 'yellow',
-                'type' => 'info'
-            ]);
-        }
-
-        // Depuración: Verificar el valor de horaEntrada
-        if (!$entrada->horaEntrada) {
-            return redirect()->route('servicio.formarUni')->with([
-                'message' => "La unidad " . $numeroUnidad . " no tiene hora de entrada registrada.",
-                'color' => 'yellow',
-                'type' => 'info'
-            ]);
-        }
+            $fechaActual = Carbon::now()->toDateString();
+    
+            // Usar created_at para verificar la fecha actual
+            $entrada = entrada::where('idUnidad', $unidadId)
+                              ->whereDate('created_at', $fechaActual)
+                              ->first();
+    
+            if (!$entrada) {
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La unidad " . $numeroUnidad . " no tiene registrada la hora de entrada el día de hoy.",
+                    'color' => 'yellow',
+                    'type' => 'info'
+                ]);
+            }
+    
+            if (!$entrada->horaEntrada) {
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La unidad " . $numeroUnidad . " no tiene hora de entrada registrada.",
+                    'color' => 'yellow',
+                    'type' => 'info'
+                ]);
+            }
+    
+            // Verificar si ya existe un registro de ultimaCorrida para hoy
+            $registroExistente = ultimaCorrida::where('idUnidad', $unidadId)
+                                              ->whereDate('created_at', $fechaActual)
+                                              ->first();
+    
+            if ($registroExistente) {
+                // Si ya existe un registro para la misma unidad el mismo día, impedir el registro
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La unidad " . $numeroUnidad . " ya tiene registrada una última corrida el día de hoy.",
+                    'color' => 'yellow',
+                    'type' => 'info'
+                ]);
+            }
     
             // Validar que la horaFinUC no sea menor que la horaInicioUC, si se proporciona
             $horaInicioUC = \Carbon\Carbon::parse($request->input('horaInicioUC'));
@@ -1212,19 +1226,19 @@ class ServicioController extends Controller
                 }
             }
     
-            // Crear un nuevo registro en ultimaCorrida
+            // Crear un nuevo registro de ultimaCorrida
             ultimaCorrida::create([
                 'idUnidad' => $unidadId,
                 'horaInicioUC' => $request->input('horaInicioUC'),
                 'horaFinUC' => $request->input('horaFinUC'),
                 'idTipoUltimaCorrida' => $request->input('tipoUltimaCorrida'),
-                'idOperador' => $idOperador, // Asociar el ID del operador
-                'idRuta' => $idRuta, // Asociar la ruta actual
-                'idDirectivo' => $idDirectivo, // Asociar el directivo actual
+                'idOperador' => $idOperador,
+                'idRuta' => $idRuta,
+                'idDirectivo' => $idDirectivo,
             ]);
     
             return redirect()->route('servicio.formarUni')->with([
-                'message' => "Última corrida de la unidad " .$numeroUnidad ." registrada correctamente",
+                'message' => "Última corrida de la unidad " . $numeroUnidad . " registrada correctamente",
                 'color' => 'green',
                 'type' => 'success'
             ]);
@@ -1236,53 +1250,58 @@ class ServicioController extends Controller
                 'type' => 'error'
             ]);
         }
-    
-    }
+    }    
 
     public function RegistrarHoraRegresoUC(Request $request){
         // Validar los campos del formulario
-    $request->validate([
-        'unidad' => 'required',
-        'horaFinUC' => 'required',
-    ]);
-
-    try {
-        $unidadId = $request->input('unidad');
-        $unidad = unidad::find($unidadId);
-
-        if (!$unidad) {
-            return redirect()->route('servicio.formarUni')->with([
-                'message' => 'Unidad no encontrada.',
-                'color' => 'red',
-                'type' => 'error'
-            ]);
-        }
-
-        // Obtener el número de unidad para mostrarlo en el mensaje de éxito
-        $numeroUnidad = $unidad->numeroUnidad;
-
-        /* // Buscar el último registro para esta unidad en ultimaCorrida
-        $ultimaCorrida = UltimaCorrida::where('idUnidad', $unidadId)->orderBy('created_at', 'desc')->first(); */
-
-        // Buscar el último registro de inicio de la UC para esta unidad hoy
-        $ultimaCorrida = ultimaCorrida::where('idUnidad', $unidadId)
-        ->whereDate('created_at', Carbon::today())
-        ->orderBy('created_at', 'desc')
-        ->first();
-
-        if (!$ultimaCorrida) {
-        return redirect()->route('servicio.formarUni')->with([
-            'message' => "La unidad {$numeroUnidad} no tiene registrado hora de inicio de BN, UB o UC para hoy.",
-            'color' => 'red',
-            'type' => 'error'
+        $request->validate([
+            'unidad' => 'required',
+            'horaFinUC' => 'required',
         ]);
-        }
-
-        if ($ultimaCorrida) {
+    
+        try {
+            $unidadId = $request->input('unidad');
+            $unidad = unidad::find($unidadId);
+    
+            if (!$unidad) {
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => 'Unidad no encontrada.',
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+    
+            // Obtener el número de unidad para mostrarlo en el mensaje de éxito
+            $numeroUnidad = $unidad->numeroUnidad;
+    
+            // Buscar el último registro de inicio de la UC para esta unidad hoy
+            $ultimaCorrida = ultimaCorrida::where('idUnidad', $unidadId)
+                ->whereDate('created_at', Carbon::today())
+                ->orderBy('created_at', 'desc')
+                ->first();
+    
+            if (!$ultimaCorrida) {
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La unidad {$numeroUnidad} no tiene registrado hora de inicio de BN, UB o UC para hoy.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+    
+            // Verificar si ya tiene una hora de regreso registrada
+            if ($ultimaCorrida->horaFinUC) {
+                // Si ya tiene hora de regreso, no permitir la actualización
+                return redirect()->route('servicio.formarUni')->with([
+                    'message' => "La unidad {$numeroUnidad} ya tiene registrada la hora de regreso para de la UC de hoy.",
+                    'color' => 'red',
+                    'type' => 'error'
+                ]);
+            }
+    
             // Verificar que la hora de regreso sea mayor o igual a la hora de inicio de la UC
             $horaInicioUC = \Carbon\Carbon::parse($ultimaCorrida->horaInicioUC);
             $horaFinUC = \Carbon\Carbon::parse($request->input('horaFinUC'));
-
+    
             if ($horaFinUC->lessThan($horaInicioUC)) {
                 $horaInicioUCFormateada = $horaInicioUC->format('H:i');
                 $horaFinUCFormateada = $horaFinUC->format('H:i');
@@ -1293,34 +1312,26 @@ class ServicioController extends Controller
                     'type' => 'error'
                 ]);
             }
-
-            // Si ya hay un registro y la horaFinUC es válida, actualizar la horaFinUC
+    
+            // Si no hay hora de regreso, se puede actualizar la horaFinUC
             $ultimaCorrida->update([
                 'horaFinUC' => $request->input('horaFinUC'),
             ]);
-
+    
             return redirect()->route('servicio.formarUni')->with([
                 'message' => "Hora de regreso de UC de la unidad " . $numeroUnidad . " actualizada correctamente",
                 'color' => 'green',
                 'type' => 'success'
             ]);
-        } else {
-            // No se encontró un registro existente para actualizar
+        } catch (Exception $e) {
             return redirect()->route('servicio.formarUni')->with([
-                'message' => "La unidad " . $numeroUnidad ." no tiene registrado hora de inicio de BN, UB o UC",
+                'message' => "Error al registrar la hora de regreso de la UC",
                 'color' => 'red',
                 'type' => 'error'
             ]);
         }
-    } catch (Exception $e) {
-        return redirect()->route('servicio.formarUni')->with([
-            'message' => "Error al registrar la hora de regreso de la UC",
-            'color' => 'red',
-            'type' => 'error'
-        ]);
     }
-    }
-
+    
     public function registrarTrabajanDomingo(Request $request)
     {
         try {

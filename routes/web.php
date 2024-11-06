@@ -231,6 +231,7 @@ Route::middleware([RHMiddleware::class])->group(function () {
 
     Route::get('/RecursosHumanos/vacaciones', 'vacaciones')->name('rh.vacaciones');
     Route::post('/RecursosHumanos/agregarVacaciones', 'addVacaciones')->name('rh.addVacaciones');
+    Route::delete('/RecursosHumanos/eliminarVacaciones/{vacacionesIds}', 'eliminarVacaciones')->name('rh.eliminarVacaciones');
     });
 });
 

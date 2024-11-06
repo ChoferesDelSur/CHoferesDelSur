@@ -541,9 +541,7 @@ const filteredColumnas = computed(() => columnas.filter(col => col.visible));
 
 // Función para actualizar la tabla
 const updateTable = () => {
-    console.log("Estoy dentro de updateTable");
     nextTick(() => {
-        console.log("Estoy despues de nextTick");
         const table = $('#operadoresTablaId').DataTable();
 
         // Actualiza la visibilidad de las columnas según el estado de `visible`
