@@ -2,6 +2,9 @@
 import { useForm } from '@inertiajs/inertia-vue3';
 import { ref, watch, onMounted } from 'vue';
 import Modal from '../Modal.vue';
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
+import 'vue-select';
 
 const props = defineProps({
     show: {
@@ -59,7 +62,7 @@ watch([() => form.numeroDias, () => form.fechaInicio], ([newNumeroDias, newFecha
     if (newNumeroDias && newFechaInicio) {
         const startDate = new Date(newFechaInicio);
         const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + parseInt(newNumeroDias, 10)-1);
+        endDate.setDate(startDate.getDate() + parseInt(newNumeroDias, 10) - 1);
         form.fechaFin = endDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     }
 });
@@ -183,7 +186,7 @@ const save = async () => {
                             </div>
                             <div v-if="motivoError != ''" class="text-red-500 text-xs mt-1">{{
                                 motivoError
-                                }}
+                            }}
                             </div>
                         </div>
                         <div class="sm:col-span-2 px-2">
@@ -196,7 +199,7 @@ const save = async () => {
                             </div>
                             <div v-if="numDiasError != ''" class="text-red-500 text-xs mt-1">{{
                                 numDiasError
-                                }}
+                            }}
                             </div>
                         </div>
                         <div class="sm:col-span-2 px-2">
@@ -220,23 +223,21 @@ const save = async () => {
                             </div>
                             <div v-if="fechaFinError != ''" class="text-red-500 text-xs mt-1">{{
                                 fechaFinError
-                                }}</div>
+                            }}</div>
                         </div>
-                        <div class="sm:col-span-2 px-4">
-                            <label for="chofer"
-                                class="block text-sm font-medium leading-6 text-gray-900">Operador <span class="text-red-500">*</span></label>
+                        <div class="sm:col-span-2 w-full px-4">
+                            <label for="chofer" class="block text-sm font-medium leading-6 text-gray-900">Operador <span
+                                    class="text-red-500">*</span></label>
                             <div class="mt-2">
-                                <select name="chofer" :id="'chofer' + op" v-model="form.chofer"
-                                    placeholder="Seleccione al operador"
-                                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    <option value="" disabled selected>Seleccione al operador para esta unidad</option>
-                                    <option v-for="chof in operadoresAlta" :key="chof.idOperador" :value="chof.idOperador">
-                                        {{ chof.nombre_completo }}
-                                    </option>
-                                </select>
+                                <v-select v-model="form.chofer"
+                                    :options="operador.map(chof => ({ label: chof.nombre_completo, value: chof.idOperador }))"
+                                    placeholder="Seleccione al operador" :reduce="chofer => chofer.value"
+                                    class="w-full" :searchable="true">
+                                </v-select>
                             </div>
                             <div v-if="operadorError != ''" class="text-red-500 text-xs mt-1">{{ operadorError }}</div>
                         </div>
+
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">
