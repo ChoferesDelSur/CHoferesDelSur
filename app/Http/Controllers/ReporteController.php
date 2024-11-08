@@ -703,9 +703,18 @@ class ReporteController extends Controller
             $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {
                 return !$operadoresConEntradas->contains($operador->idOperador);
             })->map(function ($operador) {
+                // Obtener la última entrada de cada operador
+                $ultimaEntrada = entrada::where('idOperador', $operador->idOperador)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+    
+                // Si existe una entrada, obtener la fecha del último día trabajado
+                $ultimoDiaTrabajado = $ultimaEntrada ? $ultimaEntrada->created_at->format('Y-m-d') : 'No ha trabajado';
+    
                 return [
                     'idOperador' => $operador->idOperador,
                     'nombre_completo' => $operador->nombre_completo,
+                    'ultimo_dia_trabajado' => $ultimoDiaTrabajado, // Se agrega la fecha
                 ];
             });
     
@@ -722,19 +731,22 @@ class ReporteController extends Controller
             // Asegurarse de que los operadores que registraron entrada hoy no se excluyan
             $operadoresConEntradas = $operadoresConEntradas->merge($entradaHoy);
     
-            // Filtrar los operadores que no trabajaron de lunes a viernes y agregar el último día trabajado
+            // Filtrar los operadores que no trabajaron de lunes a viernes
             $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {
                 return !$operadoresConEntradas->contains($operador->idOperador);
             })->map(function ($operador) {
-                // Obtener el último día trabajado del operador
-                $ultimoDiaTrabajado = entrada::where('idOperador', $operador->idOperador)
+                // Obtener la última entrada de cada operador
+                $ultimaEntrada = entrada::where('idOperador', $operador->idOperador)
                     ->orderBy('created_at', 'desc')
                     ->first();
+    
+                // Si existe una entrada, obtener la fecha del último día trabajado
+                $ultimoDiaTrabajado = $ultimaEntrada ? $ultimaEntrada->created_at->format('Y-m-d') : 'No ha trabajado';
     
                 return [
                     'idOperador' => $operador->idOperador,
                     'nombre_completo' => $operador->nombre_completo,
-                    'ultimo_dia_trabajado' => $ultimoDiaTrabajado ? $ultimoDiaTrabajado->created_at->format('Y-m-d') : 'No ha trabajado'
+                    'ultimo_dia_trabajado' => $ultimoDiaTrabajado, // Se agrega la fecha
                 ];
             });
     

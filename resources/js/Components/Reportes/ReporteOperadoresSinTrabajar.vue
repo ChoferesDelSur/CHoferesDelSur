@@ -139,13 +139,13 @@ const generarExcel = (tipo, semanaSeleccionada) => {
     const nombreArchivo = `${tipo}-Semana-${semanaSeleccionada}.xlsx`;
 
     // Encabezados del reporte
-    const data = [['Nombre del Operador', 'Última Día Trabajado']];
+    const data = [['Nombre del Operador', 'Último Día Trabajado']];  // Nueva columna para la fecha
 
     // Agregar cada entrada con el nombre completo y la última fecha de trabajo
     entradas.value.forEach(entry => {
         const nombreCompleto = entry.nombre_completo || 'N/A';
-        const ultimaFechaTrabajo = entry.ultima_fecha_trabajo || 'No ha trabajado';
-        data.push([nombreCompleto, ultimaFechaTrabajo]);
+        const ultimoDiaTrabajado = entry.ultimo_dia_trabajado || 'No ha trabajado';  // Agregar la fecha del último día trabajado
+        data.push([nombreCompleto, ultimoDiaTrabajado]);  // Incluir la fecha en cada fila
     });
 
     // Crear el libro de trabajo y la hoja de cálculo
