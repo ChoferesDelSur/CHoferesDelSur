@@ -110,7 +110,7 @@ const generarPDF = (tipo, semanaSeleccionada) => {
     // Agregar las filas con datos, incluyendo la última fecha de trabajo
     const rows = entradas.value.map(entry => ({
         nombre: entry.nombre_completo || 'N/A',
-        ultimaFechaTrabajo: entry.ultima_fecha_trabajo || 'N/A'
+        ultimaFechaTrabajo: entry.ultima_fecha_trabajo || 'No ha trabajado'
     }));
 
     // Generar la tabla en el PDF

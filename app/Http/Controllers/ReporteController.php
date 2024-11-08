@@ -673,55 +673,77 @@ class ReporteController extends Controller
     }
 
     public function obtenerOperadoresSinTrabajarPorSemana($semana)
-{
-    try {
-        // Calcular el inicio y fin de la semana (lunes a viernes)
-        $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
-        $finSemana = $inicioSemana->copy()->addDays(4); // Solo hasta el viernes
-
-        // Obtener el id del estado "Alta"
-        $estadoAlta = estado::where('estado', 'Alta')->first();
-
-        // Obtener el id del tipo de operador "Base"
-        $tipoOperadorBase = tipoOperador::where('tipOperador', 'Base')->first();
-
-        // Obtener operadores en estado Alta y tipo Base que trabajaron al menos un día de lunes a viernes
-        $operadoresConEntradas = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
-            ->whereHas('operador', function ($query) use ($estadoAlta, $tipoOperadorBase) {
-                $query->where('idEstado', $estadoAlta->idEstado)
-                    ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador);
-            })
-            ->pluck('idOperador')
-            ->unique();
-
-        // Obtener todos los operadores en estado Alta y tipo Base
-        $todosOperadoresAlta = operador::where('idEstado', $estadoAlta->idEstado)
-            ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador)
-            ->get();
-
-        // Filtrar los operadores que no trabajaron de lunes a viernes
-        $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {
-            return !$operadoresConEntradas->contains($operador->idOperador);
-        })->map(function ($operador) use ($semana) {
-            // Obtener la última fecha de trabajo (si la hay)
-            $ultimaEntrada = entrada::where('idOperador', $operador->idOperador)
-                ->where('created_at', '<', Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek()) // Antes de la semana actual
-                ->latest('created_at')
-                ->first();
-
-            return [
-                'idOperador' => $operador->idOperador,
-                'nombre_completo' => $operador->nombre_completo,
-                'ultima_fecha_trabajo' => $ultimaEntrada ? $ultimaEntrada->created_at->toDateString() : null // Si no tiene entrada, es null
-            ];
-        });
-
-        return response()->json($operadoresSinTrabajar);
-    } catch (\Exception $e) {
-        Log::error('Error al obtener operadores sin trabajar por semana', ['details' => $e->getMessage()]);
-        return response()->json(['error' => 'Error al obtener operadores sin trabajar por semana', 'details' => $e->getMessage()], 500);
-    }
-}     
+    {
+        try {
+            // Calcular el inicio y fin de la semana (lunes a viernes)
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->addDays(4); // Solo hasta el viernes
+    
+            // Obtener el id del estado "Alta"
+            $estadoAlta = estado::where('estado', 'Alta')->first();
+    
+            // Obtener el id del tipo de operador "Base"
+            $tipoOperadorBase = tipoOperador::where('tipOperador', 'Base')->first();
+    
+            // Obtener operadores en estado Alta y tipo Base que trabajaron al menos un día de lunes a viernes
+            $operadoresConEntradas = entrada::whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->whereHas('operador', function ($query) use ($estadoAlta, $tipoOperadorBase) {
+                    $query->where('idEstado', $estadoAlta->idEstado)
+                        ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador);
+                })
+                ->pluck('idOperador')
+                ->unique();
+    
+            // Obtener todos los operadores en estado Alta y tipo Base
+            $todosOperadoresAlta = operador::where('idEstado', $estadoAlta->idEstado)
+                ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador)
+                ->get();
+    
+            // Filtrar los operadores que no trabajaron de lunes a viernes
+            $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {
+                return !$operadoresConEntradas->contains($operador->idOperador);
+            })->map(function ($operador) {
+                return [
+                    'idOperador' => $operador->idOperador,
+                    'nombre_completo' => $operador->nombre_completo,
+                ];
+            });
+    
+            // Verificar si el operador tiene un registro de entrada hoy, y agregarlo si no se le considera
+            $fechaHoy = Carbon::now()->startOfDay();  // El inicio del día de hoy
+            $entradaHoy = entrada::where('created_at', '>=', $fechaHoy)
+                ->whereHas('operador', function ($query) use ($estadoAlta, $tipoOperadorBase) {
+                    $query->where('idEstado', $estadoAlta->idEstado)
+                        ->where('idTipoOperador', $tipoOperadorBase->idTipoOperador);
+                })
+                ->pluck('idOperador')
+                ->unique();
+    
+            // Asegurarse de que los operadores que registraron entrada hoy no se excluyan
+            $operadoresConEntradas = $operadoresConEntradas->merge($entradaHoy);
+    
+            // Filtrar los operadores que no trabajaron de lunes a viernes y agregar el último día trabajado
+            $operadoresSinTrabajar = $todosOperadoresAlta->filter(function ($operador) use ($operadoresConEntradas) {
+                return !$operadoresConEntradas->contains($operador->idOperador);
+            })->map(function ($operador) {
+                // Obtener el último día trabajado del operador
+                $ultimoDiaTrabajado = entrada::where('idOperador', $operador->idOperador)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+    
+                return [
+                    'idOperador' => $operador->idOperador,
+                    'nombre_completo' => $operador->nombre_completo,
+                    'ultimo_dia_trabajado' => $ultimoDiaTrabajado ? $ultimoDiaTrabajado->created_at->format('Y-m-d') : 'No ha trabajado'
+                ];
+            });
+    
+            return response()->json($operadoresSinTrabajar);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener operadores sin trabajar por semana', ['details' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al obtener operadores sin trabajar por semana', 'details' => $e->getMessage()], 500);
+        }
+    }    
 
         public function reporteMultasDominicales()
     {
