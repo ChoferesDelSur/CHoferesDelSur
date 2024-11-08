@@ -25,13 +25,13 @@ const form = reactive({
     unidad: null, // Puedes inicializarlo con algún valor predeterminado si lo deseas
     operador: null
 });
-
 const fetchEntradas = async (semana) => {
     const url = route('reporte.opSinTrabajar', { semana });
 
     try {
         const response = await axios.get(url);
         entradas.value = Object.values(response.data);  // Convertir el objeto en un array de entradas
+        console.log(entradas.value);
     } catch (error) {
         console.error("Error al obtener los datos:", error.response ? error.response.data : error.message);
         Swal.fire({
@@ -93,7 +93,7 @@ const obtenerTotalDias = (tipo, valor) => {
 };
 
 const generarPDF = (tipo, semanaSeleccionada) => {
-    const doc = new jsPDF('portrait');//Orientacion de la hoja
+    const doc = new jsPDF('portrait'); // Orientación de la hoja
     doc.setFontSize(12);
     doc.text(`Reporte de ${tipo} - Semana ${semanaSeleccionada}`, 14, 20);
 
@@ -101,27 +101,36 @@ const generarPDF = (tipo, semanaSeleccionada) => {
     doc.setFontSize(10);
     doc.text("Los operadores que aparecen en el listado no trabajaron ni al menos 1 día durante la semana seleccionada.", 14, 30);
 
-    const columns = [{ header: 'Nombre del operador', dataKey: 'nombre' }];
+    // Definir las columnas de la tabla
+    const columns = [
+        { header: 'Nombre del operador', dataKey: 'nombre' },
+        { header: 'Última Día Trabajo', dataKey: 'ultimaFechaTrabajo' }
+    ];
+
+    // Agregar las filas con datos, incluyendo la última fecha de trabajo
     const rows = entradas.value.map(entry => ({
         nombre: entry.nombre_completo || 'N/A',
+        ultimaFechaTrabajo: entry.ultima_fecha_trabajo || 'N/A'
     }));
 
+    // Generar la tabla en el PDF
     doc.autoTable({
         columns: columns,
         body: rows,
-        startY: 24,
+        startY: 40,
         styles: { fontSize: 10 }
     });
 
+    // Agregar la fecha de creación al pie de la página
     const fechaCreacion = new Date().toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
-
     doc.setFontSize(10);
     doc.text(`Fecha de creación: ${fechaCreacion}`, 14, doc.internal.pageSize.height - 10);
-    
+
+    // Guardar el PDF
     const nombreArchivo = `${tipo}-Semana-${semanaSeleccionada}.pdf`;
     doc.save(nombreArchivo);
 };
@@ -129,15 +138,22 @@ const generarPDF = (tipo, semanaSeleccionada) => {
 const generarExcel = (tipo, semanaSeleccionada) => {
     const nombreArchivo = `${tipo}-Semana-${semanaSeleccionada}.xlsx`;
 
-    const data = [['Nombre del Operador']];
+    // Encabezados del reporte
+    const data = [['Nombre del Operador', 'Última Día Trabajado']];
+
+    // Agregar cada entrada con el nombre completo y la última fecha de trabajo
     entradas.value.forEach(entry => {
         const nombreCompleto = entry.nombre_completo || 'N/A';
-        data.push([nombreCompleto]);
+        const ultimaFechaTrabajo = entry.ultima_fecha_trabajo || 'No ha trabajado';
+        data.push([nombreCompleto, ultimaFechaTrabajo]);
     });
 
+    // Crear el libro de trabajo y la hoja de cálculo
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Operadores_Sin_Trabajar');
+
+    // Guardar el archivo
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
@@ -190,7 +206,7 @@ const reportes = [
         </div>
         <div class="flex flex-wrap space-x-3">
             <button v-for="formato in formatos" :key="formato.tipo" :class="formato.clase"
-                @click="generarArchivo(reporte, formato.tipo, form.operador, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada /* : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado  */: '' })">
+                @click="generarArchivo(reporte, formato.tipo, form.operador, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada /* : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado  */ : '' })">
                 <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
             </button>
         </div>
