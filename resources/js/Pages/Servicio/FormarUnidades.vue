@@ -195,23 +195,27 @@ const columnas = [
   {
     data: null,
     render: function (data, type, row, meta) {
-      return meta.row + 1
-    }
+      return `<span class="bg-sky-200 text-black py-1 px-2 rounded">${meta.row + 1}</span>`
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'RUTA',
     render: function (data, type, row, meta) {
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
         const ruta = props.ruta.find(ruta => ruta.idRuta === unidad.idRuta);
-        return ruta ? ruta.nombreRuta : '';
+        return `<div class="bg-sky-200 text-black py-1 px-2 rounded">${ruta.nombreRuta}</div>`;
       } else {
         return '';
       }
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'DOM',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -223,39 +227,45 @@ const columnas = [
           // Ordenar los registros por fecha de created_at (más reciente primero)
           registrosUnidad.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
           // Devolver el valor de trabajaDomingo del registro más reciente
-          return registrosUnidad[0].trabajaDomingo;
+          return `<div class="bg-sky-200 text-black py-1 px-2 rounded">${registrosUnidad[0].trabajaDomingo}</div>`;
         } else {
           // Si no hay registros para esta idUnidad, devolver un valor por defecto
-          return '<span style="color: red;">Sin asignar</span>';
+          return '<div class="bg-sky-200 text-red-600 py-1 px-2 rounded"><span>Sin asignar</span></div>';
         }
       } else {
         // Si no se encuentra la unidad, devolver un mensaje de error o un valor por defecto
         return 'Unidad no encontrada';
       }
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'UNIDAD',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       const carro = props.unidad.find(carro => carro.idUnidad === data);
-      return carro ? carro.numeroUnidad : '';
-    }
+      return `<div class="bg-sky-200 text-black py-1 px-2 rounded">${carro ? carro.numeroUnidad : ''}</div>`;
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'SOCIO/PRESTADOR',
     render: function (data, type, row, meta) {
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
         const jefe = props.directivo.find(jefe => jefe.idDirectivo === unidad.idDirectivo);
-        return jefe ? jefe.nombre_completo : '';
+        return `<div class="bg-sky-200 text-black py-1 px-2 rounded">${jefe ? jefe.nombre_completo : ''}</div>`;
       } else {
         return '';
       }
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'HORA ENTRADA',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -270,15 +280,17 @@ const columnas = [
         if (entradasHoy.length > 0) {
           // Construir una cadena con todas las horas de entrada para la unidad y la fecha actual
           const horasEntrada = entradasHoy.map(entrada => entrada.horaEntrada.substring(0, 5)).join(', ');
-          return horasEntrada;
+          return `<div class="bg-green-200 text-black py-1 px-2 rounded">${horasEntrada}</div>`;
         }
       }
       // Si no se encuentra la unidad o no hay registros de entrada para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'TIPO ENTRADA',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -293,15 +305,17 @@ const columnas = [
         if (entradasHoy.length > 0) {
           // Construir una cadena con todos los tipos de entrada para la unidad y la fecha actual
           const tiposEntrada = entradasHoy.map(entrada => entrada.tipoEntrada).join(', ');
-          return tiposEntrada;
+          return `<div class="bg-green-200 text-black py-1 px-2 rounded">${tiposEntrada}</div>`;
         }
       }
       // Si no se encuentra la unidad o no hay registros de entrada para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'EXTREMO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -316,15 +330,18 @@ const columnas = [
         if (entradasHoy.length > 0) {
           // Construir una cadena con todos los valores de esExtremo para la unidad y la fecha actual
           const extremos = entradasHoy.map(entrada => entrada.extremo).join(', ');
-          return extremos;
+          //return `<div class="bg-green-200 text-black py-1 px-2 rounded">${extremos}</div>`;
+          return `<div class="bg-green-200 text-black py-1 px-2 rounded" style="width: 100%; height: 100%;">${extremos}</div>`;
         }
       }
       // Si no se encuentra la unidad o no hay registros de entrada para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'HORA CORTE',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -348,15 +365,17 @@ const columnas = [
           `;
           }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
 
-          return horasCorteRows;
+          return `<div style="background-color: #f5c6cb; padding: 0.5rem;">${horasCorteRows}</div>`;
         }
       }
       // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
-      return '';
-    }
+      return '';//return `<div style="background-color: #f5c6cb; padding: 0.5rem;"></div>`;
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'CAUSA',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -380,15 +399,18 @@ const columnas = [
           `;
           }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
 
-          return causasCorteRows;
+          return `<div style="background-color: #f5c6cb; padding: 0.5rem;">${causasCorteRows}</div>`;
+
         }
       }
       // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'HORA REGRESO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -415,15 +437,17 @@ const columnas = [
           `;
           }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
 
-          return horasRegresoRows;
+          return `<div style="background-color: #f5c6cb; padding: 0.5rem;">${horasRegresoRows}</div>`;
         }
       }
       // Si no se encuentra la unidad o no hay registros de corte para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'TIPO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -440,16 +464,18 @@ const columnas = [
           const tipoUltimaCorrida = props.tipoUltimaCorrida.find(tipo => tipo.idTipoUltimaCorrida === ultimasCorridasHoy[0].idTipoUltimaCorrida);
           // Devolver el dato correspondiente a tipoUltimaCorrida
           if (tipoUltimaCorrida) {
-            return tipoUltimaCorrida.tipoUltimaCorrida;
+            return `<div class="bg-purple-200 text-black py-1 px-2 rounded">${tipoUltimaCorrida.tipoUltimaCorrida}</div>`;
           }
         }
       }
       // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'HORA INICIO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -464,15 +490,17 @@ const columnas = [
         if (ultimasCorridasHoy.length > 0) {
           // Devolver la hora de inicio de la última corrida del primer registro encontrado, si no es null
           const horaInicioUC = ultimasCorridasHoy[0].horaInicioUC;
-          return horaInicioUC ? horaInicioUC.substring(0, 5) : '';
+          return `<div class="bg-purple-200 text-black py-1 px-2 rounded">${horaInicioUC ? horaInicioUC.substring(0, 5) : ''}</div>`;
         }
       }
       // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: "idUnidad",
+    title: 'HORA REGRESO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Buscar la unidad correspondiente en props.unidad
@@ -490,16 +518,18 @@ const columnas = [
           // Verificar si horaFinUC no es null
           if (horaFinUC) {
             // Devolver la hora de fin de la última corrida truncada a los primeros 5 caracteres
-            return horaFinUC.substring(0, 5);
+            return `<div class="bg-purple-200 text-black py-1 px-2 rounded">${horaFinUC.substring(0, 5)}</div>`;
           }
         }
       }
       // Si no se encuentra la unidad o no hay registros de última corrida para la fecha actual, devolver un valor por defecto
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'HORA INICIO CASTIGO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
@@ -520,7 +550,7 @@ const columnas = [
           // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
           const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
           return `
-          <div style="${borderStyle}">
+          <div style="background-color: #fff3b0 ${borderStyle}">
             <div>${castigoRow.horaInicio}</div>
           </div>
         `;
@@ -529,10 +559,12 @@ const columnas = [
 
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'HORA FIN CASTIGO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
@@ -553,7 +585,7 @@ const columnas = [
           // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
           const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
           return `
-          <div style="${borderStyle}">
+          <div style="background-color: #fff3b0 ${borderStyle}">
             <div>${castigoRow.horaFin}</div>
           </div>
         `;
@@ -562,10 +594,12 @@ const columnas = [
 
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'MOTIVO',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
@@ -583,16 +617,18 @@ const columnas = [
         return nombresCastigos.map((nombreCastigo, index) => {
           // Renderizar cada nombre de castigo en una fila diferente con un borde inferior si hay más de un nombre de castigo
           const borderStyle = nombresCastigos.length > 1 && index !== nombresCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-          return `<div style="${borderStyle}">${nombreCastigo}</div>`;
+          return `<div style="background-color: #fff3b0 ${borderStyle}">${nombreCastigo}</div>`;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
 
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'OBSERVACIONES',
     className: "text-center", // Clase que asegura el centrado
     render: function (data, type, row, meta) {
       // Filtrar los castigos de la unidad correspondiente para la fecha actual
@@ -610,29 +646,32 @@ const columnas = [
         return observacionesCastigos.map((observacion, index) => {
           // Renderizar cada observación en una fila diferente con un borde inferior si hay más de una observación de castigo
           const borderStyle = observacionesCastigos.length > 1 && index !== observacionesCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-          return `<div style="${borderStyle}">${observacion}</div>`;
+          return `<div style="background-color: #fff3b0 ${borderStyle}">${observacion}</div>`;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
 
       // Si no se encontraron castigos para la unidad actual, devolver cadena vacía
       return '';
-    }
+    },
+    visible: true
   },
   {
     data: 'idUnidad',
+    title: 'OPERADOR',
     render: function (data, type, row, meta) {
       const unidad = props.unidad.find(unidad => unidad.idUnidad === data);
       if (unidad) {
         const chofer = props.operador.find(chofer => chofer.idOperador === unidad.idOperador);
         if (chofer) {
-          return chofer.nombre_completo;
+          return `<div class="bg-sky-200 text-black py-1 px-2 rounded">${chofer.nombre_completo}</div>`;
         } else {
-          return '<span style="color: red;">Sin asignar</span>'; // Aplica color rojo si no hay operador asignado
+          return '<div class="bg-sky-200 text-red-600 py-1 px-2 rounded"><span>Sin asignar</span></div>'; // Aplica color rojo si no hay operador asignado
         }
       } else {
         return '';
       }
-    }
+    },
+    visible: true
   },
 ]
 
@@ -767,12 +806,50 @@ const contarRegistrosHrEnt = () => {
     return entrada.horaEntrada && new Date(entrada.created_at).toLocaleDateString() === fechaActual;
   }).length;
 };
+
+// Configuración de opciones para DataTable
+const dataTableOptions = {
+  responsive: false,
+  autoWidth: false,
+  dom: 'Bftrip',
+  language: {
+    search: 'Buscar',
+    zeroRecords: 'No hay registros para mostrar',
+    info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
+    infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
+    infoFiltered: '(filtrado de un total de _MAX_ registros)',
+  },
+  buttons: [botonesPersonalizados],
+  paging: false, // Esto es para quitar la paginación
+};
+
+const col = ref([]);
+// Computed para filtrar columnas visibles
+const filteredColumnas = computed(() => columnas.filter(col => col.visible));
+
+// Función para actualizar la tabla
+const updateTable = () => {
+  nextTick(() => {
+    const table = $('#formacionTablaId').DataTable();
+
+    // Actualiza la visibilidad de las columnas según el estado de `visible`
+    filteredColumnas.value.forEach((col, index) => {
+      table.column(index).visible(col.visible);
+    });
+
+    // Recarga la tabla con los datos actuales
+    table.ajax.reload();
+  });
+};
+
+
 </script>
 
 <template>
   <ServicioLayout title="Formar Unidades" :usuario="props.usuario">
     <div class="mt-0 bg-white p-4 shadow rounded-lg h-5/6 ">
       <h3 class="font-bold text-center text-xl pt-0"> Formar Unidades</h3>
+      <!-- Aquí agregamos la fecha y número de semana, fuera de la tabla -->
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
       <Mensaje />
@@ -841,105 +918,39 @@ const contarRegistrosHrEnt = () => {
       </div>
 
       <div class="overflow-x-auto">
-        <h3 class="text-center">Formaciones registradas: <strong>{{ contarRegistrosHrEnt() }}</strong></h3>
+        <!-- Texto de total de formaciones-->
+        <h1 class="text-center">Formaciones registradas: <strong>{{ contarRegistrosHrEnt() }}</strong></h1>
+
+        <!-- Aquí agregamos la fecha y número de semana, fuera de la tabla -->
+        <div class="py-2 text-center text-sm font-semibold bg-gray-100 rounded mb-2">
+          <span>FECHA: {{ diaSemana + ', ' + fechaActual }} -- SEMANA: {{ numeroSemanaActual }}</span>
+        </div>
+
+        <div class="overflow-x-auto py-2">
+          <!-- Checkbox para controlar columnas -->
+          <div class="checkbox-container">
+            <label v-for="(col, index) in filteredColumnas" :key="index" class="checkbox-label">
+              <input type="checkbox" v-model="col.visible" @change="updateTable" />
+              {{ col.title }}
+            </label>
+          </div>
+        </div>
+
         <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-          id="formacionTablaId" name="formacionTablaId" :columns="columnas" :data="unidad" :options="{
-            responsive: false, autoWidth: false, dom: 'Bftrip', language: {
-              search: 'Buscar', zeroRecords: 'No hay registros para mostrar',
-              info: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-              infoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-              infoFiltered: '(filtrado de un total de _MAX_ registros)',
-              /* lengthMenu: 'Mostrar _MENU_ registros',
-              paginate: { first: 'Primero', previous: 'Anterior', next: 'Siguiente', last: 'Ultimo' }, */
-            }, buttons: [botonesPersonalizados],
-
-            paging: false,// Esto es para quitar la paginacion
-            lengthMenu: [], // Este es donde se pone sin limite de filas
-          }">
+          id="formacionTablaId" name="formacionTablaId" :columns="filteredColumnas" :data="unidad"
+          :options="dataTableOptions">
           <thead>
+            <!--Viene titulos de las columnas y datos-->
             <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th>
-              <!-- Celda vacía para la primera columna -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }} -- SEMANA: {{ numeroSemanaActual }}</th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th>
-              <!-- Unidad -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th>
-              <!-- Socio/Prestador -->
-              <th
-                class="py-2 px-4 bg-green-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                colspan="3">ENTRADA</th>
-              <th class="py-2 px-4 bg-red-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="3">CORTE</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="3">ÚLTIMAS CORRIDAS</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-yellow-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="4">CASTIGO</th> <!-- Columna combinada con título "Corte" -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th>
-              <!-- operador -->
-            </tr>
-            <tr class="text-sm leading-normal border-b border-gray-300">
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                ID
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Ruta
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Dom
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Unidad
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Socio / Prestador
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. Ent
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tip. Ent
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Ext
-              </th>
-              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. Cor
-              </th>
-              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Causa
-              </th>
-              <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. reg
-              </th>
-              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo
-              </th>
-              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. ini
-              </th>
-              <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. reg
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. Ini
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. Fin
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Motivo
-              </th>
-              <th class="py-2 px-4 bg-yellow-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Otras observaciones
-              </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Operador
+              <th v-for="col in filteredColumnas" :key="col.title" v-if="col.visible" :class="col.class"
+                class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                {{ col.title }}
+                <!-- Input de filtro para cada columna -->
+                <div>
+                  <input type="text" v-model="filters[columna.key]" placeholder="Filtrar"
+                    class="mt-1 p-1 text-xs w-full border rounded" />
+                </div>
               </th>
             </tr>
           </thead>
@@ -991,20 +1002,100 @@ const contarRegistrosHrEnt = () => {
 
   </ServicioLayout>
 </template>
+
 <style>
 /* Estilo personalizado para centrar el texto en las celdas de la tabla */
 #formacionTablaId th {
   text-align: center !important;
 }
 
-.jump-icon:hover i {
-  transition: transform 0.2s ease-in-out;
-  transform: translateY(-3px);
+/* Asegúrate de que las celdas de la tabla tengan el fondo cubriendo toda la celda */
+#formacionTablaId td {
+  padding: 0 !important;
+  /* Elimina cualquier padding extra que podría estar limitando el fondo */
+  border: 1px solid #e5e7eb;
+  /* Mantiene los bordes visibles */
+  vertical-align: middle; /* Alinea el contenido verticalmente */
 }
 
+#formacionTablaId td.bg-green-200 {
+  background-color: #c6f6d5 !important;
+  /* Aplica el color verde */
+  padding: 4px 8px !important;
+  /* Asegúrate de que haya suficiente padding */
+}
+
+/* Aplica padding directamente al div de contenido para evitar conflictos con el padding de la celda */
+#formacionTablaId td div {
+  padding: 4px 8px;
+  /* Controla el padding del contenido */
+  width: 100%;
+  /* Asegúrate de que el contenido ocupe todo el espacio */
+  height: 100%;
+  /* Asegúrate de que el contenido se extienda hasta el fondo de la celda */
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño del contenido */
+}
+
+/* Si quieres que el texto en las celdas se centre */
+#formacionTablaId td.text-center {
+  text-align: center;
+  vertical-align: middle;
+  /* Alinea el contenido verticalmente */
+}
+
+/* Estilo adicional para la columna Hora Corte, asegurando que las celdas con varias horas de corte se vean bien */
+#formacionTablaId td .hora-corte {
+  background-color: #f5c6cb;
+  padding: 0.5rem;
+  display: block;
+  /* Asegura que cada hora de corte se muestre en una línea separada */
+}
+
+/* Si la celda tiene más de un corte, asegurarse de que las horas de corte se muestren correctamente */
+#formacionTablaId td .hora-corte div {
+  border-bottom: 1px solid #b2b2b2;
+  padding: 4px 0;
+  /* Asegura separación entre las horas de corte */
+}
+
+/* Añadir un poco de espacio entre las filas de la tabla */
+#formacionTablaId td {
+  padding: 10px;
+}
+
+/* Estilo para celdas de texto centrado */
 .dataTables_wrapper td.text-center {
   text-align: center;
   width: 100px;
   /* Ajusta este valor según sea necesario */
+}
+
+/* Fila de elementos expirados */
+.expired-row {
+  background-color: red !important;
+  color: white;
+  /* Opcional, para mejorar la legibilidad del texto */
+}
+
+.bg-red-500 {
+  background-color: #f56565;
+  /* rojo claro en Tailwind CSS */
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.checkbox-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* Permite que los checkboxes se ajusten en filas si hay muchos */
+  gap: 2px;
+  /* Espacio entre cada checkbox */
+}
+
+.checkbox-label {
+  margin-right: 5px;
+  /* Espacio adicional entre cada checkbox */
 }
 </style>
