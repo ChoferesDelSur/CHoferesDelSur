@@ -67,7 +67,8 @@ const columnas = [
         const directivo = unidad.directivo;
 
         if (directivo && directivo.nombre_completo === nombreCompleto) {
-          return unidad.ruta ? unidad.ruta.nombreRuta : ''; // Retorna el nombre de la ruta
+          //return unidad.ruta ? unidad.ruta.nombreRuta : ''; // Retorna el nombre de la ruta
+          return `<span style="font-size: 11px;">${unidad.ruta ? unidad.ruta.nombreRuta : ''}</span>`;
         } else {
           return ''; // Si no coincide, devuelve un string vacío
         }
@@ -122,21 +123,6 @@ const columnas = [
         }
       } else {
         return ''; // Si no se encuentra la unidad, devuelve un string vacío
-      }
-    }
-  },
-  {
-    data: 'idUnidad',
-    render: function (data, type, row, meta) {
-      const unidad = props.unidades.find(unidad => unidad.idUnidad === data);
-      if (unidad) {
-        const jefe = props.directivo.find(jefe => jefe.idDirectivo === unidad.idDirectivo);
-        if (jefe) {
-          return jefe.nombre_completo === nombreCompleto ? jefe.nombre_completo : '';
-        }
-        return jefe ? jefe.nombre_completo : '';
-      } else {
-        return '';
       }
     }
   },
@@ -551,6 +537,11 @@ const unidadesFiltradas = computed(() => {
       <h2 class="font-bold text-center text-xl pt-0"> Formación de Unidades</h2>
       <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-1.5"></div>
 
+      <!-- Aquí agregamos la fecha y número de semana, fuera de la tabla -->
+      <div class="py-2 text-center text-sm font-semibold bg-gray-100 rounded mb-2">
+          <span>FECHA: {{ diaSemana + ', ' + fechaActual }} -- SEMANA: {{ numeroSemanaActual }}</span>
+        </div>
+
       <div class="overflow-x-auto relative">
         <!-- el overflow-x-auto - es para poner la barra de dezplazamiento en horizontal automático -->
         <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
@@ -569,11 +560,9 @@ const unidadesFiltradas = computed(() => {
           }">
           <thead>
             <tr class="text-sm leading-normal border-b border-gray-300">
-              <!-- <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-              </th> -->
+              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+              </th>
               <!-- Celda vacía para la primera columna -->
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300"
-                colspan="2">FECHA: {{ diaSemana + ', ' + fechaActual }} -- SEMANA: {{ numeroSemanaActual }}</th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
               </th>
               <!-- Unidad -->
@@ -601,22 +590,19 @@ const unidadesFiltradas = computed(() => {
                 Ruta
               </th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Trab. DOMINGO
+                Dom
               </th>
               <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Unidad
               </th>
-              <th class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Socio / Prestador
+              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
+                Hr. ent
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Hr. entrada
+                Tipo
               </th>
               <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo entrada
-              </th>
-              <th class="py-2 px-4 bg-green-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Extremo
+                Ext
               </th>
               <th class="py-2 px-4 bg-red-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hr. Corte
@@ -628,7 +614,7 @@ const unidadesFiltradas = computed(() => {
                 Hr. regreso
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
-                Tipo de Corrida
+                Tipo
               </th>
               <th class="py-2 px-4 bg-blue-100 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                 Hr. inicio
