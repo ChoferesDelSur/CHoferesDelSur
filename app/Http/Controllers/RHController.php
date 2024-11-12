@@ -119,7 +119,7 @@ class RHController extends Controller
     }
 
     public function operadores(){
-        $operador = operador::all();
+        $operador = operador::with(['empresa', 'tipoOperador', 'convenioPago', 'direccion', 'estado'])->get();
         //$operador = operador::with('direccion.asentamiento.municipio.estados','direccion.asentamiento.codigoPostal')->get();
         $tipoOperador = tipoOperador::all();
         $estado = estado::all();

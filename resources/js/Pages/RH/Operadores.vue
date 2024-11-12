@@ -5,7 +5,7 @@ import { useForm } from '@inertiajs/inertia-vue3';
 import Select from 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import Swal from 'sweetalert2';
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { watch, ref, computed, onMounted, nextTick } from 'vue';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
 import Mensaje from '../../Components/Mensaje.vue';
@@ -115,17 +115,19 @@ const botonesPersonalizados = [
         }
     }
 ];
+console.log(props.operador);
 
 const columnas = [
     {
-        data: null,
+        data: 'checkbox',
+        
         render: function (data, type, row, meta) {
             return `<input type="checkbox" class="operador-checkboxes" data-id="${row.idOperador}" ">`;
         },
         visible: true,
     },
     {
-        data: null, render: function (data, type, row, meta) { return meta.row + 1 },
+        data: 'index', render: function (data, type, row, meta) { return meta.row + 1 },
         //title: 'No.',
         visible: true,
     },
@@ -519,7 +521,6 @@ const eliminarOperadores = () => {
     });
 };
 
-
 // Configuración de opciones para DataTable
 const dataTableOptions = {
     responsive: false,
@@ -554,6 +555,53 @@ const updateTable = () => {
     });
 };
 
+const searchQuery = ref('');
+/* const filters = ref({}); */
+
+// Datos reactivos
+const filters = ref({}); // Filtros por columna
+//const filteredData = ref(props.data); // Datos de la tabla filtrados
+
+// Método para aplicar los filtros
+const applyFilters = () => {
+    filteredData.value = props.operador.filter(row => {
+        return Object.keys(filters.value).every(colKey => {
+            // Si no hay filtro para la columna, no se aplica filtro
+            if (!filters.value[colKey]) return true;
+
+            // Compara el valor de la celda con el filtro
+            const filterValue = filters.value[colKey].toLowerCase();
+            return row[colKey] && row[colKey].toString().toLowerCase().includes(filterValue);
+        });
+    });
+};
+
+// Observador para aplicar los filtros cuando cambian
+watch(filters, () => {
+    applyFilters();
+}, { deep: true });
+
+const filteredData = computed(() => {
+    return props.operador.filter(item => {
+        // Filtro global
+        const matchesGlobalSearch = Object.values(item).some(value =>
+            String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+
+        // Filtros por columna
+        const matchesColumnFilters = Object.keys(filters.value).every((key) => {
+            if (filters.value[key]) {
+                return String(item[key]).toLowerCase().includes(filters.value[key].toLowerCase());
+            }
+            return true;
+        });
+
+        return matchesGlobalSearch && matchesColumnFilters;
+    });
+});
+
+console.log(filteredColumnas.value.map(col => col.data));
+
 </script>
 
 <template>
@@ -586,21 +634,27 @@ const updateTable = () => {
                     </label>
                 </div>
             </div>
+            <!-- Filtro por columna -->
+            <div class="py-2 flex flex-wrap space-x-2">
+                <div v-for="(columna, index) in filteredColumnas" :key="index">
+                    <!-- Solo mostrar filtros para columnas a partir de la tercera (índice 2) y excluir la última columna -->
+                    <input v-if="columna.visible && index >= 2 && index < filteredColumnas.length - 1"
+                        v-model="filters[columna.data || 'sinData']"
+                        :placeholder="'Filtrar por ' + (columna.title || 'sin título')"
+                        class="mt-1 p-1 text-xs border rounded" />
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <!-- DataTable con visibilidad de columnas controlada por v-if -->
                 <DataTable class="w-full table-auto text-sm display nowrap stripe compact cell-border order-column"
-                    id="operadoresTablaId" name="operadoresTablaId" :columns="filteredColumnas" :data="operador"
+                    id="operadoresTablaId" name="operadoresTablaId" :columns="filteredColumnas" :data="filteredData"
                     :options="dataTableOptions">
                     <thead>
                         <tr class="text-sm leading-normal border-b border-gray-300">
                             <th v-for="col in filteredColumnas" :key="col.title" v-if="col.visible" :class="col.class"
                                 class="py-2 px-4 bg-sky-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300">
                                 {{ col.title }}
-                                <!-- Input de filtro para cada columna -->
-                                <div>
-                                    <input type="text" v-model="filters[col.key]" placeholder="Filtrar"
-                                           class="mt-1 p-1 text-xs w-full border rounded"/>
-                                </div>
                             </th>
                         </tr>
                     </thead>

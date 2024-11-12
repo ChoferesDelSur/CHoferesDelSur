@@ -58,4 +58,21 @@ public function direccion(): HasOne
         return $this->belongsTo(estado::class, 'idEstado', 'idEstado');
     }
 
+    // Relación con TipoOperador
+    public function tipoOperador()
+    {
+        return $this->belongsTo(tipoOperador::class, 'idTipoOperador', 'idTipoOperador');
+    }
+
+    public function empresa()
+    {
+        return $this->belongsTo(empresa::class, 'idEmpresa', 'idEmpresa');
+    }
+
+    // Relación con ConvenioPago
+    public function convenioPago()
+    {
+        return $this->belongsTo(convenioPago::class, 'idConvenioPago', 'idConvenioPago');
+    }
+
 }
