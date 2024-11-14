@@ -757,57 +757,57 @@ class ReporteController extends Controller
         }
     }    
 
-        public function reporteMultasDominicales()
+    public function reporteMultasDominicales($semana)
     {
         try {
-            // Obtener el domingo más reciente
-            $domingoReciente = Carbon::now()->previous(Carbon::SUNDAY);
-            // Obtener el sábado anterior y el lunes después del domingo
-            $sabadoAnterior = $domingoReciente->copy()->subDay();
-            $lunesDespuesDelDomingo = $domingoReciente->copy()->addDay();
-
+            // Calcular el domingo y el sábado de la semana especificada
+            $domingoEspecifico = Carbon::now()->startOfYear()->addWeeks($semana - 1)->previous(Carbon::SUNDAY);
+            $sabadoEspecifico = $domingoEspecifico->copy()->subDay();
+            $lunesDespuesDelDomingo = $domingoEspecifico->copy()->addDay();
+    
             // Obtener unidades que deberían trabajar el domingo pero no lo hicieron
             $unidadesSancionables = unidad::with(['operador', 'rolServicio', 'ruta', 'directivo'])
                 ->whereHas('rolServicio', function($query) {
                     $query->where('trabajaDomingo', 'SI'); // Unidades que trabajan los domingos
                 })
-                ->whereDoesntHave('entradas', function($query) use ($domingoReciente) {
-                    $query->whereDate('created_at', '=', $domingoReciente); // No registraron entrada el domingo
+                ->whereDoesntHave('entradas', function($query) use ($domingoEspecifico) {
+                    $query->whereDate('created_at', '=', $domingoEspecifico); // No registraron entrada el domingo
                 })
                 ->get();
-
+    
             // Filtrar unidades sancionables basándose en las entradas del sábado y del lunes
-            $unidadesFiltradas = $unidadesSancionables->filter(function($unidad) use ($sabadoAnterior, $lunesDespuesDelDomingo) {
+            $unidadesFiltradas = $unidadesSancionables->filter(function($unidad) use ($sabadoEspecifico, $lunesDespuesDelDomingo) {
                 // Verificar si la unidad registró entrada el sábado y obtener el registro
                 $entradaSabado = $unidad->entradas()
-                ->with('operador') // Cargar también la relación operador
-                ->with('ruta')
-                ->whereDate('created_at', '=', $sabadoAnterior)->first();
+                    ->with('operador')
+                    ->with('ruta')
+                    ->whereDate('created_at', '=', $sabadoEspecifico)->first();
+    
                 // Verificar si la unidad registró entrada el lunes antes de las 10 a.m. y obtener el registro
                 $entradaLunesTemprana = $unidad->entradas()
-                    ->with('operador') // Cargar también la relación operador
+                    ->with('operador')
                     ->with('ruta')
                     ->whereDate('created_at', '=', $lunesDespuesDelDomingo)
                     ->whereTime('horaEntrada', '<', '10:00:00')
                     ->first();
-
+    
                 // Si existen las entradas, las almacenamos en la unidad
                 if ($entradaSabado) {
-                    $unidad->entradaSabado = $entradaSabado; // Guardar entrada del sábado en la unidad
+                    $unidad->entradaSabado = $entradaSabado;
                 }
-
+    
                 if ($entradaLunesTemprana) {
-                    $unidad->entradaLunesTemprana = $entradaLunesTemprana; // Guardar entrada del lunes en la unidad
+                    $unidad->entradaLunesTemprana = $entradaLunesTemprana;
                 }
-
+    
                 // Mantener en el listado solo si cumple con ambas condiciones
                 return $entradaSabado && $entradaLunesTemprana;
             });
-
+    
             // Devolver el resultado
             return response()->json($unidadesFiltradas);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
+    }    
 }

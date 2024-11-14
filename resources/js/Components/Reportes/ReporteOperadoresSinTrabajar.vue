@@ -44,7 +44,6 @@ const fetchEntradas = async (semana) => {
 };
 
 const generarArchivo = async (reporte, formato, operador, periodo) => {
-    console.log("Semana seleccionada:", semanaSeleccionada); // Agregar un log para verificar el valor
 
     if (!semanaSeleccionada) {
         Swal.fire({

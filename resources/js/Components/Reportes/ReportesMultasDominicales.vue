@@ -20,20 +20,44 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    operador: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
+const form = reactive({
+    unidad: null, // Puedes inicializarlo con algún valor predeterminado si lo deseas
+    operador: null
+});
+console.log("Estoy en componente ReportesMultasDominicales");
 const entradas = ref([]); // Aquí guardamos los datos del reporte
 
-// Función para calcular el domingo más reciente
-const obtenerDomingoMasReciente = () => {
-    const hoy = new Date();
-    const diaSemana = hoy.getDay(); // 0 = Domingo, 6 = Sábado
-    const diferencia = diaSemana === 0 ? 0 : diaSemana; // Si es domingo hoy, diferencia = 0
-    const domingo = new Date(hoy);
-    domingo.setDate(hoy.getDate() - diferencia); // Restamos los días necesarios para llegar al domingo
-    return domingo.toLocaleDateString(); // Retornamos la fecha en formato legible
+// Función para obtener la semana del año
+const getWeek = (date) => {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dayNum = d.getDay() || 7;
+    d.setDate(d.getDate() + 3 - dayNum);
+    const firstThursday = d.getDate();
+    d.setMonth(0, 1);
+    return Math.ceil(((d.getDate() - firstThursday) / 7) + 1);
 };
 
+// Función para obtener el domingo de una semana dada
+const obtenerDomingoPorSemana = (semana) => {
+    const hoy = new Date();
+    const inicioDelAno = new Date(hoy.getFullYear(), 0, 1);
+    const dias = (semana - 1) * 7;
+    const fechaInicioSemana = new Date(inicioDelAno.setDate(inicioDelAno.getDate() + dias));
+    const diaSemana = fechaInicioSemana.getDay();
+    const diferencia = diaSemana === 0 ? 0 : diaSemana;
+    const domingo = new Date(fechaInicioSemana);
+    domingo.setDate(fechaInicioSemana.getDate() - diferencia);
+    return domingo.toLocaleDateString(); // Fecha en formato legible
+};
+
+let semanaSeleccionada = 1; // Por defecto, la primera semana
+console.log("Semana seleccionada:", semanaSeleccionada);
 const reportes = [
     { titulo: 'Multas Dominicales' },
 ];
@@ -45,28 +69,22 @@ const formatos = [
 
 const formatearHora = (hora) => {
     if (!hora) return 'Sin registro'; // Si no hay hora, devolvemos "Sin registro"
-    
+
     // El formato de hora debería ser algo como "08:30:00"
     const [horas, minutos] = hora.split(':'); // Dividimos la cadena en horas, minutos y segundos
     return `${horas}:${minutos}`; // Solo devolvemos horas y minutos
 };
 
-const generarArchivo = async (reporte, formato) => {
-    console.log("Estoy en generar Archivo:");
-    const domingoMasReciente = obtenerDomingoMasReciente(); // Obtener la fecha del domingo más reciente
-    const tituloConFecha = `${reporte.titulo} - ${domingoMasReciente}`; // Incluir la fecha en el título
-    
+const fetchEntradas = async (semana) => {
+    const url = route('reporte.multasDominicales', { semana });
+    console.log("Url:",url);
     try {
-        const response = await axios.get(route('reporte.multasDominicales')); // Llama a tu endpoint
-        entradas.value = response.data; // Asigna los datos a la variable
-        console.log("Datos obtenidos de la consulta:", entradas.value);
-        if (formato === 'pdf') {
-            generarPDF(tituloConFecha); // Pasar el nuevo título con la fecha
-        } else if (formato === 'excel') {
-            generarExcel(tituloConFecha); // Pasar el nuevo título con la fecha
-        }
+        console.log("Estoy despues del try");
+        const response = await axios.get(url);
+        entradas.value = Object.values(response.data);  // Convertir el objeto en un array de entradas
+        console.log(entradas.value);
     } catch (error) {
-        console.error(error);
+        console.error("Error al obtener los datos:", error.response ? error.response.data : error.message);
         Swal.fire({
             title: 'Error',
             text: 'No se pudieron obtener los datos',
@@ -75,6 +93,40 @@ const generarArchivo = async (reporte, formato) => {
         });
     }
 };
+
+const generarArchivo = async (reporte, formato, operador, periodo) => {
+    console.log("Estoy en generar archivo");
+    if (!semanaSeleccionada) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor seleccione una semana para generar el archivo.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    try {
+        await fetchEntradas(semanaSeleccionada);
+        if (reporte.titulo === 'Multas Dominicales') {
+            if (formato === 'pdf') {
+                console.log("Estoy en formato pdf");
+                generarPDF(reporte.titulo, semanaSeleccionada);
+            } else if (formato === 'excel') {
+                console.log("Estoy en generarExcel");
+                generarExcel(reporte.titulo, semanaSeleccionada);
+            }
+        }
+    } catch (error) {
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudieron obtener los datos',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+};
+
 
 const formatearOperador = (operador) => {
     if (!operador) return 'Sin registro'; // Si no hay operador, devolvemos "Sin registro"
@@ -94,28 +146,21 @@ const generarPDF = (tipo) => {
         const rutaSabado = entry.entradaSabado && entry.entradaSabado.ruta ? entry.entradaSabado.ruta.nombreRuta : 'Sin registro';
         const lunesEntrada = entry.entradaLunesTemprana ? formatearHora(entry.entradaLunesTemprana.horaEntrada) : 'Sin registro';
         const operadorLunes = entry.entradaLunesTemprana ? formatearOperador(entry.entradaLunesTemprana.operador) : 'Sin registro';
-        const rutaLunes = entry.entradaLunesTemprana && entry.entradaLunesTemprana.ruta ? entry.entradaLunesTemprana.ruta.nombreRuta: 'Sin registro';
+        const rutaLunes = entry.entradaLunesTemprana && entry.entradaLunesTemprana.ruta ? entry.entradaLunesTemprana.ruta.nombreRuta : 'Sin registro';
 
-        return [numeroUnidad, directivo, sabadoEntrada, operadorSabado,rutaSabado, lunesEntrada,operadorLunes, rutaLunes];
+        return [numeroUnidad, directivo, sabadoEntrada, operadorSabado, rutaSabado, lunesEntrada, operadorLunes, rutaLunes];
     });
 
-    // Añadimos las columnas "Sábado" y "Lunes"
-    const headers = [['Numero Unidad', 'Socio/Prestador','Sábado (horaEntrada)', 'Operador (Sábado)','Ruta (Sábado)', 'Lunes (horaEntrada)','Operador (Lunes)','Ruta (Lunes)']];
+    const headers = [['Numero Unidad', 'Socio/Prestador', 'Sábado (horaEntrada)', 'Operador (Sábado)', 'Ruta (Sábado)', 'Lunes (horaEntrada)', 'Operador (Lunes)', 'Ruta (Lunes)']];
     doc.autoTable({ head: headers, body: bodyContent, startY: 24 });
 
     doc.save(`${tipo}.pdf`);
 };
 
-const generarExcel = (tipo) => {
-    const nombreArchivo = `${tipo}.xlsx`;
-    const data = [['Numero Unidad', 'Socio/Prestador','Sábado (horaEntrada)', 'Operador (Sábado)','Ruta (Sábado)', 'Lunes (horaEntrada)','Operador (Lunes)','Ruta (Lunes)','Justificado']];
-
-    const formatHora = (hora) => {
-        if (!hora) return 'Sin registro';
-        const date = new Date(hora);
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    };
-
+const generarExcel = (tipo, semanaSeleccionada) => {
+    const nombreArchivo = `${tipo}-Semana-${semanaSeleccionada}.xlsx`;
+    const data = [['Numero Unidad', 'Socio/Prestador', 'Sábado (horaEntrada)', 'Operador (Sábado)', 'Ruta (Sábado)', 'Lunes (horaEntrada)', 'Operador (Lunes)', 'Ruta (Lunes)', 'Justificado']];
+    console.log("en generarExcel:", entradas.value);
     entradas.value.forEach(entry => {
         const numeroUnidad = entry.numeroUnidad || 'N/A';
         const directivo = entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A';
@@ -124,8 +169,8 @@ const generarExcel = (tipo) => {
         const rutaSabado = entry.entradaSabado && entry.entradaSabado.ruta ? entry.entradaSabado.ruta.nombreRuta : 'Sin registro';
         const lunesEntrada = entry.entradaLunesTemprana ? formatearHora(entry.entradaLunesTemprana.horaEntrada) : 'Sin registro';
         const operadorLunes = entry.entradaLunesTemprana ? formatearOperador(entry.entradaLunesTemprana.operador) : 'Sin registro';
-        const rutaLunes = entry.entradaLunesTemprana && entry.entradaLunesTemprana.ruta ? entry.entradaLunesTemprana.ruta.nombreRuta: 'Sin registro';
-        data.push([numeroUnidad, directivo, sabadoEntrada,operadorSabado,rutaSabado, lunesEntrada,operadorLunes,rutaLunes,'']);
+        const rutaLunes = entry.entradaLunesTemprana && entry.entradaLunesTemprana.ruta ? entry.entradaLunesTemprana.ruta.nombreRuta : 'Sin registro';
+        data.push([numeroUnidad, directivo, sabadoEntrada, operadorSabado, rutaSabado, lunesEntrada, operadorLunes, rutaLunes, '']);
     });
 
     const workbook = XLSX.utils.book_new();
@@ -134,16 +179,34 @@ const generarExcel = (tipo) => {
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
-
+// Definir semanas
+const weeks = Array.from({ length: 52 }, (_, i) => i + 1);
 </script>
 
 <template>
     <div v-for="reporte in reportes" :key="reporte.titulo" class="mb-4 bg-zinc-100 rounded-lg p-4">
         <h3 class="text-lg font-bold ">{{ reporte.titulo }}</h3>
         <div class="bg-gradient-to-r from-cyan-500 to-cyan-500 h-px mb-2"></div>
-        <div class="flex flex-wrap space-x-3">
+
+        <div class="flex flex-wrap gap-4 mb-3">
+            <div class="flex flex-wrap space-x-3 mb-2">
+                <h2 class="font-semibold text-l pt-0">Semana: </h2>
+                <select v-model="semanaSeleccionada"
+                    class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2">
+                    <option v-for="week in weeks" :key="week" :value="week">Semana {{ week }}</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- <div class="flex flex-wrap space-x-3">
             <button v-for="formato in formatos" :key="formato.tipo" :class="formato.clase"
                 @click="generarArchivo(reporte, formato.tipo)">
+                <i :class="formato.icono"></i> {{ formato.texto }}
+            </button>
+        </div> -->
+        <div class="flex flex-wrap space-x-3">
+            <button v-for="formato in formatos" :key="formato.tipo" :class="formato.clase"
+                @click="generarArchivo(reporte, formato.tipo, form.unidad, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada /* : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado  */ : '' })">
                 <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
             </button>
         </div>

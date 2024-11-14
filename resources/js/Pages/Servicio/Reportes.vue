@@ -71,7 +71,7 @@ const props = defineProps({
 
             <ReporteOperadoresSinTrabajar :unidad="props.unidad" :operador="props.operador"/>
 
-            <ReportesMultasDominicales :unidad="props.unidad" :entrada="props.entrada" :corte="props.corte"/>
+            <ReportesMultasDominicales :unidad="props.unidad" :entrada="props.entrada" :corte="props.corte" :operador="props.operador"/>
 
         </div>
     </ServicioLayout>
