@@ -959,7 +959,8 @@ const updateTable = () => {
     </div>
     <FormularioRegHoraEntrada :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
       :title="'Registrar hora de entrada'" :op="'1'" :modal="'modalCreate'" :entrada="props.entrada"
-      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :ruta="props.ruta">
+      :unidad="props.unidad" :unidadesConOperador="props.unidadesConOperador" :ruta="props.ruta"
+      :operador="props.operador">
     </FormularioRegHoraEntrada>
     <FormularioRegCorte :show="mostrarModalCorte" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalCorte"
       :title="'Registrar hora de corte'" :op="'1'" :modal="'modalCreate'" :corte="props.corte" :unidad="props.unidad"
@@ -1015,7 +1016,8 @@ const updateTable = () => {
   /* Elimina cualquier padding extra que podría estar limitando el fondo */
   border: 1px solid #e5e7eb;
   /* Mantiene los bordes visibles */
-  vertical-align: middle; /* Alinea el contenido verticalmente */
+  vertical-align: middle;
+  /* Alinea el contenido verticalmente */
 }
 
 #formacionTablaId td.bg-green-200 {
@@ -1033,7 +1035,8 @@ const updateTable = () => {
   /* Asegúrate de que el contenido ocupe todo el espacio */
   height: 100%;
   /* Asegúrate de que el contenido se extienda hasta el fondo de la celda */
-  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño del contenido */
+  box-sizing: border-box;
+  /* Asegura que el padding no afecte el tamaño del contenido */
 }
 
 /* Si quieres que el texto en las celdas se centre */

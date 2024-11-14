@@ -1,6 +1,6 @@
 <script setup>
 import { useForm, put } from '@inertiajs/inertia-vue3';
-import { ref, watch, computed} from 'vue';
+import { ref, watch, computed } from 'vue';
 import Modal from '../Modal.vue';
 //import { route } from '../../../../vendor/tightenco/ziggy/src/js';
 import { route } from 'ziggy-js';
@@ -31,6 +31,10 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    operador: {
+        type: Object,
+        default: () => ({}),
+    },
     ruta: {
         type: Object,
         default: () => ({}),
@@ -56,6 +60,11 @@ const form = useForm({
 const rutaNombre = computed(() => {
     const unidadSeleccionada = props.unidadesConOperador.find(unidad => unidad.idUnidad === form.unidad);
     return unidadSeleccionada && unidadSeleccionada.ruta ? unidadSeleccionada.ruta.nombreRuta : 'Nombre de ruta'; // Obtén solo el nombre de la ruta
+});
+
+const operadorNombre = computed(() => {
+    const unidadSeleccionada = props.unidadesConOperador.find(unidad => unidad.idUnidad === form.unidad);
+    return unidadSeleccionada && unidadSeleccionada.operador ? unidadSeleccionada.operador.nombre_completo : 'Nombre de operador';
 });
 
 watch(() => props.entrada, async (newVal) => {
@@ -150,7 +159,7 @@ const save = async () => {
                                     class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
                             <div v-if="horaEntradaError != ''" class="text-red-500 text-xs">{{ horaEntradaError }}</div>
-                        </div>
+                        </ div>
                         <div class="sm:col-span-2 px-4">
                             <label class="block text-sm font-medium leading-6 text-gray-900">¿Es de extremo?</label>
                             <div class="mt-2">
@@ -161,14 +170,26 @@ const save = async () => {
                             </div>
                             <div v-if="extremoError != ''" class="text-red-500 text-xs">{{ extremoError }}</div>
                         </div>
+                        <!-- Operador -->
+                        <div class="sm:col-span-2 px-4">
+                            <label class="block text-sm font-medium leading-6 text-gray-900">Operador</label>
+                            <div class="mt-2">
+                                <span
+                                    class="block w-72 rounded-md border border-gray-300 px-1.5 py-1.5 text-gray-900 bg-gray-100 shadow-sm sm:text-sm sm:leading-6">{{
+                                    operadorNombre }}</span>
+                            </div>
+                        </div>
+
                         <div class="sm:col-span-2 px-4">
                             <label for="ruta" class="block text-sm font-medium leading-6 text-gray-900">Ruta</label>
                             <div class="mt-2">
-                                <span class="block w-72 rounded-md border border-gray-300 px-1.5 py-1.5 text-gray-900 bg-gray-100 shadow-sm sm:text-sm sm:leading-6">
+                                <span
+                                    class="block w-72 rounded-md border border-gray-300 px-1.5 py-1.5 text-gray-900 bg-gray-100 shadow-sm sm:text-sm sm:leading-6">
                                     {{ rutaNombre }} <!-- Solo se mostrará el nombre de la ruta -->
                                 </span>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <div class="mt-6 flex items-center justify-end gap-x-6">

@@ -115,7 +115,6 @@ const botonesPersonalizados = [
         }
     }
 ];
-console.log(props.operador);
 
 const columnas = [
     {
@@ -600,8 +599,6 @@ const filteredData = computed(() => {
     });
 });
 
-console.log(filteredColumnas.value.map(col => col.data));
-
 </script>
 
 <template>
@@ -634,6 +631,7 @@ console.log(filteredColumnas.value.map(col => col.data));
                     </label>
                 </div>
             </div>
+            
             <!-- Filtro por columna -->
             <div class="py-2 flex flex-wrap space-x-2">
                 <div v-for="(columna, index) in filteredColumnas" :key="index">
