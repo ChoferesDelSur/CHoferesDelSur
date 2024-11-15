@@ -26,7 +26,7 @@ const props = defineProps({
     tipoOperador: { type: Object },
     estado: { type: Object },
     directivo: { type: Object },
-    usuario: { type: Object},
+    usuario: { type: Object },
     incapacidad: { type: Object },
     empresa: { type: Object },
     convenioPago: { type: Object },
@@ -135,7 +135,7 @@ const botonesPersonalizados = [
         text: '<i class="fa-solid fa-print"></i> Imprimir', // Texto del botón
         className: 'bg-blue-500 hover:bg-blue-600 text-white py-1/2 px-3 rounded mb-2 jump-icon', // Clase de estilo
         exportOptions: {
-            columns: [1,2,3,4,5,6] // Índices de las columnas que deseas imprimir 
+            columns: [1, 2, 3, 4, 5, 6] // Índices de las columnas que deseas imprimir 
         }
     }
 ];
@@ -163,6 +163,47 @@ const columnas = [
             return estad ? estad.estado : '';
         }
     },
+    {
+        data: null,
+        render: function (data, type, row, meta) {
+            const operador = props.operador.find(op => op.idOperador === row.idOperador);
+            if (operador && operador.ultimaIncapacidad && operador.idEstado === 3) {
+                return operador.ultimaIncapacidad.numeroDias;
+            }
+            return ''; // Mostrar vacío si no cumple la condición
+        }
+    },
+    {
+    data: null,
+    render: function (data, type, row, meta) {
+        const operador = props.operador.find(op => op.idOperador === row.idOperador);
+        if (operador && operador.ultimaIncapacidad && operador.idEstado === 3 && operador.ultimaIncapacidad.fechaInicio) {
+            // Convertir la fecha explícitamente a UTC
+            const fechaInicio = new Date(operador.ultimaIncapacidad.fechaInicio + 'T00:00:00Z');
+            const dia = ('0' + fechaInicio.getUTCDate()).slice(-2);
+            const mes = ('0' + (fechaInicio.getUTCMonth() + 1)).slice(-2);
+            const anio = fechaInicio.getUTCFullYear();
+            return `${dia}/${mes}/${anio}`;
+        }
+        return ''; // Mostrar vacío si no cumple la condición
+    }
+},
+{
+    data: null,
+    render: function (data, type, row, meta) {
+        const operador = props.operador.find(op => op.idOperador === row.idOperador);
+        if (operador && operador.ultimaIncapacidad && operador.idEstado === 3 && operador.ultimaIncapacidad.fechaFin) {
+            // Convertir la fecha explícitamente a UTC
+            const fechaFin = new Date(operador.ultimaIncapacidad.fechaFin + 'T00:00:00Z');
+            const dia = ('0' + fechaFin.getUTCDate()).slice(-2);
+            const mes = ('0' + (fechaFin.getUTCMonth() + 1)).slice(-2);
+            const anio = fechaFin.getUTCFullYear();
+            return `${dia}/${mes}/${anio}`;
+        }
+        return ''; // Mostrar vacío si no cumple la condición
+    }
+},
+
     {
         data: 'fechaAlta',
         render: function (data, type, row, meta) {
@@ -207,6 +248,7 @@ const columnas = [
         }
     }, */
 ]
+console.log(props.operador);
 
 const mostrarModal = ref(false);
 const mostrarModalE = ref(false);
@@ -275,55 +317,6 @@ onMounted(() => {
     });
 });
 
-const eliminarOperadores = () => {
-    const swal = Swal.mixin({
-        buttonsStyling: true
-    })
-    // Obtener los nombres de las rutas seleccionadas
-    const nombresOperadoores = operadoresSeleccionados.value.map((operador) => operador.nombre_completo).join(', ');
-
-    swal.fire({
-        title: '¿Estas seguro que deseas eliminar al operador seleccionado?',
-        html: `Operadores seleccionados: ${nombresOperadoores}`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
-        cancelButtonText: '<i class="fa-solid fa-ban"></i> Cancelar'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const operadorE = operadoresSeleccionados.value.map((operador) => operador.idOperador);
-                const $operadoresIds = operadorE.join(',');
-                await form.post(route('servicio.eliminarOperador', $operadoresIds));
-                operadoresSeleccionados.value = [];
-                const botonEliminar = document.getElementById("eliminarABtn");
-                if (operadoresSeleccionados.value.length > 0) {
-                    botonEliminar.removeAttribute("disabled");
-                } else {
-                    botonEliminar.setAttribute("disabled", "");
-                }
-                // Mostrar mensaje de éxito
-                Swal.fire({
-                    title: 'Operador(es) eliminado(s) correctamente',
-                    icon: 'success'
-                });
-
-                // Almacenar el mensaje en la sesión flash de Laravel
-                window.flash = { message: 'Operador(es) eliminado(s) correctamente', color: 'green' };
-
-            } catch (error) {
-                console.log("Error al eliminar varias operadores: " + error);
-                // Mostrar mensaje de error si es necesario
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Hubo un error al eliminar al operador. Por favor, inténtalo de nuevo más tarde.',
-                    icon: 'error'
-                });
-            }
-        }
-    });
-};
-
 </script>
 
 <template>
@@ -349,6 +342,14 @@ const eliminarOperadores = () => {
                     }">
                     <thead>
                         <tr class="text-sm leading-normal">
+                            <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                                colspan="6"></th>
+                            <th class="py-2 px-4 bg-blue-300 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left text-center"
+                                colspan="3" style="text-align: center; vertical-align: middle;">INCAPACIDAD</th>
+                            <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
+                                colspan="3"></th>
+                        </tr>
+                        <tr class="text-sm leading-normal">
                             <!-- <th
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th>
@@ -356,39 +357,51 @@ const eliminarOperadores = () => {
                                 class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                             </th> -->
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 ID
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Paterno
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Apellido Materno
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Nombre
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Tipo de operador
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Estado
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-300 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Días
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-blue-300 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Inicio
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-blue-300 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Fin
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Fecha Alta
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Fecha Baja
                             </th>
                             <th
-                                class="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Jefe
                             </th>
                         </tr>
@@ -398,10 +411,10 @@ const eliminarOperadores = () => {
         </div>
         <FormularioOperadores :show="mostrarModal" :max-width="maxWidth" :closeable="closeable" @close="cerrarModal"
             :title="'Añadir operador'" :modal="'modalCreate'" :operador="props.operador"
-            :tipoOperador="props.tipoOperador" :estado="props.estado"
-            :directivo="props.directivo"></FormularioOperadores>
-        <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable" @close="cerrarModalE"
-            :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
+            :tipoOperador="props.tipoOperador" :estado="props.estado" :directivo="props.directivo">
+        </FormularioOperadores>
+        <FormularioActualizarOperadores :show="mostrarModalE" :max-width="maxWidth" :closeable="closeable"
+            @close="cerrarModalE" :title="'Editar operador'" :modal="'modalEdit'" :tipoOperador="props.tipoOperador"
             :estado="props.estado" :directivo="props.directivo" :operador="operadorE"></FormularioActualizarOperadores>
     </ServicioLayout>
 </template>

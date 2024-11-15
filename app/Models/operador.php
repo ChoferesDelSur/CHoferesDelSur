@@ -75,4 +75,9 @@ public function direccion(): HasOne
         return $this->belongsTo(convenioPago::class, 'idConvenioPago', 'idConvenioPago');
     }
 
+    public function ultimaIncapacidad()
+    {
+        return $this->hasOne(incapacidad::class, 'idOperador', 'idOperador')->orderBy('fechaInicio', 'desc');
+    }
+
 }

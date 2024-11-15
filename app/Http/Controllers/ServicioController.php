@@ -295,6 +295,16 @@ class ServicioController extends Controller
             $operador->idMunicipio = $domicilio ? $domicilio->asentamiento->municipio->idMunicipio : null;
             $operador->idEntidad = $domicilio ? $domicilio->asentamiento->municipio->estados->idEntidad : null;
         });
+
+        // Ajustar el operador con la última incapacidad
+    $operador->each(function ($operador) {
+        $ultimaIncapacidad = incapacidad::where('idOperador', $operador->idOperador)
+            ->orderBy('created_at', 'desc') // Ordenar por fecha de creación más reciente
+            ->first();
+
+        // Añadir la última incapacidad como una propiedad al operador
+        $operador->ultimaIncapacidad = $ultimaIncapacidad;
+    });
         $empresa = empresa::all();
         $convenioPago = convenioPago::all();
         $usuario = $this->obtenerInfoUsuario();
