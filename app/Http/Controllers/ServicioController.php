@@ -451,10 +451,11 @@ class ServicioController extends Controller
                 'ruta' => 'required',
                 'directivo' => 'required',
             ]);
-            // Verificar si la unidad ya existe
+            // Verificar si ya existe una unidad activa con los mismos datos
             $existingUnidad = unidad::where('numeroUnidad', $request->numeroUnidad)
                 ->where('idRuta', $request->ruta)
                 ->where('idDirectivo', $request->directivo)
+                ->whereNull('deleted_at') // Excluir registros eliminados
                 ->first();
             // Obtener el nombre completo del directivo y el nombre de la ruta
             $directivo = directivo::find($request->directivo);
@@ -467,7 +468,9 @@ class ServicioController extends Controller
                 // Unidad ya existe, puedes devolver una respuesta indicando el error
                 return redirect()->route('servicio.unidades')->with(['message' => "La unidad ya está registrada: " .$request->numeroUnidad ." - " .$nombreruta ." - " .$nombredirectivo, "color" => "yellow", 'type' => 'info']);
             }
+            // Verificar si ya existe una unidad activa con el mismo número pero en otra ruta/directivo
             $existingNumero = unidad::where('numeroUnidad', $request->numeroUnidad)
+            ->whereNull('deleted_at') // Excluir registros eliminados
             ->first();
         if($existingNumero){
             // Unidad ya existe con un número igual pero diferentes ruta y directivo
