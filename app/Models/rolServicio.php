@@ -18,4 +18,9 @@ class rolServicio extends Model
         'trabajaDomingo',
         'idUnidad',
     ];
+
+        public function unidad()
+    {
+        return $this->belongsTo(unidad::class, 'idUnidad');
+    }
 }

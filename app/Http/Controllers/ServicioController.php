@@ -1392,7 +1392,7 @@ class ServicioController extends Controller
         }
     }
 
-        public function cambiarRolServicio(Request $request)
+        /* public function cambiarRolServicio(Request $request)
     {
         // Cambiar el valor de trabajaDomingo para todos los registros
         $rolServicios = rolServicio::all();
@@ -1406,6 +1406,40 @@ class ServicioController extends Controller
             'message' => "Rol de domingo actualizado correctamente",
             'color' => 'green'
         ]);
+    } */
+
+        public function cambiarRolServicio(Request $request)
+    {
+        try {
+            // Obtener todas las unidades actuales
+            $unidades = unidad::all();
+
+            // Iterar sobre cada unidad y crear un nuevo registro en rolServicio
+            foreach ($unidades as $unidad) {
+                // Determinar el nuevo valor para trabajaDomingo
+                $ultimoRegistro = rolServicio::where('idUnidad', $unidad->idUnidad)
+                    ->latest('idRolServicio') // Tomar el registro más reciente
+                    ->first();
+
+                $nuevoValor = $ultimoRegistro && $ultimoRegistro->trabajaDomingo === 'SI' ? 'NO' : 'SI';
+
+                // Crear un nuevo registro en rolServicio
+                rolServicio::create([
+                    'idUnidad' => $unidad->idUnidad,
+                    'trabajaDomingo' => $nuevoValor,
+                ]);
+            }
+
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Se han generado nuevos registros de rol de domingo para todas las unidades.",
+                'color' => 'green',
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('servicio.formarUni')->with([
+                'message' => "Error: " . $e->getMessage(),
+                'color' => 'red',
+            ]);
+        }
     }
 
         public function actualizarRolRuta(Request $request)

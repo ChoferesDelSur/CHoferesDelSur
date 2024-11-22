@@ -130,7 +130,7 @@ const generarArchivo = async (reporte, formato, operador, periodo) => {
 
 const formatearOperador = (operador) => {
     if (!operador) return 'Sin registro'; // Si no hay operador, devolvemos "Sin registro"
-    return `${operador.nombre} ${operador.apellidoP} ${operador.apellidoM}`;
+    return `${operador.apellidoP} ${operador.apellidoM} ${operador.nombre}`;
 };
 
 const generarPDF = (tipo) => {
@@ -164,12 +164,15 @@ const generarExcel = (tipo, semanaSeleccionada) => {
     entradas.value.forEach(entry => {
         const numeroUnidad = entry.numeroUnidad || 'N/A';
         const directivo = entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A';
+
         const sabadoEntrada = entry.entradaSabado ? formatearHora(entry.entradaSabado.horaEntrada) : 'Sin registro';
         const operadorSabado = entry.entradaSabado ? formatearOperador(entry.entradaSabado.operador) : 'Sin registro';
         const rutaSabado = entry.entradaSabado && entry.entradaSabado.ruta ? entry.entradaSabado.ruta.nombreRuta : 'Sin registro';
+
         const lunesEntrada = entry.entradaLunesTemprana ? formatearHora(entry.entradaLunesTemprana.horaEntrada) : 'Sin registro';
         const operadorLunes = entry.entradaLunesTemprana ? formatearOperador(entry.entradaLunesTemprana.operador) : 'Sin registro';
         const rutaLunes = entry.entradaLunesTemprana && entry.entradaLunesTemprana.ruta ? entry.entradaLunesTemprana.ruta.nombreRuta : 'Sin registro';
+        
         data.push([numeroUnidad, directivo, sabadoEntrada, operadorSabado, rutaSabado, lunesEntrada, operadorLunes, rutaLunes, '']);
     });
 
