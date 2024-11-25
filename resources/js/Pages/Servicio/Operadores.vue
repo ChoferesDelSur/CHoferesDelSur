@@ -235,6 +235,9 @@ const columnas = [
         }
     },
     {
+        data: 'numLicencia',
+    },
+    {
         data: 'idDirectivo',
         render: function (data, type, row, meta) {
             // Modificación para mostrar la descripción del ciclo
@@ -347,7 +350,7 @@ onMounted(() => {
                             <th class="py-2 px-4 bg-blue-300 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left text-center"
                                 colspan="3" style="text-align: center; vertical-align: middle;">INCAPACIDAD</th>
                             <th class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-600 border-r border-grey-300 text-left"
-                                colspan="3"></th>
+                                colspan="4"></th>
                         </tr>
                         <tr class="text-sm leading-normal">
                             <!-- <th
@@ -399,6 +402,10 @@ onMounted(() => {
                             <th
                                 class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
                                 Fecha Baja
+                            </th>
+                            <th
+                                class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
+                                Núm. Licencia
                             </th>
                             <th
                                 class="py-2 px-4 bg-blue-200 font-bold uppercase text-sm text-grey-light border-b border-grey-light">
