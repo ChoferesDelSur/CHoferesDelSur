@@ -57,7 +57,7 @@ function obtenerNumeroSemana(fecha) {
 // Obtener la fecha actual y el número de semana
 const fechaActual = new Date().toLocaleDateString();
 const diaSemana = obtenerDiaSemana(new Date().getDay());
-const numeroSemanaActual = obtenerNumeroSemana(new Date()) + 1;
+const numeroSemanaActual = obtenerNumeroSemana(new Date());
 
 // Función para obtener el día de la semana según el número
 function obtenerDiaSemana(diaNumero) {
