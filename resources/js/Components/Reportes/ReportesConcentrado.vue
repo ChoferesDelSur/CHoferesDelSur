@@ -41,6 +41,8 @@ const props = defineProps({
     },
 });
 
+const isLoading = ref(false);
+
 const form = reactive({
     unidad: null, // Puedes inicializarlo con algún valor predeterminado si lo deseas
     operador: null
@@ -91,6 +93,9 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
         periodo.valor = anioSeleccionado;
     }
 
+    // Mostrar el spinner de carga
+    isLoading.value = true;
+
     try {
         await fetchEntradas(idUnidad, periodo);
         if (reporte.titulo === 'Concentrado') {
@@ -117,6 +122,9 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
             icon: 'error',
             confirmButtonText: 'OK'
         });
+    } finally {
+        // Ocultar el spinner de carga después de que termine el proceso
+        isLoading.value = false;
     }
 };
 
@@ -351,6 +359,11 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                 @click="generarArchivo(reporte, formato.tipo, form.unidad, { tipo: reporte.periodoSeleccionado, valor: reporte.periodoSeleccionado === 'semana' ? semanaSeleccionada : reporte.periodoSeleccionado === 'mes' ? mesSeleccionado : reporte.periodoSeleccionado === 'anio' ? anioSeleccionado : '' })">
                 <i :class="formato.icono + ' mr-2 jump-icon'"></i> {{ formato.texto }}
             </button>
+
+            <!-- Spinner de carga -->
+            <div :class="['loading-overlay', { show: isLoading }]">
+                <div class="spinner"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -360,5 +373,50 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
 .jump-icon:hover i {
     transition: transform 0.2s ease-in-out;
     transform: translateY(-3px);
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Asegúrate de que esté por encima de otros elementos */
+    visibility: hidden;
+    /* Oculto por defecto */
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s;
+}
+
+/* Mostrar el overlay */
+.loading-overlay.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Estilos del spinner */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Animación del spinner */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>
