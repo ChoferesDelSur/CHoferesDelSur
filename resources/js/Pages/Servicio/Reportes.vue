@@ -10,11 +10,12 @@ import ReportesUltimasCorridas from '../../Components/Reportes/ReportesUltimasCo
 import ServicioLayout from '../../Layouts/ServicioLayout.vue';
 import ReporteOperadoresSinTrabajar from '../../Components/Reportes/ReporteOperadoresSinTrabajar.vue';
 import ReportesMultasDominicales from '../../Components/Reportes/ReportesMultasDominicales.vue';
+import ReportesConcentrado from '../../Components/Reportes/ReportesConcentrado.vue';
 
 const props = defineProps({
     message: { String, default: '' },
     color: { String, default: '' },
-    usuario: { type: Object},
+    usuario: { type: Object },
     unidad: {
         type: Object,
         default: () => ({}),
@@ -53,25 +54,31 @@ const props = defineProps({
             <h2 class="font-bold text-center text-xl pt-0 mb-2">Reportes</h2>
             <div class="bg-gradient-to-r from-cyan-300 to-cyan-500 h-px mb-2"></div>
 
-            <ReportesEntrada :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada"/>
+            <ReportesEntrada :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada" />
 
-            <ReportesEntradasTardes :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada"/>
+            <ReportesEntradasTardes :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada" />
 
-            <ReportesCortes :unidad="props.unidad" :operador="props.operador" :corte="props.corte"/>
+            <ReportesCortes :unidad="props.unidad" :operador="props.operador" :corte="props.corte" />
 
-            <ReportesCortesConRegreso :unidad="props.unidad" :operador="props.operador" :corte="props.corte"/>
+            <ReportesCortesConRegreso :unidad="props.unidad" :operador="props.operador" :corte="props.corte" />
 
-            <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador" :corte="props.corte"/>
+            <ReportesCortesSinRegreso :unidad="props.unidad" :operador="props.operador" :corte="props.corte" />
 
-            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador" :tipoUltimaCorrida="props.tipoUltimaCorrida" :ultimaCorrida="props.ultimaCorrida"/>
+            <ReportesUltimasCorridas :unidad="props.unidad" :operador="props.operador"
+                :tipoUltimaCorrida="props.tipoUltimaCorrida" :ultimaCorrida="props.ultimaCorrida" />
 
-            <ReportesCastigos :unidad="props.unidad" :operador="props.operador" :castigo="props.castigo"/>
+            <ReportesCastigos :unidad="props.unidad" :operador="props.operador" :castigo="props.castigo" />
 
-            <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador"/>
+            <ReportesDiasTrabajados :unidad="props.unidad" :operador="props.operador" />
 
-            <ReporteOperadoresSinTrabajar :unidad="props.unidad" :operador="props.operador"/>
+            <ReporteOperadoresSinTrabajar :unidad="props.unidad" :operador="props.operador" />
 
-            <ReportesMultasDominicales :unidad="props.unidad" :entrada="props.entrada" :corte="props.corte" :operador="props.operador"/>
+            <ReportesMultasDominicales :unidad="props.unidad" :entrada="props.entrada" :corte="props.corte"
+                :operador="props.operador" />
+
+            <ReportesConcentrado :unidad="props.unidad" :operador="props.operador" :entrada="props.entrada"
+                :corte="props.corte" :castigo="props.castigo" :ultimaCorrida="props.ultimaCorrida"
+                :tipoUltimaCorrida="props.tipoUltimaCorrida" />
 
         </div>
     </ServicioLayout>

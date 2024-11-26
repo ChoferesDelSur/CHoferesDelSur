@@ -30,7 +30,6 @@ const form = reactive({
     unidad: null, // Puedes inicializarlo con algún valor predeterminado si lo deseas
     operador: null
 });
-console.log("Estoy en componente ReportesMultasDominicales");
 const entradas = ref([]); // Aquí guardamos los datos del reporte
 
 // Función para obtener la semana del año
@@ -57,7 +56,6 @@ const obtenerDomingoPorSemana = (semana) => {
 };
 
 let semanaSeleccionada = 1; // Por defecto, la primera semana
-console.log("Semana seleccionada:", semanaSeleccionada);
 const reportes = [
     { titulo: 'Multas Dominicales' },
 ];
@@ -77,12 +75,9 @@ const formatearHora = (hora) => {
 
 const fetchEntradas = async (semana) => {
     const url = route('reporte.multasDominicales', { semana });
-    console.log("Url:",url);
     try {
-        console.log("Estoy despues del try");
         const response = await axios.get(url);
         entradas.value = Object.values(response.data);  // Convertir el objeto en un array de entradas
-        console.log(entradas.value);
     } catch (error) {
         console.error("Error al obtener los datos:", error.response ? error.response.data : error.message);
         Swal.fire({
@@ -95,7 +90,6 @@ const fetchEntradas = async (semana) => {
 };
 
 const generarArchivo = async (reporte, formato, operador, periodo) => {
-    console.log("Estoy en generar archivo");
     if (!semanaSeleccionada) {
         Swal.fire({
             title: 'Error',
@@ -110,10 +104,8 @@ const generarArchivo = async (reporte, formato, operador, periodo) => {
         await fetchEntradas(semanaSeleccionada);
         if (reporte.titulo === 'Multas Dominicales') {
             if (formato === 'pdf') {
-                console.log("Estoy en formato pdf");
                 generarPDF(reporte.titulo, semanaSeleccionada);
             } else if (formato === 'excel') {
-                console.log("Estoy en generarExcel");
                 generarExcel(reporte.titulo, semanaSeleccionada);
             }
         }

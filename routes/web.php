@@ -111,6 +111,10 @@ Route::controller(ReporteController::class)->group(function(){
     Route::get('/reporte/OperadoresSinTrabajar/operadores/semana/{semana}','obtenerOperadoresSinTrabajarPorSemana')->name('reporte.opSinTrabajar');
     Route::get('/reporte/multasDominicales/semana/{semana}','reporteMultasDominicales')->name('reporte.multasDominicales');
 
+    Route::get('/reporte/concentrado-semana/unidad/{idUnidad}/semana/{semana}','obtenerConcentradoPorSemana')->name('reportes.concentradoSemana');
+    Route::get('/reporte/concentrado-mes/unidad/{idUnidad}/mes/{mes}','obtenerConcentradoPorMes')->name('reportes.concentradoMes');
+    Route::get('/reporte/concentrado/unidad/{idUnidad}/anio/{anio}','obtenerConcentradoPorAnio')->name('reportes.concentradoAnio');
+
 });
 
 Route::controller(InfoController::class)->group(function () {

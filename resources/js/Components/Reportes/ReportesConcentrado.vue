@@ -23,6 +23,22 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    corte: {
+        type: Object,
+        default: () => ({}),
+    },
+    castigo: {
+        type: Object,
+        default: () => ({}),
+    },
+    ultimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
+    tipoUltimaCorrida: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const form = reactive({
@@ -33,17 +49,16 @@ const form = reactive({
 const fetchEntradas = async (idUnidad, periodo) => {
     let url = '';
     if (periodo.tipo === 'semana') {
-        url = route('reportes.entradasSemana', { idUnidad: idUnidad, semana: periodo.valor });
+        url = route('reportes.concentradoSemana', { idUnidad: idUnidad, semana: periodo.valor });
     } else if (periodo.tipo === 'mes' || typeof periodo === 'number') {
-        url = route('reportes.entradasMes', { idUnidad: idUnidad, mes: periodo.valor });
+        url = route('reportes.concentradoMes', { idUnidad: idUnidad, mes: periodo.valor });
     } else if (periodo.tipo === 'anio') {
-        url = route('reportes.entradasAnio', { idUnidad: idUnidad, anio: periodo.valor });
+        url = route('reportes.concentradoAnio', { idUnidad: idUnidad, anio: periodo.valor });
     }
 
     try {
         const response = await axios.get(url);
         entradas.value = response.data;
-        console.log("Datos:", entradas.value);
     } catch (error) {
         /* console.error(error); */
         Swal.fire({
@@ -78,7 +93,7 @@ const generarArchivo = async (reporte, formato, idUnidad, periodoSeleccionado) =
 
     try {
         await fetchEntradas(idUnidad, periodo);
-        if (reporte.titulo === 'Entradas') {
+        if (reporte.titulo === 'Concentrado') {
             if (formato === 'pdf') {
                 generarPDF(reporte.titulo, periodo); // Pasa el objeto periodo completo
             } else if (formato === 'excel') {
@@ -109,8 +124,8 @@ const generarPDF = (tipo, periodoSeleccionado) => {
     const periodoTexto = periodoSeleccionado.tipo === 'semana'
         ? `Semana ${periodoSeleccionado.valor}`
         : periodoSeleccionado.tipo === 'mes'
-        ? months[periodoSeleccionado.valor - 1]
-        : periodoSeleccionado.valor;
+            ? months[periodoSeleccionado.valor - 1]
+            : periodoSeleccionado.valor;
 
     const nombreArchivo = `${tipo}-${periodoTexto}.pdf`;
     // Crear una instancia de jsPDF
@@ -173,36 +188,88 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     } else if (periodoSeleccionado.tipo === 'mes') {
         periodoTexto = months[periodoSeleccionado.valor - 1];
     } else if (periodoSeleccionado.tipo === 'anio') {
-        periodoTexto = periodoSeleccionado.valor; // Asumiendo que `anioSeleccionado` ya está en `periodoSeleccionado.valor`
+        periodoTexto = periodoSeleccionado.valor;
     } else {
-        periodoTexto = periodoSeleccionado.valor; // Default case
+        periodoTexto = periodoSeleccionado.valor;
     }
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
-    // Crear datos para el archivo Excel
-    const data = [['Ruta', 'Fecha', 'Numero Unidad', 'Socio/Prestador', 'Hora Entrada', 'Tipo Entrada', 'Extremo', 'Operador']];
+    const data = [['Ruta', 'Fecha', 'Núm. Unidad', 'Socio/Prestador', 'Operador', 'Hora Entrada', 'Tipo Entrada', 'Ext', 'Hora Corte', 'Hora Regreso', 'Causa', 'Hora Inicio Castigo', 'Hora Fin Castigo', 'Castigo', 'Observaciones', 'Hora Inicio UC', 'Hora Fin UC', 'Tipo UC']];
+
+    // Iterar sobre cada objeto en entradas.value
     entradas.value.forEach(entry => {
-        const ruta = entry.ruta ? entry.ruta.nombreRuta : 'N/A';
-        const fecha = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : 'N/A';
-        const numeroUnidad = entry.unidad?.numeroUnidad || 'N/A';
-        const directivo = entry.directivo ? `${entry.directivo.nombre_completo}` : 'N/A';
-        const horaEntrada = entry.horaEntrada ? entry.horaEntrada.substring(0, 5) : 'N/A';
-        const tipoEntrada = entry.tipoEntrada;
-        const extremo = entry.extremo || 'N/A';
-        const operador = entry.operador ? `${entry.operador.nombre_completo}` : 'N/A';
-        data.push([ruta, fecha, numeroUnidad, directivo, horaEntrada, tipoEntrada, extremo, operador]);
+        // Extraer las entradas anidadas
+        entry.entradas.forEach(entrada => {
+            const ruta = entrada.ruta.nombreRuta || 'N/A';
+            const fecha = entrada.created_at ? new Date(entrada.created_at).toLocaleDateString() : 'N/A';
+            const numeroUnidad = entry.unidad || 'N/A'; // `entry.unidad` contiene directamente el número
+            const directivo = entrada.directivo.nombre_completo || 'N/A';
+            const operador = entrada.operador ? `${entrada.operador.nombre_completo}` : 'N/A';
+            const horaEntrada = entrada.horaEntrada ? entrada.horaEntrada.substring(0, 5) : 'N/A';
+            const tipoEntrada = entrada.tipoEntrada || '';
+            const extremo = entrada.extremo || 'N/A';
+
+            // Inicializar variables para cortes y castigos
+            let horaCorte = '';
+            let horaRegreso = '';
+            let causa = '';
+            let horaInicioCastigo = '';
+            let horaFinCastigo = '';
+            let castigo = '';
+            let observaciones = '';
+
+            // Concatenar los cortes correspondientes en la misma fecha
+            entry.cortes.forEach(corte => {
+                const corteFecha = new Date(corte.created_at).toLocaleDateString();
+                if (corteFecha === fecha) {
+                    horaCorte += (horaCorte ? `, ${corte.horaCorte ? corte.horaCorte.substring(0, 5) : ''}` : corte.horaCorte ? corte.horaCorte.substring(0, 5) : '');
+                    horaRegreso += (horaRegreso ? `, ${corte.horaRegreso ? corte.horaRegreso.substring(0, 5) : ''}` : corte.horaRegreso ? corte.horaRegreso.substring(0, 5) : '');
+                    causa += (causa ? `, ${corte.causa || ''}` : corte.causa || '');
+                }
+            });
+
+            // Concatenar los castigos correspondientes en la misma fecha
+            entry.castigos.forEach(cast => {
+                const castigoFecha = new Date(cast.created_at).toLocaleDateString();
+                if (castigoFecha === fecha) {
+                    horaInicioCastigo += (horaInicioCastigo ? `, ${cast.horaInicio ? cast.horaInicio.substring(0, 5) : ''}` : cast.horaInicio ? cast.horaInicio.substring(0, 5) : '');
+                    horaFinCastigo += (horaFinCastigo ? `, ${cast.horaFin ? cast.horaFin.substring(0, 5) : ''}` : cast.horaFin ? cast.horaFin.substring(0, 5) : '');
+                    castigo += (castigo ? `, ${cast.castigo || ''}` : cast.castigo || '');
+                    observaciones += (observaciones ? `, ${cast.observaciones || ''}` : cast.observaciones || '');
+                }
+            });
+
+            // Buscar la última corrida correspondiente a la misma fecha
+            let horaInicioUC = '';
+            let horaFinUC = '';
+            let tipoUltimaCorrida = '';
+
+            // Iterar sobre las últimas corridas de la unidad para encontrar una en la misma fecha
+            entry.ultimaCorridas.forEach(ultimaCorrida => {
+                const ultimaCorridaFecha = new Date(ultimaCorrida.created_at).toLocaleDateString();
+                if (ultimaCorridaFecha === fecha) {
+                    horaInicioUC = ultimaCorrida.horaInicioUC ? ultimaCorrida.horaInicioUC.substring(0, 5) : '';
+                    horaFinUC = ultimaCorrida.horaFinUC ? ultimaCorrida.horaFinUC.substring(0, 5) : '';
+                    tipoUltimaCorrida = ultimaCorrida.tipo_ultima_corrida.tipoUltimaCorrida || '';
+                }
+            });
+
+            // Agregar cada fila de datos al arreglo `data`
+            data.push([ruta, fecha, numeroUnidad, directivo, operador, horaEntrada, tipoEntrada, extremo, horaCorte, horaRegreso, causa, horaInicioCastigo, horaFinCastigo, castigo, observaciones, horaInicioUC, horaFinUC, tipoUltimaCorrida]);
+        });
     });
+
     // Crear libro de Excel
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Entradas');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Concentrado');
     // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
 
 const reportes = [
-    { titulo: 'Entradas', periodo: 'semana', periodoSeleccionado: 'semana' },
+    { titulo: 'Concentrado', periodo: 'semana', periodoSeleccionado: 'semana' },
 ];
 
 const formatos = [
@@ -248,19 +315,6 @@ let anioSeleccionado = currentYear; // Por defecto, el año actual
                     </select>
                 </div>
             </div>
-            <!-- <h2 class="font-semibold text-l pt-0"> o </h2>
-            <div>
-                <div>
-                    <select name="operador" id="operador" v-model="form.operador"
-                        class="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option value="" disabled selected>----------- Operador -----------</option>
-                        <option value="todas">Todos los operadores</option>
-                        <option v-for="chofer in operador" :key="chofer.idOperador" :value="chofer.idOperador">
-                            {{ chofer.nombre_completo }}
-                        </option>
-                    </select>
-                </div>
-            </div> -->
         </div>
         <div class="flex flex-wrap gap-4 mb-3">
             <div class="flex flex-wrap space-x-3 mb-2">

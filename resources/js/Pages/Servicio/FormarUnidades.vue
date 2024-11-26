@@ -550,7 +550,7 @@ const columnas = [
           // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
           const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
           return `
-          <div style="background-color: #fff3b0 ${borderStyle}">
+          <div style="background-color: #fff3b0; ${borderStyle}">
             <div>${castigoRow.horaInicio}</div>
           </div>
         `;
@@ -585,7 +585,7 @@ const columnas = [
           // Renderizar cada castigo en una fila diferente con un borde inferior si hay más de un castigo
           const borderStyle = castigosRows.length > 1 && index !== castigosRows.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
           return `
-          <div style="background-color: #fff3b0 ${borderStyle}">
+          <div style="background-color: #fff3b0; ${borderStyle}">
             <div>${castigoRow.horaFin}</div>
           </div>
         `;
@@ -617,7 +617,7 @@ const columnas = [
         return nombresCastigos.map((nombreCastigo, index) => {
           // Renderizar cada nombre de castigo en una fila diferente con un borde inferior si hay más de un nombre de castigo
           const borderStyle = nombresCastigos.length > 1 && index !== nombresCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-          return `<div style="background-color: #fff3b0 ${borderStyle}">${nombreCastigo}</div>`;
+          return `<div style="background-color: #fff3b0; ${borderStyle}">${nombreCastigo}</div>`;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
 
@@ -646,7 +646,7 @@ const columnas = [
         return observacionesCastigos.map((observacion, index) => {
           // Renderizar cada observación en una fila diferente con un borde inferior si hay más de una observación de castigo
           const borderStyle = observacionesCastigos.length > 1 && index !== observacionesCastigos.length - 1 ? 'border-bottom: 1px solid #b2b2b2;' : '';
-          return `<div style="background-color: #fff3b0 ${borderStyle}">${observacion}</div>`;
+          return `<div style="background-color: #fff3b0; ${borderStyle}">${observacion}</div>`;
         }).join(''); // Unir las filas en una sola cadena para mostrar en la celda
       }
 
