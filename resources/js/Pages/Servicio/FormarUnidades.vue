@@ -130,7 +130,7 @@ const exportarExcel = () => {
           'Hr. Finaliza': '',
           'Motivo': '',
           'Otras Observaciones': '',
-          'Operador': operadorMap[row.idOperador] || 'Sin Asignar',
+          'Operador': operadorMap[row.idOperador]?.nombre_completo || 'Sin Asignar',
           'Num. Licencia': operadorMap[row.idOperador] ? operadorMap[row.idOperador].numLicencia : ''
         };
       }
