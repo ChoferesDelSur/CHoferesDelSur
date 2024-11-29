@@ -87,7 +87,7 @@ const exportarExcel = () => {
     const corteMap = Object.fromEntries(props.corte.map(c => [c.idUnidad, []]));
     const ultimaCorridaMap = Object.fromEntries(props.ultimaCorrida.map(uc => [uc.idUnidad, { tipoCorrida: uc.idTipoUltimaCorrida, horaInicioUC: uc.horaInicioUC, horaFinUC: uc.horaFinUC, created_at: uc.created_at }]));
     const castigoMap = Object.fromEntries(props.castigo.map(c => [c.idUnidad, []])); // Cambiado a lista de castigos
-    const operadorMap = Object.fromEntries(props.operador.map(o => [o.idOperador, o.nombre_completo]));
+    const operadorMap = Object.fromEntries(props.operador.map(o => [o.idOperador, { nombre_completo: o.nombre_completo, numLicencia: o.numLicencia }]));
     const tipoUltimaCorridaMap = Object.fromEntries(props.tipoUltimaCorrida.map(tuc => [tuc.idTipoUltimaCorrida, tuc.tipoUltimaCorrida]));
 
     // Función para formatear hora a "HH:mm"
@@ -130,7 +130,8 @@ const exportarExcel = () => {
           'Hr. Finaliza': '',
           'Motivo': '',
           'Otras Observaciones': '',
-          'Operador': operadorMap[row.idOperador] || 'Sin Asignar'
+          'Operador': operadorMap[row.idOperador] || 'Sin Asignar',
+          'Num. Licencia': operadorMap[row.idOperador] ? operadorMap[row.idOperador].numLicencia : ''
         };
       }
 
