@@ -871,56 +871,65 @@ class ReporteController extends Controller
     }
 
     public function obtenerConcentradoPorSemana($idUnidad, $semana)
-{
-    try {
-        // Crear las fechas de inicio y fin de la semana seleccionada
-        $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
-        $finSemana = $inicioSemana->copy()->endOfWeek();
-
-        // Obtener las unidades y cargar las relaciones necesarias
-        $unidades = unidad::with([
-                'entradas' => function ($query) use ($inicioSemana, $finSemana) {
-                    $query->whereBetween('created_at', [$inicioSemana, $finSemana])
-                          ->with(['ruta', 'directivo', 'operador']);
-                },
-                'cortes' => function ($query) use ($inicioSemana, $finSemana) {
-                    $query->whereBetween('created_at', [$inicioSemana, $finSemana])
-                          ->with(['ruta', 'directivo', 'operador']);
-                },
-                'castigos' => function ($query) use ($inicioSemana, $finSemana) {
-                    $query->whereBetween('created_at', [$inicioSemana, $finSemana])
-                          ->with(['ruta', 'directivo', 'operador']);
-                },
-                'ultimaCorridas' => function ($query) use ($inicioSemana, $finSemana) {
-                    $query->whereBetween('created_at', [$inicioSemana, $finSemana])
-                          ->with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida']);
-                }
-            ])
-            ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
-                return $query->where('idUnidad', $idUnidad);
-            })
-            ->get();
-
-        // Construir el concentrado en un array estructurado
-        $concentrado = $unidades->map(function ($unidad) {
-            return [
-                'unidad' => $unidad->numeroUnidad,
-                'entradas' => $unidad->entradas,
-                'cortes' => $unidad->cortes,
-                'castigos' => $unidad->castigos,
-                'ultimaCorridas' => $unidad->ultimaCorridas,
-            ];
-        });
-
-        // Devolver el concentrado como respuesta JSON
+    {
+        try {
+            // Calcular el rango de fechas de la semana seleccionada
+            $inicioSemana = Carbon::now()->startOfYear()->addWeeks($semana - 1)->startOfWeek();
+            $finSemana = $inicioSemana->copy()->endOfWeek();
+    
+            // Obtener las unidades y cargar las relaciones necesarias
+            $unidades = unidad::with([
+                    'entradas' => function ($query) use ($inicioSemana, $finSemana) {
+                        $query->whereBetween('created_at', [$inicioSemana, $finSemana])
+                              ->with(['ruta', 'directivo', 'operador']);
+                    },
+                    'cortes' => function ($query) use ($inicioSemana, $finSemana) {
+                        $query->whereBetween('created_at', [$inicioSemana, $finSemana])
+                              ->with(['ruta', 'directivo', 'operador']);
+                    },
+                    'castigos' => function ($query) use ($inicioSemana, $finSemana) {
+                        $query->whereBetween('created_at', [$inicioSemana, $finSemana])
+                              ->with(['ruta', 'directivo', 'operador']);
+                    },
+                    'ultimaCorridas' => function ($query) use ($inicioSemana, $finSemana) {
+                        $query->whereBetween('created_at', [$inicioSemana, $finSemana])
+                              ->with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida']);
+                    },
+                    'rolServicio' => function ($query) use ($inicioSemana, $finSemana) {
+                        $query->whereBetween('created_at', [$inicioSemana, $finSemana]);
+                    }
+                ])
+                ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
+                    return $query->where('idUnidad', $idUnidad);
+                })
+                ->get();
+    
+            // Construir el concentrado en un array estructurado
+            $concentrado = $unidades->map(function ($unidad) {
+                return [
+                    'unidad' => $unidad->numeroUnidad,
+                    'entradas' => $unidad->entradas,
+                    'cortes' => $unidad->cortes,
+                    'castigos' => $unidad->castigos,
+                    'ultimaCorridas' => $unidad->ultimaCorridas,
+                    'rolServicio' => $unidad->rolServicio,
+                ];
+            });
+    
+            // Devolver el concentrado como respuesta JSON (similar a obtenerConcentradoPorMes)
         return response()->json($concentrado);
-
-    } catch (\Exception $e) {
-        // Manejar excepciones y devolver un mensaje de error
-        return response()->json(['error' => 'Error al obtener el concentrado por semana', 'message' => $e->getMessage()], 500);
+    
+        } catch (\Exception $e) {
+            // Manejar excepciones y devolver un mensaje de error
+            Log::error('Error al obtener concentrado por semana', ['details' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener el concentrado por semana',
+                'details' => $e->getMessage()
+            ], 500);
+        }
     }
-}
-
+    
     public function obtenerConcentradoPorMes($idUnidad, $mes)
 {
     try {
@@ -945,6 +954,9 @@ class ReporteController extends Controller
                 'ultimaCorridas' => function ($query) use ($inicioMes, $finMes) {
                     $query->whereBetween('created_at', [$inicioMes, $finMes])
                           ->with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida']);
+                },
+                'rolServicio' => function ($query) use ($inicioMes, $finMes) {
+                    $query->whereBetween('created_at', [$inicioMes, $finMes]);
                 }
             ])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
@@ -960,6 +972,7 @@ class ReporteController extends Controller
                 'cortes' => $unidad->cortes,
                 'castigos' => $unidad->castigos,
                 'ultimaCorridas' => $unidad->ultimaCorridas,
+                'rolServicio' => $unidad->rolServicio,
             ];
         });
 
@@ -996,6 +1009,9 @@ public function obtenerConcentradoPorAnio($idUnidad, $anio)
                 'ultimaCorridas' => function ($query) use ($inicioAnio, $finAnio) {
                     $query->whereBetween('created_at', [$inicioAnio, $finAnio])
                           ->with(['ruta', 'directivo', 'operador', 'tipoUltimaCorrida']);
+                },
+                'rolServicio' => function ($query) use ($inicioAnio, $finAnio) {
+                    $query->whereBetween('created_at', [$inicioAnio, $finAnio]);
                 }
             ])
             ->when($idUnidad !== 'todas', function ($query) use ($idUnidad) {
@@ -1011,6 +1027,7 @@ public function obtenerConcentradoPorAnio($idUnidad, $anio)
                 'cortes' => $unidad->cortes,
                 'castigos' => $unidad->castigos,
                 'ultimaCorridas' => $unidad->ultimaCorridas,
+                'rolServicio' => $unidad->rolServicio,
             ];
         });
 
@@ -1022,5 +1039,4 @@ public function obtenerConcentradoPorAnio($idUnidad, $anio)
         return response()->json(['error' => 'Error al obtener el concentrado por año', 'message' => $e->getMessage()], 500);
     }
 }
-
 }

@@ -61,6 +61,7 @@ const fetchEntradas = async (idUnidad, periodo) => {
     try {
         const response = await axios.get(url);
         entradas.value = response.data;
+        console.log('Datos consultados:',entradas.value);
     } catch (error) {
         /* console.error(error); */
         Swal.fire({
@@ -190,7 +191,6 @@ const generarPDF = (tipo, periodoSeleccionado) => {
 
 const generarExcel = (tipo, periodoSeleccionado) => {
     let periodoTexto;
-    // Ajustar el texto del periodo según el tipo
     if (periodoSeleccionado.tipo === 'semana') {
         periodoTexto = `Semana ${periodoSeleccionado.valor}`;
     } else if (periodoSeleccionado.tipo === 'mes') {
@@ -202,20 +202,36 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     }
 
     const nombreArchivo = `${tipo}-${periodoTexto}.xlsx`;
-    const data = [['Ruta', 'Fecha', 'Núm. Unidad', 'Socio/Prestador', 'Operador', 'Hora Entrada', 'Tipo Entrada', 'Ext', 'Hora Corte', 'Hora Regreso', 'Causa', 'Hora Inicio Castigo', 'Hora Fin Castigo', 'Castigo', 'Observaciones', 'Hora Inicio UC', 'Hora Fin UC', 'Tipo UC']];
 
-    // Iterar sobre cada objeto en entradas.value
+    // Cabecera del Excel
+    const data = [['Ruta', 'Fecha', 'Núm. Unidad', 'Domingo', 'Socio/Prestador', 'Operador', 'Hora Entrada', 'Tipo Entrada', 'Ext', 'Hora Corte', 'Hora Regreso', 'Causa De Corte', 'Hora Inicio Castigo', 'Hora Fin Castigo', 'Castigo', 'Observaciones', 'Hora Inicio UC', 'Hora Fin UC', 'Tipo UC']];
+
     entradas.value.forEach(entry => {
-        // Extraer las entradas anidadas
         entry.entradas.forEach(entrada => {
             const ruta = entrada.ruta.nombreRuta || 'N/A';
             const fecha = entrada.created_at ? new Date(entrada.created_at).toLocaleDateString() : 'N/A';
-            const numeroUnidad = entry.unidad || 'N/A'; // `entry.unidad` contiene directamente el número
+            const numeroUnidad = entry.unidad || 'N/A';
             const directivo = entrada.directivo.nombre_completo || 'N/A';
             const operador = entrada.operador ? `${entrada.operador.nombre_completo}` : 'N/A';
             const horaEntrada = entrada.horaEntrada ? entrada.horaEntrada.substring(0, 5) : 'N/A';
             const tipoEntrada = entrada.tipoEntrada || '';
             const extremo = entrada.extremo || 'N/A';
+
+            // Calcular "Domingo" con base en rolServicio
+            let trabajaDomingo = ' ';
+            entry.rolServicio.forEach(rol => {
+                const fechaRol = new Date(rol.created_at);
+
+                // Calcular el próximo domingo
+                const proximoDomingo = new Date(fechaRol);
+                proximoDomingo.setDate(fechaRol.getDate() + (7 - fechaRol.getDay()));
+
+                // Si la fecha de entrada corresponde al próximo domingo, asignar trabajaDomingo
+                const fechaEntrada = new Date(entrada.created_at);
+                if (fechaEntrada.toDateString() === proximoDomingo.toDateString()) {
+                    trabajaDomingo = rol.trabajaDomingo;
+                }
+            });
 
             // Inicializar variables para cortes y castigos
             let horaCorte = '';
@@ -252,7 +268,6 @@ const generarExcel = (tipo, periodoSeleccionado) => {
             let horaFinUC = '';
             let tipoUltimaCorrida = '';
 
-            // Iterar sobre las últimas corridas de la unidad para encontrar una en la misma fecha
             entry.ultimaCorridas.forEach(ultimaCorrida => {
                 const ultimaCorridaFecha = new Date(ultimaCorrida.created_at).toLocaleDateString();
                 if (ultimaCorridaFecha === fecha) {
@@ -262,8 +277,8 @@ const generarExcel = (tipo, periodoSeleccionado) => {
                 }
             });
 
-            // Agregar cada fila de datos al arreglo `data`
-            data.push([ruta, fecha, numeroUnidad, directivo, operador, horaEntrada, tipoEntrada, extremo, horaCorte, horaRegreso, causa, horaInicioCastigo, horaFinCastigo, castigo, observaciones, horaInicioUC, horaFinUC, tipoUltimaCorrida]);
+            // Agregar fila de datos
+            data.push([ruta, fecha, numeroUnidad, trabajaDomingo, directivo, operador, horaEntrada, tipoEntrada, extremo, horaCorte, horaRegreso, causa, horaInicioCastigo, horaFinCastigo, castigo, observaciones, horaInicioUC, horaFinUC, tipoUltimaCorrida]);
         });
     });
 
@@ -272,7 +287,6 @@ const generarExcel = (tipo, periodoSeleccionado) => {
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte_Concentrado');
-    // Guardar el archivo Excel
     XLSX.writeFile(workbook, nombreArchivo);
 };
 

@@ -27,7 +27,7 @@ class unidad extends Model
     }
     public function rolServicio()
     {
-        return $this->hasOne(rolServicio::class, 'idUnidad');
+        return $this->hasMany(rolServicio::class, 'idUnidad');
     }
 
     public function entradas()
